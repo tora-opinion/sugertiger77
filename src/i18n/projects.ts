@@ -58,7 +58,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "idit",
-      name: "IDIT.jp",
+      name: "idit.jp",
       url: "https://idit.jp",
       description:
         "Multi-AI platform for cloud infrastructure, analytics, and AI-powered applications. Integrates multiple AI providers with billing and security.",
@@ -150,7 +150,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "idit",
-      name: "IDIT.jp",
+      name: "idit.jp",
       url: "https://idit.jp",
       description:
         "クラウドインフラ・分析・AIアプリケーションのためのマルチAIプラットフォーム。複数AIプロバイダーを統合し、課金とセキュリティを提供。",
