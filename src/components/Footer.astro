@@ -1,8 +1,12 @@
 ---
-const year = new Date().getFullYear();
+import { getLang, t } from "../i18n/utils";
+const lang = getLang(Astro.currentLocale);
+const year = new Date().getFullYear().toString();
 ---
-<footer class="py-8 border-t border-gray-200 dark:border-gray-800">
+<footer class="border-t border-gray-200 dark:border-gray-800 py-8">
   <div class="max-w-5xl mx-auto px-6 text-center">
-    <p class="text-sm text-gray-500 dark:text-gray-400">© {year} sugertiger77. All rights reserved.</p>
+    <p class="text-sm text-gray-500 dark:text-gray-500">
+      {t("footer.rights", lang, { year })}
+    </p>
   </div>
 </footer>

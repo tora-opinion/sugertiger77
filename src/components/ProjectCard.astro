@@ -1,38 +1,56 @@
 ---
-import type { Project } from '../data/projects';
-import TechBadge from './TechBadge.astro';
+import type { Project } from "../i18n/projects";
+import type { Locale } from "../i18n/translations";
+import TechBadge from "./TechBadge.astro";
+import { t } from "../i18n/utils";
 
 interface Props {
   project: Project;
+  lang: Locale;
 }
-const { project } = Astro.props;
+const { project, lang } = Astro.props;
+
+const statusMap = {
+  "In Development": "status.inDevelopment",
+  "Live": "status.live",
+  "Beta": "status.beta",
+} as const;
 ---
-<article class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-  <div class="flex items-start justify-between">
-    <div>
-      <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">{project.name}</h3>
-      {project.japaneseName && <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{project.japaneseName}</p>}
-    </div>
-    <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
-      {project.status}
-    </span>
+<article class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 hover:shadow-lg dark:hover:shadow-gray-900/50 hover:-translate-y-0.5 transition-all duration-300 h-full flex flex-col">
+  <div class="flex items-start justify-between gap-3">
+    <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+      {project.name}
+      {project.japaneseName && <span class="ml-1 text-base text-gray-500 dark:text-gray-400">({project.japaneseName})</span>}
+    </h3>
+    {project.status && (
+      <span class="shrink-0 rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
+        {t(statusMap[project.status] as any, lang)}
+      </span>
+    )}
   </div>
-  <p class="mt-4 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{project.description}</p>
+  <p class="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+    {project.description}
+  </p>
   <div class="mt-4 flex flex-wrap gap-1.5">
-    {project.tech.map((t) => <TechBadge name={t} />)}
+    {project.tech.map((techName) => <TechBadge name={techName} />)}
   </div>
-  <ul class="mt-4 space-y-1">
-    {project.features.map((f) => (
-      <li class="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-        <span class="text-blue-500">›</span> {f}
+  <ul class="mt-4 space-y-1 text-sm text-gray-600 dark:text-gray-400">
+    {project.features.map((feature) => (
+      <li class="flex items-start gap-1.5">
+        <span class="text-gray-400 dark:text-gray-500 mt-0.5">›</span>
+        {feature}
       </li>
     ))}
   </ul>
-  <div class="mt-6 flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
-    <a href={project.url} target="_blank" rel="noopener noreferrer"
-      class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-      Visit Site ↗
+  <div class="mt-6 flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
+    <a
+      href={project.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+    >
+      {t("projects.visitSite", lang)}
     </a>
-    <span class="text-xs text-gray-600 dark:text-gray-400">{project.contact}</span>
+    <span class="text-xs text-gray-500 dark:text-gray-500">{project.contact}</span>
   </div>
 </article>

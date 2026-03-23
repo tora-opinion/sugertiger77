@@ -1,38 +1,47 @@
 ---
 import "../styles/global.css";
+import { getLang, t } from "../i18n/utils";
 
 interface Props {
   title?: string;
   description?: string;
 }
+
+const lang = getLang(Astro.currentLocale);
 const {
-  title = "sugertiger77 — Developer Portfolio",
-  description = "Full-stack developer building AI-powered products with Cloudflare, Vercel, Supabase, and AWS."
+  title = t("meta.title", lang),
+  description = t("meta.description", lang),
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const altLang = lang === "en" ? "ja" : "en";
+const altPath = lang === "en" ? "/ja/" : "/";
 ---
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang={altLang} href={new URL(altPath, Astro.site).href} />
+    <link rel="alternate" hreflang={lang} href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL('/og-image.png', Astro.site).href} />
+    <meta property="og:image" content={new URL("/og-image.png", Astro.site).href} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content={lang === "ja" ? "ja_JP" : "en_US"} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@sugertiger77" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL('/og-image.png', Astro.site).href} />
+    <meta name="twitter:image" content={new URL("/og-image.png", Astro.site).href} />
+    <noscript><style>.animate-on-scroll { opacity: 1 !important; }</style></noscript>
     <script is:inline>
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
@@ -44,14 +53,25 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "sugertiger77",
-      "url": "https://sugertiger77.pages.dev",
+      "url": "https://sugertiger77.com",
       "sameAs": [
         "https://github.com/tora-opinion",
         "https://twitter.com/sugertiger77"
       ]
     })} />
   </head>
-  <body class="min-h-screen">
+  <body class="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-300">
     <slot />
+    <script is:inline>
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
+    </script>
   </body>
 </html>

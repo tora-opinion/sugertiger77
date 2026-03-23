@@ -1,21 +1,28 @@
 ---
-import TechBadge from './TechBadge.astro';
+import TechBadge from "./TechBadge.astro";
+import { getLang, t } from "../i18n/utils";
 
+const lang = getLang(Astro.currentLocale);
 const techStack = [
   "Cloudflare", "Vercel", "Supabase", "AWS", "Next.js",
   "Swift / SwiftUI", "TypeScript", "React", "Prisma", "Stripe",
   "Tailwind CSS", "Astro",
 ];
 ---
-<section id="about" class="py-24 md:py-32">
-  <div class="max-w-5xl mx-auto px-6">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">About</h2>
-    <p class="mt-6 text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl">
-      I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms.
-      Currently developing 4 products across education, fintech, cloud infrastructure, and creative tooling.
+<section id="about" class="min-h-screen flex items-center">
+  <div class="max-w-5xl mx-auto px-6 w-full">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 animate-on-scroll animate-fade-in-up">
+      {t("about.title", lang)}
+    </h2>
+    <p class="mt-8 text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl animate-on-scroll animate-fade-in-up" style="animation-delay: 0.15s">
+      {t("about.description", lang)}
     </p>
-    <div class="mt-8 flex flex-wrap gap-2">
-      {techStack.map((tech) => <TechBadge name={tech} />)}
+    <div class="mt-10 flex flex-wrap gap-2">
+      {techStack.map((tech, i) => (
+        <div class="animate-on-scroll animate-scale-in" style={`animation-delay: ${0.2 + i * 0.05}s`}>
+          <TechBadge name={tech} />
+        </div>
+      ))}
     </div>
   </div>
 </section>
