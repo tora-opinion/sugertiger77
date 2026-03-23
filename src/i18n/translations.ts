@@ -23,7 +23,6 @@ export const translations = {
     ja: "Cloudflare · Vercel · Supabase · AWS",
   },
   "hero.github": { en: "GitHub", ja: "GitHub" },
-  "hero.twitter": { en: "Twitter", ja: "Twitter" },
   "hero.viewProjects": { en: "View Projects ↓", ja: "プロジェクトを見る ↓" },
   "about.title": { en: "About", ja: "About" },
   "about.description": {
