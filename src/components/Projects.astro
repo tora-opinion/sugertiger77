@@ -1,0 +1,15 @@
+---
+import { projects } from '../data/projects';
+import ProjectCard from './ProjectCard.astro';
+---
+<section id="projects" class="py-24 md:py-32 bg-gray-50/50 dark:bg-gray-900/50">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Projects</h2>
+    <p class="mt-4 text-base text-gray-600 dark:text-gray-400">
+      Currently building 4 products across education, fintech, cloud infrastructure, and creative tooling.
+    </p>
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </div>
+</section>

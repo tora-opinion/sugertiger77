@@ -1,0 +1,21 @@
+---
+import TechBadge from './TechBadge.astro';
+
+const techStack = [
+  "Cloudflare", "Vercel", "Supabase", "AWS", "Next.js",
+  "Swift / SwiftUI", "TypeScript", "React", "Prisma", "Stripe",
+  "Tailwind CSS", "Astro",
+];
+---
+<section id="about" class="py-24 md:py-32">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">About</h2>
+    <p class="mt-6 text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl">
+      I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms.
+      Currently developing 4 products across education, fintech, cloud infrastructure, and creative tooling.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-2">
+      {techStack.map((tech) => <TechBadge name={tech} />)}
+    </div>
+  </div>
+</section>

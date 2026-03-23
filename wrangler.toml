@@ -1,0 +1,7 @@
+name = "sugertiger77"
+compatibility_date = "2025-06-01"
+pages_build_output_dir = "dist"
+
+[assets]
+directory = "./dist"
+not_found_handling = "404-page"
