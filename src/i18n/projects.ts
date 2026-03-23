@@ -33,7 +33,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "sugupena",
-      name: "Sukupena",
+      name: "Sugupena",
       japaneseName: "スグペナ",
       url: "https://sugupena.com",
       description:
@@ -125,7 +125,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "sugupena",
-      name: "Sukupena",
+      name: "Sugupena",
       japaneseName: "スグペナ",
       url: "https://sugupena.com",
       description:
