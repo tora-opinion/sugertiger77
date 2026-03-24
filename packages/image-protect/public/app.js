@@ -16,7 +16,6 @@
   const removeFile = $('#remove-file');
   const uploadBtn = $('#upload-btn');
   const uploadResult = $('#upload-result');
-  const previewUrlInput = $('#preview-url');
   const cdnUrlInput = $('#cdn-url');
   const deleteTokenDisplay = $('#delete-token');
   const uploadAnother = $('#upload-another');
@@ -150,7 +149,6 @@
       }
 
       cdnUrlInput.value = data.cdnUrl;
-      previewUrlInput.value = data.previewUrl;
       deleteTokenDisplay.value = data.deleteToken;
 
       $('#upload-section .card').classList.add('hidden');
