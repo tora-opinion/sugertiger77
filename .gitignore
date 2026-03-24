@@ -4,3 +4,7 @@ dist/
 .wrangler/
 .env
 .env.*
+
+# Image Protect
+packages/image-protect/node_modules/
+packages/image-protect/.wrangler/
