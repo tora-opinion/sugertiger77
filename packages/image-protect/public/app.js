@@ -4,7 +4,6 @@
 
   // --- State ---
   let selectedFile = null;
-  let deleteMode = 'token'; // 'token' or 'password'
 
   // --- DOM refs ---
   const $ = (sel) => document.querySelector(sel);
@@ -17,17 +16,13 @@
   const removeFile = $('#remove-file');
   const uploadBtn = $('#upload-btn');
   const uploadResult = $('#upload-result');
+  const previewUrlInput = $('#preview-url');
   const cdnUrlInput = $('#cdn-url');
   const deleteTokenDisplay = $('#delete-token');
   const uploadAnother = $('#upload-another');
   const deleteImageId = $('#delete-image-id');
   const deleteTokenField = $('#delete-token-input');
-  const deleteAdminPassword = $('#delete-admin-password');
   const deleteBtn = $('#delete-btn');
-  const toggleTokenAuth = $('#toggle-token-auth');
-  const togglePasswordAuth = $('#toggle-password-auth');
-  const tokenAuthField = $('#token-auth-field');
-  const passwordAuthField = $('#password-auth-field');
   const themeToggle = $('#theme-toggle');
 
   // --- Dark Mode ---
@@ -155,6 +150,7 @@
       }
 
       cdnUrlInput.value = data.cdnUrl;
+      previewUrlInput.value = data.previewUrl;
       deleteTokenDisplay.value = data.deleteToken;
 
       $('#upload-section .card').classList.add('hidden');
@@ -191,94 +187,54 @@
     }
   });
 
-  // --- Delete Auth Toggle ---
-  toggleTokenAuth.addEventListener('click', () => {
-    deleteMode = 'token';
-    toggleTokenAuth.classList.add('active');
-    toggleTokenAuth.setAttribute('aria-pressed', 'true');
-    togglePasswordAuth.classList.remove('active');
-    togglePasswordAuth.setAttribute('aria-pressed', 'false');
-    tokenAuthField.classList.remove('hidden');
-    passwordAuthField.classList.add('hidden');
-  });
-
-  togglePasswordAuth.addEventListener('click', () => {
-    deleteMode = 'password';
-    togglePasswordAuth.classList.add('active');
-    togglePasswordAuth.setAttribute('aria-pressed', 'true');
-    toggleTokenAuth.classList.remove('active');
-    toggleTokenAuth.setAttribute('aria-pressed', 'false');
-    passwordAuthField.classList.remove('hidden');
-    tokenAuthField.classList.add('hidden');
-  });
-
-  // --- Delete Image ---
+  // --- Delete Image (unified: try token first, fallback to password auth) ---
   deleteBtn.addEventListener('click', async () => {
     const id = deleteImageId.value.trim();
+    const secret = deleteTokenField.value.trim();
     if (!id) {
       toast('画像IDを入力してください', 'error');
       return;
     }
-
-    if (deleteMode === 'token') {
-      const token = deleteTokenField.value.trim();
-      if (!token) {
-        toast('削除トークンを入力してください', 'error');
-        return;
-      }
-      await deleteWithToken(id, token);
-    } else {
-      const password = deleteAdminPassword.value.trim();
-      if (!password) {
-        toast('管理パスワードを入力してください', 'error');
-        return;
-      }
-      await deleteWithPassword(id, password);
+    if (!secret) {
+      toast('削除トークンまたは管理パスワードを入力してください', 'error');
+      return;
     }
+    await deleteImage(id, secret);
   });
 
-  async function deleteWithToken(id, token) {
+  async function deleteImage(id, secret) {
     deleteBtn.disabled = true;
     deleteBtn.textContent = '削除中...';
     try {
-      const res = await fetch(`/api/image/${encodeURIComponent(id)}`, {
+      // Step 1: Try deleting with the value as a delete token
+      const tokenRes = await fetch(`/api/image/${encodeURIComponent(id)}`, {
         method: 'DELETE',
-        headers: { 'X-Delete-Token': token },
+        headers: { 'X-Delete-Token': secret },
       });
-      const data = await safeJson(res);
-      if (data.success) {
+      const tokenData = await safeJson(tokenRes);
+
+      if (tokenData.success) {
         toast('画像を削除しました', 'success');
         deleteImageId.value = '';
         deleteTokenField.value = '';
-      } else {
-        toast(data.error || '削除に失敗しました', 'error');
+        return;
       }
-    } catch (err) {
-      toast('削除に失敗しました: ' + err.message, 'error');
-    } finally {
-      deleteBtn.disabled = false;
-      deleteBtn.textContent = '画像を削除';
-    }
-  }
 
-  async function deleteWithPassword(id, password) {
-    deleteBtn.disabled = true;
-    deleteBtn.textContent = '認証中...';
-    try {
-      // Step 1: Authenticate to get session token
+      // Step 2: Token failed — try as admin password
+      deleteBtn.textContent = '認証中...';
       const authRes = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password: secret }),
       });
       const authData = await safeJson(authRes);
 
       if (!authData.success || !authData.token) {
-        toast(authData.error || '認証に失敗しました', 'error');
+        toast('削除トークンまたはパスワードが正しくありません', 'error');
         return;
       }
 
-      // Step 2: Delete with session token
+      // Step 3: Auth succeeded — delete with session token
       deleteBtn.textContent = '削除中...';
       const delRes = await fetch(`/api/image/${encodeURIComponent(id)}`, {
         method: 'DELETE',
@@ -289,7 +245,7 @@
       if (delData.success) {
         toast('画像を削除しました', 'success');
         deleteImageId.value = '';
-        deleteAdminPassword.value = '';
+        deleteTokenField.value = '';
       } else {
         toast(delData.error || '削除に失敗しました', 'error');
       }

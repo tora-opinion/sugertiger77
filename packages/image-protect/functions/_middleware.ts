@@ -28,12 +28,13 @@ async function securityMiddleware(context: Context): Promise<Response> {
   });
 }
 
-// Bot detection for API/CDN routes
+// Bot detection for API/CDN/preview routes
 async function botMiddleware(context: Context): Promise<Response> {
   const url = new URL(context.request.url);
   if (
     url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/cdn/')
+    url.pathname.startsWith('/cdn/') ||
+    url.pathname.startsWith('/preview/')
   ) {
     const check = detectBot(context.request);
     if (check.isBot) {

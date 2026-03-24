@@ -1,3 +1,13 @@
+const SOCIAL_CRAWLER_ORIGINS = [
+  'https://twitter.com',
+  'https://x.com',
+  'https://t.co',
+  'https://www.facebook.com',
+  'https://facebook.com',
+  'https://www.linkedin.com',
+  'https://discord.com',
+];
+
 export function isHotlink(
   request: Request,
   allowedOrigins: string[],
@@ -11,6 +21,11 @@ export function isHotlink(
 
   try {
     const refererOrigin = new URL(referer).origin;
+
+    // Allow social media crawlers for OGP/card previews
+    if (SOCIAL_CRAWLER_ORIGINS.includes(refererOrigin)) {
+      return { blocked: false };
+    }
 
     for (const allowed of allowedOrigins) {
       if (refererOrigin === allowed) {

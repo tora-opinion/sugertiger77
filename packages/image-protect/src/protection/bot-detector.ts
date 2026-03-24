@@ -20,6 +20,27 @@ const BLOCKED_UA_PATTERNS = [
   /okhttp/i,
 ];
 
+// AI training crawlers — block on CDN/preview routes
+const AI_CRAWLER_PATTERNS = [
+  /GPTBot/i,
+  /ChatGPT-User/i,
+  /ClaudeBot/i,
+  /anthropic-ai/i,
+  /CCBot/i,
+  /Google-Extended/i,
+  /Bytespider/i,
+  /PerplexityBot/i,
+  /cohere-ai/i,
+  /Applebot-Extended/i,
+  /Amazonbot/i,
+  /FacebookBot/i,
+  /Omgilibot/i,
+  /YouBot/i,
+  /Diffbot/i,
+  /ImagesiftBot/i,
+  /Ai2Bot/i,
+];
+
 const ALLOWED_BOTS = [
   /Googlebot/i,
   /Bingbot/i,
@@ -43,6 +64,12 @@ export function detectBot(
   for (const pattern of ALLOWED_BOTS) {
     if (pattern.test(ua)) {
       return { isBot: false };
+    }
+  }
+
+  for (const pattern of AI_CRAWLER_PATTERNS) {
+    if (pattern.test(ua)) {
+      return { isBot: true, reason: `AI crawler blocked: ${ua.slice(0, 50)}` };
     }
   }
 
