@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Image Protect — sugertiger77</title>
-  <meta name="description" content="Artist image protection service. Upload, protect, and share your images securely." />
+  <meta name="description" content="アーティスト向け画像保護サービス。安全にアップロード、保護、共有。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -17,7 +17,7 @@
       <div class="container header-inner">
         <a href="/" class="logo">🛡️ Image Protect</a>
         <nav class="header-actions">
-          <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode">
+          <button id="theme-toggle" class="btn-icon" aria-label="ダークモード切替">
             <span id="theme-icon">🌙</span>
           </button>
         </nav>
@@ -27,95 +27,95 @@
     <main class="container">
       <!-- Upload Section -->
       <section class="section" id="upload-section">
-        <h1 class="section-title">Upload &amp; Protect</h1>
-        <p class="section-desc">Upload your artwork to get a protected CDN URL. Images are guarded against scraping, hotlinking, and unauthorized access.</p>
+        <h1 class="section-title">アップロード &amp; 保護</h1>
+        <p class="section-desc">アートワークをアップロードして、保護されたCDN URLを取得しましょう。スクレイピング、直リンク、不正アクセスから画像を守ります。</p>
 
         <div class="card">
           <div id="drop-zone" class="drop-zone">
             <div class="drop-zone-content">
               <span class="drop-icon">📁</span>
-              <p>Drag &amp; drop your image here</p>
-              <p class="text-muted">or click to select a file</p>
-              <p class="text-muted text-sm">JPEG, PNG, WebP, GIF — Max 10MB</p>
+              <p>画像をドラッグ＆ドロップ</p>
+              <p class="text-muted">またはクリックしてファイルを選択</p>
+              <p class="text-muted text-sm">JPEG, PNG, WebP, GIF — 最大10MB</p>
             </div>
             <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
           </div>
 
           <div id="file-preview" class="file-preview hidden">
-            <img id="preview-img" class="preview-img" alt="Preview" />
+            <img id="preview-img" class="preview-img" alt="プレビュー" />
             <div class="file-info">
               <span id="file-name" class="file-name"></span>
               <span id="file-size" class="text-muted"></span>
             </div>
-            <button id="remove-file" class="btn btn-secondary btn-sm">✕ Remove</button>
+            <button id="remove-file" class="btn btn-secondary btn-sm">✕ 削除</button>
           </div>
 
-          <button id="upload-btn" class="btn btn-primary" disabled>Upload Image</button>
+          <button id="upload-btn" class="btn btn-primary" disabled>画像をアップロード</button>
         </div>
 
         <!-- Upload Result -->
         <div id="upload-result" class="card result-card hidden">
-          <h2 class="result-title">✅ Upload Complete</h2>
+          <h2 class="result-title">✅ アップロード完了</h2>
           <div class="result-field">
-            <label>CDN URL (Public Preview)</label>
+            <label>CDN URL（公開プレビュー）</label>
             <div class="copy-group">
               <input type="text" id="cdn-url" class="input" readonly />
-              <button class="btn btn-secondary btn-sm" data-copy="cdn-url">Copy</button>
+              <button class="btn btn-secondary btn-sm" data-copy="cdn-url">コピー</button>
             </div>
           </div>
           <div class="result-field">
-            <label>Signed URL (Time-limited)</label>
+            <label>署名付きURL（時間制限あり）</label>
             <div class="copy-group">
               <input type="text" id="signed-url" class="input" readonly />
-              <button class="btn btn-secondary btn-sm" data-copy="signed-url">Copy</button>
+              <button class="btn btn-secondary btn-sm" data-copy="signed-url">コピー</button>
             </div>
           </div>
           <div class="result-field">
-            <label>Delete Token (Save this!)</label>
+            <label>削除トークン（保存してください！）</label>
             <div class="copy-group">
               <input type="text" id="delete-token" class="input" readonly />
-              <button class="btn btn-secondary btn-sm" data-copy="delete-token">Copy</button>
+              <button class="btn btn-secondary btn-sm" data-copy="delete-token">コピー</button>
             </div>
           </div>
-          <button id="upload-another" class="btn btn-primary">Upload Another</button>
+          <button id="upload-another" class="btn btn-primary">もう一枚アップロード</button>
         </div>
       </section>
 
       <!-- Delete Section -->
       <section class="section" id="delete-section">
-        <h2 class="section-title">Delete Image</h2>
+        <h2 class="section-title">画像を削除</h2>
         <div class="card">
           <div class="form-group">
-            <label for="delete-image-id">Image ID</label>
-            <input type="text" id="delete-image-id" class="input" placeholder="e.g. a1b2c3d4e5f67890" />
+            <label for="delete-image-id">画像ID</label>
+            <input type="text" id="delete-image-id" class="input" placeholder="例: a1b2c3d4e5f67890" />
           </div>
           <div class="form-group">
-            <label for="delete-token-input">Delete Token</label>
-            <input type="text" id="delete-token-input" class="input" placeholder="Your delete token" />
+            <label for="delete-token-input">削除トークン</label>
+            <input type="text" id="delete-token-input" class="input" placeholder="削除トークンを入力" />
           </div>
-          <button id="delete-btn" class="btn btn-danger">Delete Image</button>
+          <button id="delete-btn" class="btn btn-danger">画像を削除</button>
         </div>
       </section>
 
       <!-- Admin Section -->
       <section class="section" id="admin-section">
-        <h2 class="section-title">Admin Panel</h2>
+        <h2 class="section-title">管理パネル</h2>
 
         <div id="admin-login" class="card">
           <div class="form-group">
-            <label for="admin-password">Password</label>
-            <input type="password" id="admin-password" class="input" placeholder="Admin password" />
+            <label for="admin-password">パスワード</label>
+            <input type="password" id="admin-password" class="input" placeholder="管理パスワード" />
           </div>
-          <button id="admin-login-btn" class="btn btn-primary">Login</button>
+          <button id="admin-login-btn" class="btn btn-primary">ログイン</button>
         </div>
 
         <div id="admin-panel" class="hidden">
           <div class="admin-header">
             <span id="image-count" class="text-muted"></span>
-            <button id="admin-logout-btn" class="btn btn-secondary btn-sm">Logout</button>
+            <button id="admin-logout-btn" class="btn btn-secondary btn-sm">ログアウト</button>
           </div>
           <div id="image-list" class="image-grid"></div>
-          <button id="load-more" class="btn btn-secondary hidden">Load More</button>
+          <button id="load-more" class="btn btn-secondary hidden">もっと読み込む</button>
         </div>
       </section>
     </main>

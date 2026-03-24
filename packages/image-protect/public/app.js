@@ -75,11 +75,11 @@
   function selectFile(file) {
     const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowed.includes(file.type)) {
-      toast('File type not allowed', 'error');
+      toast('許可されていないファイル形式です', 'error');
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      toast('File too large (max 10MB)', 'error');
+      toast('ファイルが大きすぎます（最大10MB）', 'error');
       return;
     }
     selectedFile = file;
@@ -126,7 +126,7 @@
   uploadBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
     uploadBtn.disabled = true;
-    uploadBtn.textContent = 'Uploading...';
+    uploadBtn.textContent = 'アップロード中...';
 
     try {
       const formData = new FormData();
@@ -136,7 +136,7 @@
       const data = await res.json();
 
       if (!data.success) {
-        toast(data.error || 'Upload failed', 'error');
+        toast(data.error || 'アップロードに失敗しました', 'error');
         return;
       }
 
@@ -146,12 +146,12 @@
 
       $('#upload-section .card').classList.add('hidden');
       uploadResult.classList.remove('hidden');
-      toast('Image uploaded successfully!', 'success');
+      toast('画像をアップロードしました！', 'success');
     } catch (err) {
-      toast('Upload failed: ' + err.message, 'error');
+      toast('アップロードに失敗しました: ' + err.message, 'error');
     } finally {
       uploadBtn.disabled = false;
-      uploadBtn.textContent = 'Upload Image';
+      uploadBtn.textContent = '画像をアップロード';
     }
   });
 
@@ -171,10 +171,10 @@
     try {
       await navigator.clipboard.writeText(input.value);
       const original = btn.textContent;
-      btn.textContent = 'Copied!';
+      btn.textContent = 'コピー完了！';
       setTimeout(() => { btn.textContent = original; }, 1500);
     } catch {
-      toast('Failed to copy', 'error');
+      toast('コピーに失敗しました', 'error');
     }
   });
 
@@ -183,31 +183,31 @@
     const id = deleteImageId.value.trim();
     const token = deleteTokenField.value.trim();
     if (!id || !token) {
-      toast('Both fields required', 'error');
+      toast('両方のフィールドを入力してください', 'error');
       return;
     }
 
     deleteBtn.disabled = true;
-    deleteBtn.textContent = 'Deleting...';
+    deleteBtn.textContent = '削除中...';
 
     try {
-      const res = await fetch(`/api/image/${id}`, {
+      const res = await fetch(`/api/image/${encodeURIComponent(id)}`, {
         method: 'DELETE',
         headers: { 'X-Delete-Token': token },
       });
       const data = await res.json();
       if (data.success) {
-        toast('Image deleted', 'success');
+        toast('画像を削除しました', 'success');
         deleteImageId.value = '';
         deleteTokenField.value = '';
       } else {
-        toast(data.error || 'Delete failed', 'error');
+        toast(data.error || '削除に失敗しました', 'error');
       }
     } catch (err) {
-      toast('Delete failed: ' + err.message, 'error');
+      toast('削除に失敗しました: ' + err.message, 'error');
     } finally {
       deleteBtn.disabled = false;
-      deleteBtn.textContent = 'Delete Image';
+      deleteBtn.textContent = '画像を削除';
     }
   });
 
@@ -230,12 +230,12 @@
   adminLoginBtn.addEventListener('click', async () => {
     const password = adminPassword.value.trim();
     if (!password) {
-      toast('Password required', 'error');
+      toast('パスワードを入力してください', 'error');
       return;
     }
 
     adminLoginBtn.disabled = true;
-    adminLoginBtn.textContent = 'Logging in...';
+    adminLoginBtn.textContent = 'ログイン中...';
 
     try {
       const res = await fetch('/api/auth', {
@@ -248,16 +248,16 @@
         adminToken = data.token;
         sessionStorage.setItem('admin_token', data.token);
         adminPassword.value = '';
-        toast('Logged in', 'success');
+        toast('ログインしました', 'success');
         showAdminPanel();
       } else {
-        toast(data.error || 'Login failed', 'error');
+        toast(data.error || 'ログインに失敗しました', 'error');
       }
     } catch (err) {
-      toast('Login failed: ' + err.message, 'error');
+      toast('ログインに失敗しました: ' + err.message, 'error');
     } finally {
       adminLoginBtn.disabled = false;
-      adminLoginBtn.textContent = 'Login';
+      adminLoginBtn.textContent = 'ログイン';
     }
   });
 
@@ -278,14 +278,12 @@
       if (!data.success) {
         if (data.code === 401) {
           hideAdminPanel();
-          toast('Session expired', 'error');
+          toast('セッションが切れました', 'error');
         }
         return;
       }
 
       if (!append) imageList.innerHTML = '';
-
-      imageCount.textContent = `${data.images.length} image(s)`;
 
       for (const img of data.images) {
         const card = document.createElement('div');
@@ -314,12 +312,14 @@
         const delBtn = document.createElement('button');
         delBtn.className = 'btn btn-danger btn-sm';
         delBtn.dataset.deleteId = img.id;
-        delBtn.textContent = 'Delete';
+        delBtn.textContent = '削除';
         actions.appendChild(delBtn);
         card.appendChild(actions);
 
         imageList.appendChild(card);
       }
+
+      imageCount.textContent = `${imageList.children.length} 枚の画像`;
 
       if (data.cursor) {
         imageCursor = data.cursor;
@@ -329,7 +329,7 @@
         loadMore.classList.add('hidden');
       }
     } catch (err) {
-      toast('Failed to load images: ' + err.message, 'error');
+      toast('画像の読み込みに失敗しました: ' + err.message, 'error');
     }
   }
 
@@ -340,30 +340,54 @@
     const btn = e.target.closest('[data-delete-id]');
     if (!btn) return;
     const id = btn.dataset.deleteId;
-    if (!confirm('Delete this image?')) return;
+    if (!confirm('この画像を削除しますか？')) return;
 
     btn.disabled = true;
     btn.textContent = '...';
 
     try {
-      const res = await fetch(`/api/image/${id}`, {
+      const res = await fetch(`/api/image/${encodeURIComponent(id)}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${adminToken}` },
       });
       const data = await res.json();
       if (data.success) {
         btn.closest('.image-card').remove();
-        toast('Image deleted', 'success');
+        toast('画像を削除しました', 'success');
       } else {
-        toast(data.error || 'Delete failed', 'error');
+        toast(data.error || '削除に失敗しました', 'error');
       }
     } catch (err) {
-      toast('Delete failed: ' + err.message, 'error');
+      toast('削除に失敗しました: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '削除';
     }
   });
 
+  // --- Scroll Animation ---
+  function initScrollAnimations() {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach((s) => s.classList.add('scroll-animate'));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('.scroll-animate').forEach((el) => observer.observe(el));
+  }
+
   // --- Init ---
   initTheme();
+  initScrollAnimations();
   if (adminToken) {
     showAdminPanel();
   }
