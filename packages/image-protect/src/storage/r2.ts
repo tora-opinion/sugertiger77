@@ -20,6 +20,24 @@ export async function uploadImage(
   });
 }
 
+export async function getImageMetadata(
+  bucket: R2Bucket,
+  id: string,
+): Promise<ImageMetadata | null> {
+  const obj = await bucket.head(id);
+  if (!obj) return null;
+
+  const custom = obj.customMetadata || {};
+  return {
+    id: custom.id || id,
+    filename: custom.filename || 'unknown',
+    contentType: custom.contentType || 'application/octet-stream',
+    size: Number(custom.size) || 0,
+    uploadedAt: custom.uploadedAt || '',
+    deleteToken: custom.deleteToken || '',
+  };
+}
+
 export async function getImage(
   bucket: R2Bucket,
   id: string,

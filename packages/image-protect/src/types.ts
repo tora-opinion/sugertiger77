@@ -33,6 +33,7 @@ export interface UploadResponse {
   success: true;
   id: string;
   cdnUrl: string;
+  previewUrl: string;
   deleteToken: string;
   signedUrl: string;
 }
