@@ -71,7 +71,6 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
 
     const baseUrl = new URL(context.request.url).origin;
     const cdnUrl = `${baseUrl}/cdn/${id}`;
-    const previewUrl = `${baseUrl}/preview/${id}`;
     const signedUrl = await generateSignedUrl(
       baseUrl,
       id,
@@ -83,7 +82,6 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       success: true,
       id,
       cdnUrl,
-      previewUrl,
       deleteToken,
       signedUrl,
     });
