@@ -4,8 +4,7 @@
 
   // --- State ---
   let selectedFile = null;
-  let adminToken = sessionStorage.getItem('admin_token') || null;
-  let imageCursor = null;
+  let deleteMode = 'token'; // 'token' or 'password'
 
   // --- DOM refs ---
   const $ = (sel) => document.querySelector(sel);
@@ -19,36 +18,22 @@
   const uploadBtn = $('#upload-btn');
   const uploadResult = $('#upload-result');
   const cdnUrlInput = $('#cdn-url');
-  const signedUrlInput = $('#signed-url');
-  const deleteTokenInput = $('#delete-token');
+  const deleteTokenDisplay = $('#delete-token');
   const uploadAnother = $('#upload-another');
   const deleteImageId = $('#delete-image-id');
   const deleteTokenField = $('#delete-token-input');
+  const deleteAdminPassword = $('#delete-admin-password');
   const deleteBtn = $('#delete-btn');
-  const adminLogin = $('#admin-login');
-  const adminPanel = $('#admin-panel');
-  const adminPassword = $('#admin-password');
-  const adminLoginBtn = $('#admin-login-btn');
-  const adminLogoutBtn = $('#admin-logout-btn');
-  const imageCount = $('#image-count');
-  const imageList = $('#image-list');
-  const loadMore = $('#load-more');
+  const toggleTokenAuth = $('#toggle-token-auth');
+  const togglePasswordAuth = $('#toggle-password-auth');
+  const tokenAuthField = $('#token-auth-field');
+  const passwordAuthField = $('#password-auth-field');
   const themeToggle = $('#theme-toggle');
-  const themeIcon = $('#theme-icon');
 
   // --- Dark Mode ---
-  function initTheme() {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      themeIcon.textContent = '☀️';
-    }
-  }
-
   themeToggle.addEventListener('click', () => {
     const isDark = document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    themeIcon.textContent = isDark ? '☀️' : '🌙';
   });
 
   // --- Toast ---
@@ -56,6 +41,7 @@
     const container = $('#toast-container');
     const el = document.createElement('div');
     el.className = `toast toast-${type}`;
+    if (type === 'error') el.setAttribute('role', 'alert');
     el.textContent = message;
     container.appendChild(el);
     setTimeout(() => {
@@ -63,6 +49,28 @@
       el.style.transition = 'opacity 300ms';
       setTimeout(() => el.remove(), 300);
     }, 3000);
+  }
+
+  // --- Safe JSON parse from fetch response ---
+  async function safeJson(res) {
+    if (!res.ok) {
+      try {
+        return await res.json();
+      } catch {
+        const messages = {
+          413: 'ファイルが大きすぎます',
+          429: 'リクエストが多すぎます。しばらくお待ちください',
+          502: 'サーバーエラーが発生しました',
+          504: 'サーバーがタイムアウトしました',
+        };
+        return { success: false, error: messages[res.status] || `エラーが発生しました (${res.status})` };
+      }
+    }
+    try {
+      return await res.json();
+    } catch {
+      return { success: false, error: 'サーバーから不正なレスポンスが返されました' };
+    }
   }
 
   // --- File Selection ---
@@ -103,6 +111,12 @@
   }
 
   dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
   fileInput.addEventListener('change', () => {
     if (fileInput.files[0]) selectFile(fileInput.files[0]);
   });
@@ -133,7 +147,7 @@
       formData.append('file', selectedFile);
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await safeJson(res);
 
       if (!data.success) {
         toast(data.error || 'アップロードに失敗しました', 'error');
@@ -141,8 +155,7 @@
       }
 
       cdnUrlInput.value = data.cdnUrl;
-      signedUrlInput.value = data.signedUrl;
-      deleteTokenInput.value = data.deleteToken;
+      deleteTokenDisplay.value = data.deleteToken;
 
       $('#upload-section .card').classList.add('hidden');
       uploadResult.classList.remove('hidden');
@@ -178,24 +191,61 @@
     }
   });
 
+  // --- Delete Auth Toggle ---
+  toggleTokenAuth.addEventListener('click', () => {
+    deleteMode = 'token';
+    toggleTokenAuth.classList.add('active');
+    toggleTokenAuth.setAttribute('aria-pressed', 'true');
+    togglePasswordAuth.classList.remove('active');
+    togglePasswordAuth.setAttribute('aria-pressed', 'false');
+    tokenAuthField.classList.remove('hidden');
+    passwordAuthField.classList.add('hidden');
+  });
+
+  togglePasswordAuth.addEventListener('click', () => {
+    deleteMode = 'password';
+    togglePasswordAuth.classList.add('active');
+    togglePasswordAuth.setAttribute('aria-pressed', 'true');
+    toggleTokenAuth.classList.remove('active');
+    toggleTokenAuth.setAttribute('aria-pressed', 'false');
+    passwordAuthField.classList.remove('hidden');
+    tokenAuthField.classList.add('hidden');
+  });
+
   // --- Delete Image ---
   deleteBtn.addEventListener('click', async () => {
     const id = deleteImageId.value.trim();
-    const token = deleteTokenField.value.trim();
-    if (!id || !token) {
-      toast('両方のフィールドを入力してください', 'error');
+    if (!id) {
+      toast('画像IDを入力してください', 'error');
       return;
     }
 
+    if (deleteMode === 'token') {
+      const token = deleteTokenField.value.trim();
+      if (!token) {
+        toast('削除トークンを入力してください', 'error');
+        return;
+      }
+      await deleteWithToken(id, token);
+    } else {
+      const password = deleteAdminPassword.value.trim();
+      if (!password) {
+        toast('管理パスワードを入力してください', 'error');
+        return;
+      }
+      await deleteWithPassword(id, password);
+    }
+  });
+
+  async function deleteWithToken(id, token) {
     deleteBtn.disabled = true;
     deleteBtn.textContent = '削除中...';
-
     try {
       const res = await fetch(`/api/image/${encodeURIComponent(id)}`, {
         method: 'DELETE',
         headers: { 'X-Delete-Token': token },
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (data.success) {
         toast('画像を削除しました', 'success');
         deleteImageId.value = '';
@@ -209,172 +259,55 @@
       deleteBtn.disabled = false;
       deleteBtn.textContent = '画像を削除';
     }
-  });
-
-  // --- Admin Auth ---
-  function showAdminPanel() {
-    adminLogin.classList.add('hidden');
-    adminPanel.classList.remove('hidden');
-    loadImages();
   }
 
-  function hideAdminPanel() {
-    adminToken = null;
-    sessionStorage.removeItem('admin_token');
-    imageCursor = null;
-    adminLogin.classList.remove('hidden');
-    adminPanel.classList.add('hidden');
-    imageList.innerHTML = '';
-  }
-
-  adminLoginBtn.addEventListener('click', async () => {
-    const password = adminPassword.value.trim();
-    if (!password) {
-      toast('パスワードを入力してください', 'error');
-      return;
-    }
-
-    adminLoginBtn.disabled = true;
-    adminLoginBtn.textContent = 'ログイン中...';
-
+  async function deleteWithPassword(id, password) {
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = '認証中...';
     try {
-      const res = await fetch('/api/auth', {
+      // Step 1: Authenticate to get session token
+      const authRes = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
       });
-      const data = await res.json();
-      if (data.success && data.token) {
-        adminToken = data.token;
-        sessionStorage.setItem('admin_token', data.token);
-        adminPassword.value = '';
-        toast('ログインしました', 'success');
-        showAdminPanel();
-      } else {
-        toast(data.error || 'ログインに失敗しました', 'error');
-      }
-    } catch (err) {
-      toast('ログインに失敗しました: ' + err.message, 'error');
-    } finally {
-      adminLoginBtn.disabled = false;
-      adminLoginBtn.textContent = 'ログイン';
-    }
-  });
+      const authData = await safeJson(authRes);
 
-  adminLogoutBtn.addEventListener('click', hideAdminPanel);
-
-  // --- Image List ---
-  async function loadImages(append = false) {
-    try {
-      const params = new URLSearchParams();
-      if (imageCursor) params.set('cursor', imageCursor);
-      params.set('limit', '20');
-
-      const res = await fetch(`/api/images?${params}`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-      });
-      const data = await res.json();
-
-      if (!data.success) {
-        if (data.code === 401) {
-          hideAdminPanel();
-          toast('セッションが切れました', 'error');
-        }
+      if (!authData.success || !authData.token) {
+        toast(authData.error || '認証に失敗しました', 'error');
         return;
       }
 
-      if (!append) imageList.innerHTML = '';
-
-      for (const img of data.images) {
-        const card = document.createElement('div');
-        card.className = 'image-card';
-
-        const imgEl = document.createElement('img');
-        imgEl.src = '/cdn/' + encodeURIComponent(img.id);
-        imgEl.alt = img.filename.replace(/[<>"&]/g, '');
-        imgEl.loading = 'lazy';
-        card.appendChild(imgEl);
-
-        const info = document.createElement('div');
-        info.className = 'image-card-info';
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'file-name';
-        nameSpan.textContent = img.filename;
-        const sizeSpan = document.createElement('span');
-        sizeSpan.className = 'text-muted';
-        sizeSpan.textContent = formatSize(img.size);
-        info.appendChild(nameSpan);
-        info.appendChild(sizeSpan);
-        card.appendChild(info);
-
-        const actions = document.createElement('div');
-        actions.className = 'image-card-actions';
-        const delBtn = document.createElement('button');
-        delBtn.className = 'btn btn-danger btn-sm';
-        delBtn.dataset.deleteId = img.id;
-        delBtn.textContent = '削除';
-        actions.appendChild(delBtn);
-        card.appendChild(actions);
-
-        imageList.appendChild(card);
-      }
-
-      imageCount.textContent = `${imageList.children.length} 枚の画像`;
-
-      if (data.cursor) {
-        imageCursor = data.cursor;
-        loadMore.classList.remove('hidden');
-      } else {
-        imageCursor = null;
-        loadMore.classList.add('hidden');
-      }
-    } catch (err) {
-      toast('画像の読み込みに失敗しました: ' + err.message, 'error');
-    }
-  }
-
-  loadMore.addEventListener('click', () => loadImages(true));
-
-  // Admin delete
-  imageList.addEventListener('click', async (e) => {
-    const btn = e.target.closest('[data-delete-id]');
-    if (!btn) return;
-    const id = btn.dataset.deleteId;
-    if (!confirm('この画像を削除しますか？')) return;
-
-    btn.disabled = true;
-    btn.textContent = '...';
-
-    try {
-      const res = await fetch(`/api/image/${encodeURIComponent(id)}`, {
+      // Step 2: Delete with session token
+      deleteBtn.textContent = '削除中...';
+      const delRes = await fetch(`/api/image/${encodeURIComponent(id)}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${adminToken}` },
+        headers: { Authorization: `Bearer ${authData.token}` },
       });
-      const data = await res.json();
-      if (data.success) {
-        btn.closest('.image-card').remove();
+      const delData = await safeJson(delRes);
+
+      if (delData.success) {
         toast('画像を削除しました', 'success');
+        deleteImageId.value = '';
+        deleteAdminPassword.value = '';
       } else {
-        toast(data.error || '削除に失敗しました', 'error');
+        toast(delData.error || '削除に失敗しました', 'error');
       }
     } catch (err) {
       toast('削除に失敗しました: ' + err.message, 'error');
     } finally {
-      btn.disabled = false;
-      btn.textContent = '削除';
+      deleteBtn.disabled = false;
+      deleteBtn.textContent = '画像を削除';
     }
-  });
+  }
 
   // --- Scroll Animation ---
   function initScrollAnimations() {
-    const sections = document.querySelectorAll('.section');
-    sections.forEach((s) => s.classList.add('scroll-animate'));
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+            entry.target.classList.add('animate-visible');
             observer.unobserve(entry.target);
           }
         });
@@ -382,13 +315,9 @@
       { threshold: 0.1 }
     );
 
-    document.querySelectorAll('.scroll-animate').forEach((el) => observer.observe(el));
+    document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
   }
 
   // --- Init ---
-  initTheme();
   initScrollAnimations();
-  if (adminToken) {
-    showAdminPanel();
-  }
 })();
