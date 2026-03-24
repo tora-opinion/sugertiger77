@@ -1,6 +1,7 @@
 name = "image-protect"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
 
 [[r2_buckets]]
 binding = "IMAGE_BUCKET"
@@ -8,7 +9,7 @@ bucket_name = "image-protect-bucket"
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT_KV"
-id = "PLACEHOLDER_KV_ID"
+id = "b745636fb9604ab3b9d08ac130b3d93b"
 
 [vars]
 MAX_FILE_SIZE = "10485760"
