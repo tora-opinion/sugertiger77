@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Protect — sugertiger77</title>
+  <meta name="description" content="Artist image protection service. Upload, protect, and share your images securely." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="/" class="logo">🛡️ Image Protect</a>
+        <nav class="header-actions">
+          <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode">
+            <span id="theme-icon">🌙</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Upload Section -->
+      <section class="section" id="upload-section">
+        <h1 class="section-title">Upload &amp; Protect</h1>
+        <p class="section-desc">Upload your artwork to get a protected CDN URL. Images are guarded against scraping, hotlinking, and unauthorized access.</p>
+
+        <div class="card">
+          <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-content">
+              <span class="drop-icon">📁</span>
+              <p>Drag &amp; drop your image here</p>
+              <p class="text-muted">or click to select a file</p>
+              <p class="text-muted text-sm">JPEG, PNG, WebP, GIF — Max 10MB</p>
+            </div>
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+          </div>
+
+          <div id="file-preview" class="file-preview hidden">
+            <img id="preview-img" class="preview-img" alt="Preview" />
+            <div class="file-info">
+              <span id="file-name" class="file-name"></span>
+              <span id="file-size" class="text-muted"></span>
+            </div>
+            <button id="remove-file" class="btn btn-secondary btn-sm">✕ Remove</button>
+          </div>
+
+          <button id="upload-btn" class="btn btn-primary" disabled>Upload Image</button>
+        </div>
+
+        <!-- Upload Result -->
+        <div id="upload-result" class="card result-card hidden">
+          <h2 class="result-title">✅ Upload Complete</h2>
+          <div class="result-field">
+            <label>CDN URL (Public Preview)</label>
+            <div class="copy-group">
+              <input type="text" id="cdn-url" class="input" readonly />
+              <button class="btn btn-secondary btn-sm" data-copy="cdn-url">Copy</button>
+            </div>
+          </div>
+          <div class="result-field">
+            <label>Signed URL (Time-limited)</label>
+            <div class="copy-group">
+              <input type="text" id="signed-url" class="input" readonly />
+              <button class="btn btn-secondary btn-sm" data-copy="signed-url">Copy</button>
+            </div>
+          </div>
+          <div class="result-field">
+            <label>Delete Token (Save this!)</label>
+            <div class="copy-group">
+              <input type="text" id="delete-token" class="input" readonly />
+              <button class="btn btn-secondary btn-sm" data-copy="delete-token">Copy</button>
+            </div>
+          </div>
+          <button id="upload-another" class="btn btn-primary">Upload Another</button>
+        </div>
+      </section>
+
+      <!-- Delete Section -->
+      <section class="section" id="delete-section">
+        <h2 class="section-title">Delete Image</h2>
+        <div class="card">
+          <div class="form-group">
+            <label for="delete-image-id">Image ID</label>
+            <input type="text" id="delete-image-id" class="input" placeholder="e.g. a1b2c3d4e5f67890" />
+          </div>
+          <div class="form-group">
+            <label for="delete-token-input">Delete Token</label>
+            <input type="text" id="delete-token-input" class="input" placeholder="Your delete token" />
+          </div>
+          <button id="delete-btn" class="btn btn-danger">Delete Image</button>
+        </div>
+      </section>
+
+      <!-- Admin Section -->
+      <section class="section" id="admin-section">
+        <h2 class="section-title">Admin Panel</h2>
+
+        <div id="admin-login" class="card">
+          <div class="form-group">
+            <label for="admin-password">Password</label>
+            <input type="password" id="admin-password" class="input" placeholder="Admin password" />
+          </div>
+          <button id="admin-login-btn" class="btn btn-primary">Login</button>
+        </div>
+
+        <div id="admin-panel" class="hidden">
+          <div class="admin-header">
+            <span id="image-count" class="text-muted"></span>
+            <button id="admin-logout-btn" class="btn btn-secondary btn-sm">Logout</button>
+          </div>
+          <div id="image-list" class="image-grid"></div>
+          <button id="load-more" class="btn btn-secondary hidden">Load More</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 sugertiger77 — <a href="https://sugertiger77.com">sugertiger77.com</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
