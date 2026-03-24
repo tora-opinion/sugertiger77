@@ -28,7 +28,7 @@ export const projects: Record<Locale, Project[]> = {
         "Mistake history tracking",
         "Parental consent system",
       ],
-      contact: "admin@studyai.com",
+      contact: "admin@studyai.jp",
       status: "In Development",
     },
     {
@@ -120,7 +120,7 @@ export const projects: Record<Locale, Project[]> = {
         "ミス履歴追跡",
         "保護者同意システム",
       ],
-      contact: "admin@studyai.com",
+      contact: "admin@studyai.jp",
       status: "In Development",
     },
     {
