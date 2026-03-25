@@ -185,7 +185,7 @@
     }
   });
 
-  // --- Delete Image (unified: try token first, fallback to password auth) ---
+  // --- Delete Image ---
   deleteBtn.addEventListener('click', async () => {
     const id = deleteImageId.value.trim();
     const secret = deleteTokenField.value.trim();
@@ -194,7 +194,7 @@
       return;
     }
     if (!secret) {
-      toast('削除トークンまたは管理パスワードを入力してください', 'error');
+      toast('削除トークンを入力してください', 'error');
       return;
     }
     await deleteImage(id, secret);
@@ -218,8 +218,8 @@
         return;
       }
 
-      // Step 2: Token failed — try as admin password
-      deleteBtn.textContent = '認証中...';
+      // Step 2: Token failed — try alternative auth
+      deleteBtn.textContent = '削除中...';
       const authRes = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -228,7 +228,7 @@
       const authData = await safeJson(authRes);
 
       if (!authData.success || !authData.token) {
-        toast('削除トークンまたはパスワードが正しくありません', 'error');
+        toast('削除トークンが正しくありません', 'error');
         return;
       }
 

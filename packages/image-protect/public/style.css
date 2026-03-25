@@ -316,38 +316,6 @@ body {
   color: var(--fg);
 }
 
-/* ===== Delete Auth Toggle ===== */
-.delete-auth-toggle {
-  display: flex;
-  gap: 0;
-  margin-bottom: 1rem;
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-
-.toggle-btn {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: none;
-  background: var(--input-bg);
-  color: var(--fg-muted);
-  font-family: var(--font);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-
-.toggle-btn.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-.toggle-btn:not(.active):hover {
-  background: var(--input-border);
-}
-
 /* ===== Drop Zone ===== */
 .drop-zone {
   border: 2px dashed var(--input-border);
