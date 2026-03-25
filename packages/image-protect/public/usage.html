@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>使い方 — Image Protect | sugertiger77</title>
+  <meta name="description" content="Image Protectの使い方ガイド。アップロード、共有、削除の方法を解説します。" />
+  <link rel="canonical" href="https://protect.sugertiger77.com/usage.html" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="使い方 — Image Protect" />
+  <meta property="og:description" content="Image Protectの使い方ガイド。アップロード、共有、削除の方法を解説します。" />
+  <meta property="og:image" content="https://protect.sugertiger77.com/og-image.png" />
+  <meta property="og:url" content="https://protect.sugertiger77.com/usage.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="/" class="logo">🛡️ Image Protect</a>
+        <nav class="header-actions">
+          <a href="https://sugertiger77.com" class="nav-link" target="_blank" rel="noopener">Portfolio</a>
+          <button id="theme-toggle" class="btn-icon" aria-label="ダークモード切替">
+            <svg class="icon-sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"/>
+            </svg>
+            <svg class="icon-moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <article class="prose">
+        <div class="prose-header">
+          <h1>使い方</h1>
+          <p class="prose-meta">Image Protect の基本的な使い方ガイド</p>
+        </div>
+
+        <section>
+          <h2>1. 画像をアップロードする</h2>
+          <ol class="steps">
+            <li>トップページにアクセスし、ドラッグ＆ドロップまたはクリックで画像を選択します</li>
+            <li>プレビューを確認し、「画像をアップロード」ボタンをクリックします</li>
+            <li>アップロードが完了すると、共有URLと削除トークンが表示されます</li>
+            <li>共有URLと削除トークンの両方をコピーして安全に保存してください</li>
+          </ol>
+          <div class="warn-box">
+            削除トークンは一度しか表示されません。紛失した場合、画像の削除ができなくなります。必ず安全な場所に保存してください。
+          </div>
+        </section>
+
+        <section>
+          <h2>2. Twitter/Xで共有する</h2>
+          <ol class="steps">
+            <li>アップロード完了画面で「コピー」ボタンから共有URLをコピーします</li>
+            <li>Twitter/Xのツイート作成画面でURLをそのまま貼り付けます</li>
+            <li>URLが自動的にプレビューカードとして展開され、画像が表示されます</li>
+          </ol>
+          <p>共有URLを貼り付けるだけで、OGP（Open Graph Protocol）によりプレビュー画像が自動的に表示されます。</p>
+        </section>
+
+        <section>
+          <h2>3. 画像を削除する</h2>
+          <ol class="steps">
+            <li>トップページの「画像を削除」セクションに移動します</li>
+            <li>画像IDを入力します（共有URLの末尾の文字列です）</li>
+            <li>アップロード時に保存した削除トークンを入力します</li>
+            <li>「画像を削除」ボタンをクリックします</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>4. 保護のしくみ</h2>
+          <p>Image Protectは以下の方法でAIスクレイピングから画像を保護します：</p>
+          <ul>
+            <li><code>robots.txt</code> によるAIボットのクロール拒否</li>
+            <li>Cloudflare WAFによる既知のAIスクレイパーの遮断</li>
+            <li>Bot検出によるアクセス制御</li>
+          </ul>
+          <div class="info-box">
+            保護はベストエフォート（最善努力）であり、すべてのスクレイピングを完全に防止することを保証するものではありません。
+          </div>
+        </section>
+
+        <section>
+          <h2>5. 制限事項</h2>
+          <ul>
+            <li>対応形式: JPEG, PNG, WebP, GIF</li>
+            <li>最大ファイルサイズ: 10MB</li>
+            <li>180日間アクセスのない画像は自動的に削除されます</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>6. よくある質問</h2>
+          <dl class="faq-item">
+            <dt><strong>Q. 削除トークンを紛失した場合はどうすればいいですか？</strong></dt>
+            <dd>A. 削除トークンの再発行はできません。お困りの場合は <a href="mailto:support@sugertiger77.com">support@sugertiger77.com</a> までご連絡ください。</dd>
+          </dl>
+
+          <dl class="faq-item">
+            <dt><strong>Q. アップロードした画像は誰でも見られますか？</strong></dt>
+            <dd>A. 共有URLを知っている方のみがアクセスできます。URLは推測が困難なランダムIDで生成されます。</dd>
+          </dl>
+
+          <dl class="faq-item">
+            <dt><strong>Q. 商用利用は可能ですか？</strong></dt>
+            <dd>A. ご自身が著作権を保有する画像であれば、商用目的での共有にもご利用いただけます。詳しくは利用規約をご確認ください。</dd>
+          </dl>
+
+          <dl class="faq-item">
+            <dt><strong>Q. 対応しているブラウザは？</strong></dt>
+            <dd>A. Chrome, Firefox, Safari, Edge 等のモダンブラウザに対応しています。</dd>
+          </dl>
+        </section>
+      </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <nav class="footer-links">
+          <a href="/usage.html">使い方</a>
+          <a href="/terms.html">利用規約</a>
+          <a href="/privacy.html">プライバシーポリシー</a>
+        </nav>
+        <p>&copy; 2025 sugertiger77 — <a href="https://sugertiger77.com">sugertiger77.com</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    });
+  </script>
+</body>
+</html>

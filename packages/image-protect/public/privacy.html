@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>プライバシーポリシー — Image Protect | sugertiger77</title>
+  <meta name="description" content="Image Protectのプライバシーポリシー。収集するデータと取り扱いについて。" />
+  <link rel="canonical" href="https://protect.sugertiger77.com/privacy.html" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="プライバシーポリシー — Image Protect" />
+  <meta property="og:description" content="Image Protectのプライバシーポリシー。収集するデータと取り扱いについて。" />
+  <meta property="og:image" content="https://protect.sugertiger77.com/og-image.png" />
+  <meta property="og:url" content="https://protect.sugertiger77.com/privacy.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="/" class="logo">🛡️ Image Protect</a>
+        <nav class="header-actions">
+          <a href="https://sugertiger77.com" class="nav-link" target="_blank" rel="noopener">Portfolio</a>
+          <button id="theme-toggle" class="btn-icon" aria-label="ダークモード切替">
+            <svg class="icon-sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"/>
+            </svg>
+            <svg class="icon-moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <article class="prose">
+        <div class="prose-header">
+          <h1>プライバシーポリシー</h1>
+          <p class="prose-meta">最終更新日: 2025年1月</p>
+        </div>
+
+        <section>
+          <h2>1. はじめに</h2>
+          <p>本プライバシーポリシーは、Image Protect（以下「本サービス」）におけるデータの取り扱いについて定めます。本サービスは、最小限のデータ収集を原則としています。</p>
+        </section>
+
+        <section>
+          <h2>2. 収集するデータ</h2>
+          <ul>
+            <li><strong>画像データ:</strong> Cloudflare R2に保存されます</li>
+            <li><strong>メタデータ・アクセスログ:</strong> Cloudflare KVに保存されます</li>
+          </ul>
+          <div class="info-box">
+            <p>本サービスの利用にあたり、個人情報の入力は一切必要ありません。</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>3. 収集しないデータ</h2>
+          <ul>
+            <li>トラッキング目的のCookie</li>
+            <li>サードパーティの解析ツール（Google Analytics等）</li>
+            <li>ユーザーを個人的に特定する情報</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>4. Cloudflareによるデータ処理</h2>
+          <p>本サービスはCDNとしてCloudflareを利用しています。Cloudflareがインフラの一部としてアクセスログ（IPアドレス等）を処理する場合があります。詳細は<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflareのプライバシーポリシー</a>をご参照ください。</p>
+        </section>
+
+        <section>
+          <h2>5. データの削除</h2>
+          <ul>
+            <li>アップロード時に発行される削除トークンを使用して、いつでも画像を削除できます。</li>
+            <li>180日間アクセスのない画像は自動的に削除されます。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>6. データの安全性</h2>
+          <p>本サービスのデータはCloudflareのインフラにより保護されています。ただし、インターネット上のデータ通信および保存において、完全なセキュリティを保証することはできません。</p>
+        </section>
+
+        <section>
+          <h2>7. ポリシーの変更</h2>
+          <p>本ポリシーは随時変更される場合があります。変更は本ページ上で公開された時点で効力を生じます。</p>
+        </section>
+
+        <section>
+          <h2>8. お問い合わせ</h2>
+          <p><a href="mailto:support@sugertiger77.com">support@sugertiger77.com</a></p>
+        </section>
+      </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <nav class="footer-links">
+          <a href="/usage.html">使い方</a>
+          <a href="/terms.html">利用規約</a>
+          <a href="/privacy.html">プライバシーポリシー</a>
+        </nav>
+        <p>&copy; 2025 sugertiger77 — <a href="https://sugertiger77.com">sugertiger77.com</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    });
+  </script>
+</body>
+</html>
