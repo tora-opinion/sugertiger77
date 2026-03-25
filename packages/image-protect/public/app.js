@@ -23,6 +23,10 @@
   const deleteTokenField = $('#delete-token-input');
   const deleteBtn = $('#delete-btn');
   const themeToggle = $('#theme-toggle');
+  const perturbToggle = $('#perturbation-toggle');
+  const perturbProgress = $('#perturbation-progress');
+  const progressBarFill = $('#progress-bar-fill');
+  const progressText = $('#progress-text');
 
   // --- Dark Mode ---
   themeToggle.addEventListener('click', () => {
@@ -65,6 +69,28 @@
     } catch {
       return { success: false, error: 'サーバーから不正なレスポンスが返されました' };
     }
+  }
+
+  // --- Perturbation UI helpers ---
+  function showProgress() {
+    perturbProgress.classList.remove('hidden');
+    progressBarFill.style.width = '0%';
+    progressText.textContent = '処理を開始しています...';
+  }
+
+  function updateProgress(pct, stepName) {
+    progressBarFill.style.width = pct + '%';
+    const labels = {
+      'highfreq': '高周波ノイズを追加中...',
+      'dct': 'DCT周波数領域を処理中...',
+      'colorshift': 'カラーチャンネルを調整中...',
+      'watermark': '透かしを埋め込み中...',
+    };
+    progressText.textContent = (labels[stepName] || '処理中...') + ' (' + Math.round(pct) + '%)';
+  }
+
+  function hideProgress() {
+    perturbProgress.classList.add('hidden');
   }
 
   // --- File Selection ---
@@ -134,11 +160,46 @@
   uploadBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
     uploadBtn.disabled = true;
+
+    let fileToUpload = selectedFile;
+
+    // AI perturbation step (skip GIFs to preserve animation)
+    if (perturbToggle && perturbToggle.checked && window.ImagePerturbation
+        && selectedFile.type !== 'image/gif') {
+      try {
+        uploadBtn.textContent = '画像を保護中...';
+        showProgress();
+
+        fileToUpload = await window.ImagePerturbation.perturbImage(
+          selectedFile,
+          {
+            strength: 0.8,
+            onProgress: (pct, stepName) => {
+              updateProgress(pct, stepName);
+            }
+          }
+        );
+
+        hideProgress();
+        toast('AI学習保護を適用しました', 'success');
+      } catch (err) {
+        hideProgress();
+        console.error('Perturbation failed, uploading original:', err);
+        toast('保護処理に失敗しました。元の画像をアップロードします', 'info');
+        fileToUpload = selectedFile;
+      }
+    }
+
+    // Warn if GIF skipped perturbation
+    if (perturbToggle && perturbToggle.checked && selectedFile.type === 'image/gif') {
+      toast('GIF画像はアニメーション保持のため保護処理をスキップしました', 'info');
+    }
+
     uploadBtn.textContent = 'アップロード中...';
 
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', fileToUpload, selectedFile.name);
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await safeJson(res);
@@ -194,7 +255,7 @@
       return;
     }
     if (!secret) {
-      toast('削除トークンを入力してください', 'error');
+      toast('削除キーを入力してください', 'error');
       return;
     }
     await deleteImage(id, secret);
@@ -228,7 +289,7 @@
       const authData = await safeJson(authRes);
 
       if (!authData.success || !authData.token) {
-        toast('削除トークンが正しくありません', 'error');
+        toast('削除キーが正しくありません', 'error');
         return;
       }
 
