@@ -65,7 +65,7 @@
   // Step 1 – High-Frequency Noise Injection (0-25 %)
   // ============================================================
   async function stepNoise(data, w, h, strength, onProgress) {
-    const amplitude = strength * 2.5;
+    const amplitude = strength * 6.0;
     const pixels = data.data;
     const CHUNK = 64;
 
@@ -136,13 +136,13 @@
               for (let r = 0; r < 8; r++) block[r * 8 + c] = tmpOut[r];
             }
 
-            // Perturb mid-frequency coefficients
-            for (let u = 2; u <= 5; u++) {
-              for (let v = 2; v <= 5; v++) {
+            // Perturb mid-to-high frequency coefficients
+            for (let u = 1; u <= 6; u++) {
+              for (let v = 1; v <= 6; v++) {
                 const uv = u + v;
-                if (uv < 4 || uv > 8) continue;
+                if (uv < 2 || uv > 10) continue;
                 const coeff = block[u * 8 + v];
-                const scale = Math.max(Math.abs(coeff) * 0.03, 0.5) * strength;
+                const scale = Math.max(Math.abs(coeff) * 0.08, 1.5) * strength;
                 const seed = bx * 997 + by * 991 + u * 31 + v * 37 + ch;
                 block[u * 8 + v] = coeff + prngNorm(seed) * scale;
               }
@@ -189,9 +189,9 @@
       for (let y = row0; y < rowEnd; y++) {
         for (let x = 0; x < w; x++) {
           const idx = (y * w + x) * 4;
-          pixels[idx]     = clamp(pixels[idx]     + Math.round(1.5 * Math.sin(x * 0.0147 + y * 0.0093) * strength));
-          pixels[idx + 1] = clamp(pixels[idx + 1] + Math.round(1.5 * Math.sin(x * 0.0211 + y * 0.0061) * strength));
-          pixels[idx + 2] = clamp(pixels[idx + 2] + Math.round(1.5 * Math.sin(x * 0.0089 + y * 0.0173) * strength));
+          pixels[idx]     = clamp(pixels[idx]     + Math.round(4.0 * Math.sin(x * 0.0147 + y * 0.0093) * strength));
+          pixels[idx + 1] = clamp(pixels[idx + 1] + Math.round(4.0 * Math.sin(x * 0.0211 + y * 0.0061) * strength));
+          pixels[idx + 2] = clamp(pixels[idx + 2] + Math.round(4.0 * Math.sin(x * 0.0089 + y * 0.0173) * strength));
         }
       }
       onProgress(75 + 15 * Math.min(rowEnd / h, 1), 'colorshift');
@@ -257,7 +257,7 @@
   async function perturbImage(file, opts) {
     var options = opts || {};
     var onProgress = options.onProgress || function () {};
-    var strength = options.strength !== undefined ? options.strength : 0.8;
+    var strength = options.strength !== undefined ? options.strength : 2.0;
 
     // Determine output MIME type (preserve original format)
     var mimeType = file.type || 'image/png';
