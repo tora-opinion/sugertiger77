@@ -86,6 +86,26 @@
             <button id="remove-file" class="btn btn-secondary btn-sm">✕ 削除</button>
           </div>
 
+          <!-- AI Protection Toggle -->
+          <div id="perturbation-controls" class="perturbation-controls">
+            <div class="perturbation-toggle-row">
+              <label class="toggle-switch" for="perturbation-toggle">
+                <input type="checkbox" id="perturbation-toggle" checked />
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="perturbation-label">
+                <span class="perturbation-title">🛡️ AI学習保護</span>
+                <span class="perturbation-desc text-muted text-sm">アップロード前に画像にAI学習を妨害するノイズを追加します</span>
+              </div>
+            </div>
+            <div id="perturbation-progress" class="perturbation-progress hidden">
+              <div class="progress-bar-track">
+                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+              </div>
+              <span id="progress-text" class="progress-text text-sm text-muted">処理中...</span>
+            </div>
+          </div>
+
           <button id="upload-btn" class="btn btn-primary" disabled>画像をアップロード</button>
         </div>
 
@@ -144,6 +164,7 @@
   <!-- Toast container -->
   <div id="toast-container" class="toast-container" aria-live="assertive" aria-atomic="true"></div>
 
+  <script src="/perturbation.js"></script>
   <script src="/app.js"></script>
 </body>
 </html>
