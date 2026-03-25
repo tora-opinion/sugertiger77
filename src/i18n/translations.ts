@@ -9,7 +9,7 @@ export const translations = {
     en: "Full-stack developer building AI-powered products with Cloudflare, Vercel, Supabase, and AWS.",
     ja: "Cloudflare・Vercel・Supabase・AWSを活用し、AIプロダクトを開発するフルスタックエンジニア。",
   },
-  "nav.about": { en: "About", ja: "About" },
+  "nav.about": { en: "About", ja: "概要" },
   "nav.projects": { en: "Projects", ja: "Projects" },
   "nav.contact": { en: "Contact", ja: "Contact" },
   "theme.toggle": { en: "Toggle dark mode", ja: "ダークモード切替" },
@@ -24,7 +24,7 @@ export const translations = {
   },
   "hero.github": { en: "GitHub", ja: "GitHub" },
   "hero.viewProjects": { en: "View Projects ↓", ja: "プロジェクトを見る ↓" },
-  "about.title": { en: "About", ja: "About" },
+  "about.title": { en: "About", ja: "概要" },
   "about.description": {
     en: "I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms. Currently developing 4 products across education, fintech, cloud infrastructure, and creative tooling.",
     ja: "行動経済学ツールからマルチAIプラットフォームまで、AIを活用したWebアプリ・モバイルアプリを開発しています。教育・フィンテック・クラウドインフラ・クリエイティブツールの4プロダクトを開発中。",
