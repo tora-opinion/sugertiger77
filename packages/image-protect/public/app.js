@@ -173,7 +173,7 @@
         fileToUpload = await window.ImagePerturbation.perturbImage(
           selectedFile,
           {
-            strength: 0.8,
+            strength: 2.0,
             onProgress: (pct, stepName) => {
               updateProgress(pct, stepName);
             }
