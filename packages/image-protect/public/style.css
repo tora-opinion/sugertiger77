@@ -488,6 +488,266 @@ body {
   .copy-group .btn-sm {
     width: 100%;
   }
+
+}
+
+/* ===== Prose (Legal/Article Pages) ===== */
+.prose {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+  font-size: 1.0625rem;
+  font-feature-settings: "palt" 1;
+}
+
+/* Hero-like page header */
+.prose-header {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem 2rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+.prose h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+.prose .prose-meta {
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+/* Section cards */
+.prose > section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
+  transition: background var(--transition), border-color var(--transition);
+}
+.prose h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  padding-left: 0.875rem;
+  border-top: none;
+  position: relative;
+}
+.prose h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.85;
+}
+
+/* Lists */
+.prose ul,
+.prose ol:not(.steps) {
+  margin: 0.75rem 0 1.25rem 0.25rem;
+  padding-left: 1.25rem;
+  line-height: 1.85;
+}
+.prose ul {
+  list-style: none;
+  padding-left: 0;
+}
+.prose ul > li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.prose ol:not(.steps) > li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+/* Links */
+.prose a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+.prose a:hover {
+  border-bottom-color: var(--accent);
+}
+.prose strong {
+  font-weight: 600;
+}
+
+/* Inline code */
+.prose code {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  padding: 0.125em 0.375em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'Courier New', ui-monospace, monospace;
+}
+
+/* Info & Warn boxes */
+.prose .info-box {
+  background: var(--input-bg);
+  border-left: 4px solid var(--accent);
+  padding: 1.25rem 1.5rem 1.25rem 3rem;
+  border-radius: var(--radius-sm);
+  margin: 1.25rem 0;
+  position: relative;
+}
+.prose .info-box::before {
+  content: 'ℹ️';
+  position: absolute;
+  left: 0.875rem;
+  top: 1.25rem;
+}
+.prose .warn-box {
+  background: var(--input-bg);
+  border-left: 4px solid var(--danger);
+  padding: 1.25rem 1.5rem 1.25rem 3rem;
+  border-radius: var(--radius-sm);
+  margin: 1.25rem 0;
+  position: relative;
+}
+.prose .warn-box::before {
+  content: '⚠️';
+  position: absolute;
+  left: 0.875rem;
+  top: 1.25rem;
+}
+.prose .info-box > :last-child,
+.prose .warn-box > :last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Footer Links ===== */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+.footer-links a {
+  color: var(--fg-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+/* ===== Steps (Usage Page) ===== */
+.steps {
+  counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+  margin-bottom: 1.25rem;
+}
+.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.85;
+}
+.steps > li:last-child {
+  margin-bottom: 0;
+}
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 2rem;
+  height: 2rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* ===== FAQ ===== */
+.faq-item {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: background var(--transition), border-color var(--transition);
+}
+.faq-item:last-of-type {
+  margin-bottom: 0;
+}
+.faq-item dt {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.faq-item dd {
+  color: var(--fg-muted);
+  line-height: 1.85;
+  margin-left: 0;
+}
+
+/* ===== Prose Responsive ===== */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 1rem;
+    padding: 1.5rem 0 2rem;
+  }
+  .prose h1 {
+    font-size: 1.5rem;
+  }
+  .prose-header {
+    padding: 1.75rem 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .prose > section {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .prose .info-box,
+  .prose .warn-box {
+    padding-left: 2.75rem;
+  }
+  .faq-item {
+    padding: 1rem 1.25rem;
+  }
 }
 
 /* --- Reduced Motion --- */
