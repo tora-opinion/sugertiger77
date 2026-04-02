@@ -81,10 +81,13 @@
   function updateProgress(pct, stepName) {
     progressBarFill.style.width = pct + '%';
     const labels = {
+      'adversarial': '敵対的摂動を計算中...',
+      'preparing': 'モデルを準備中...',
       'highfreq': '高周波ノイズを追加中...',
       'dct': 'DCT周波数領域を処理中...',
       'colorshift': 'カラーチャンネルを調整中...',
       'watermark': '透かしを埋め込み中...',
+      'done': '処理完了',
     };
     progressText.textContent = (labels[stepName] || '処理中...') + ' (' + Math.round(pct) + '%)';
   }
@@ -173,7 +176,10 @@
         fileToUpload = await window.ImagePerturbation.perturbImage(
           selectedFile,
           {
-            strength: 2.0,
+            epsilon: 8 / 255,
+            alpha: 2 / 255,
+            iterations: 40,
+            strength: 2.0, // レガシーフォールバック用
             onProgress: (pct, stepName) => {
               updateProgress(pct, stepName);
             }
