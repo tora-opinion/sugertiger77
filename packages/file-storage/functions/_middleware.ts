@@ -38,6 +38,27 @@ async function domainRoutingMiddleware(context: Context): Promise<Response> {
         context.env,
       );
     }
+    return context.next();
+  }
+
+  // Allow localhost / 127.0.0.1 for local development
+  if (
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host === '::1' ||
+    host === '[::1]'
+  ) {
+    return context.next();
+  }
+
+  // Reject unrecognized hostnames (e.g., default *.pages.dev)
+  if (host !== cdnHost) {
+    return errorResponse(
+      'Not found',
+      404,
+      context.request.headers.get('origin'),
+      context.env,
+    );
   }
 
   return context.next();
