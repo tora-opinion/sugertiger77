@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Storage - sugertiger77</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>File Storage</h1>
+      <p class="subtitle">up.sugertiger77.com</p>
+    </header>
+
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="upload">Upload</button>
+      <button type="button" class="tab" data-tab="delete">Delete</button>
+    </div>
+
+    <!-- Upload Tab -->
+    <section class="tab-content active" id="upload-tab">
+      <div class="api-key-input">
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="fsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-content">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p>Drag &amp; Drop</p>
+          <p class="hint">or</p>
+          <button type="button" id="selectBtn" class="btn btn-primary">Select File</button>
+          <input type="file" id="fileInput" hidden>
+          <p class="size-hint">Max 1GB</p>
+        </div>
+      </div>
+
+      <div class="progress-section" id="progressSection" hidden>
+        <div class="progress-info">
+          <span id="fileName">-</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-status" id="progressStatus">Uploading...</p>
+      </div>
+
+      <div class="result-section" id="resultSection" hidden>
+        <h3>Upload Complete</h3>
+        <div class="result-item">
+          <label>CDN URL</label>
+          <div class="copy-field">
+            <input type="text" id="cdnUrl" readonly>
+            <button type="button" class="btn btn-copy" data-copy="cdnUrl">Copy</button>
+          </div>
+        </div>
+        <div class="result-item">
+          <label>Delete Token</label>
+          <div class="copy-field">
+            <input type="text" id="deleteToken" readonly>
+            <button type="button" class="btn btn-copy" data-copy="deleteToken">Copy</button>
+          </div>
+        </div>
+        <p class="hint">Save the delete token to delete the file later.</p>
+        <button type="button" id="resetBtn" class="btn btn-secondary">Upload Another</button>
+      </div>
+
+      <div class="error-section" id="errorSection" hidden>
+        <p class="error-message" id="errorMessage"></p>
+        <button type="button" id="errorResetBtn" class="btn btn-secondary">Retry</button>
+      </div>
+    </section>
+
+    <!-- Delete Tab -->
+    <section class="tab-content" id="delete-tab">
+      <div class="delete-form">
+        <div class="form-group">
+          <label for="deleteFileId">File ID</label>
+          <input type="text" id="deleteFileId" placeholder="abc123def456789a">
+          <p class="hint">The 16-character ID from the CDN URL</p>
+        </div>
+
+        <div class="form-group">
+          <label for="deleteTokenInput">Delete Token</label>
+          <input type="text" id="deleteTokenInput" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+        </div>
+
+        <button type="button" id="deleteBtn" class="btn btn-danger">Delete File</button>
+
+        <div class="delete-result" id="deleteResult" hidden>
+          <p class="success-message">File deleted successfully.</p>
+        </div>
+
+        <div class="delete-error" id="deleteError" hidden>
+          <p class="error-message" id="deleteErrorMessage"></p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>CDN: cdn.sugertiger77.com/{id}</p>
+    </footer>
+  </main>
+
+  <script src="/upload.js"></script>
+</body>
+</html>
