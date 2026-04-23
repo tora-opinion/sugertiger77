@@ -1,6 +1,7 @@
 import type { Env } from '../../src/types';
 import { getFileMetadata } from '../../src/storage/r2';
 import { parseByteRangeHeader } from '../../src/http/range';
+import { buildInlineContentDisposition } from '../../src/http/content-disposition';
 import { errorResponse } from '../../src/utils/response';
 
 interface Context {
@@ -30,11 +31,7 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
       contentType += '; charset=utf-8';
     }
 
-    const filename = metadata.filename;
-    const asciiFilename = filename.replace(/[^\x20-\x7e]/g, '_');
-    const encodedFilename = encodeURIComponent(filename);
-    const contentDisposition =
-      `inline; filename="${asciiFilename}"; filename*=UTF-8''${encodedFilename}`;
+    const contentDisposition = buildInlineContentDisposition(metadata.filename, id);
 
     const totalSize = metadata.size;
     const baseHeaders: Record<string, string> = {

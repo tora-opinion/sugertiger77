@@ -60,8 +60,16 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
 
     await abortMultipartUpload(upload);
 
-    // Delete upload state
-    await context.env.UPLOAD_STATE_KV.delete(`upload:${uploadId}`);
+    // Delete upload state (best-effort; multipart upload is already aborted)
+    try {
+      await context.env.UPLOAD_STATE_KV.delete(`upload:${uploadId}`);
+    } catch (kvErr) {
+      console.error('Failed to delete upload state after abort:', {
+        uploadId,
+        fileId: state.fileId,
+        error: kvErr instanceof Error ? kvErr.message : String(kvErr),
+      });
+    }
 
     return jsonResponse({ success: true }, 200, undefined, origin, context.env);
   } catch (err) {

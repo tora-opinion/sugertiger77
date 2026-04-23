@@ -21,10 +21,10 @@ export function parseByteRangeHeader(
   if (exactRangeMatch) {
     const start = Number(exactRangeMatch[1]);
     const end = Number(exactRangeMatch[2]);
-    if (start > end || start >= totalSize || end >= totalSize) {
+    if (start > end || start >= totalSize) {
       return null;
     }
-    return { start, end };
+    return { start, end: Math.min(end, totalSize - 1) };
   }
 
   const fromStartMatch = normalized.match(BYTE_RANGE_FROM_START_PATTERN);
@@ -39,8 +39,11 @@ export function parseByteRangeHeader(
   const suffixMatch = normalized.match(BYTE_RANGE_SUFFIX_PATTERN);
   if (suffixMatch) {
     const suffixLength = Number(suffixMatch[1]);
-    if (suffixLength <= 0 || suffixLength > totalSize) {
+    if (suffixLength <= 0) {
       return null;
+    }
+    if (suffixLength >= totalSize) {
+      return { start: 0, end: totalSize - 1 };
     }
     return {
       start: totalSize - suffixLength,

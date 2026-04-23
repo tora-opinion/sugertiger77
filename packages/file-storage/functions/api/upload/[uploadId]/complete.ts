@@ -16,6 +16,7 @@ interface Context {
   params: Record<string, string>;
   next: () => Promise<Response>;
   data: Record<string, unknown> & { auth?: RequestAuth };
+  waitUntil: (promise: Promise<unknown>) => void;
 }
 
 interface CompleteRequest {
@@ -23,6 +24,42 @@ interface CompleteRequest {
 }
 
 const MAX_MULTIPART_PARTS = 10000;
+const MAX_DELETE_RETRIES = 3;
+const DELETE_RETRY_BASE_DELAY_MS = 200;
+
+function waitMs(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function deleteObjectWithRetry(
+  env: Env,
+  fileId: string,
+  uploadId: string,
+  size: number,
+  maxFileSize: number,
+): Promise<void> {
+  for (let attempt = 1; attempt <= MAX_DELETE_RETRIES; attempt += 1) {
+    try {
+      await env.FILE_BUCKET.delete(fileId);
+      return;
+    } catch (delErr) {
+      console.error('Failed to delete oversized object (retryable leak):', {
+        fileId,
+        uploadId,
+        size,
+        maxFileSize,
+        attempt,
+        maxAttempts: MAX_DELETE_RETRIES,
+        error: delErr instanceof Error ? delErr.message : String(delErr),
+      });
+      if (attempt < MAX_DELETE_RETRIES) {
+        await waitMs(DELETE_RETRY_BASE_DELAY_MS * (2 ** (attempt - 1)));
+      }
+    }
+  }
+}
 
 function validateParts(parts: CompleteRequest['parts']): {
   ok: true;
@@ -159,18 +196,28 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     }
 
     if (completedObject.size > cfg.maxFileSize) {
+      let initialDeleteOk = false;
       try {
         await context.env.FILE_BUCKET.delete(state.fileId);
+        initialDeleteOk = true;
       } catch (delErr) {
-        console.error(
-          'Failed to delete oversized object (leak):',
-          {
-            fileId: state.fileId,
+        console.error('Initial delete of oversized object failed; scheduling retries:', {
+          fileId: state.fileId,
+          uploadId,
+          size: completedObject.size,
+          maxFileSize: cfg.maxFileSize,
+          error: delErr instanceof Error ? delErr.message : String(delErr),
+        });
+      }
+      if (!initialDeleteOk) {
+        context.waitUntil(
+          deleteObjectWithRetry(
+            context.env,
+            state.fileId,
             uploadId,
-            size: completedObject.size,
-            maxFileSize: cfg.maxFileSize,
-            error: delErr instanceof Error ? delErr.message : String(delErr),
-          },
+            completedObject.size,
+            cfg.maxFileSize,
+          ),
         );
       }
       try {

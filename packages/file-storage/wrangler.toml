@@ -16,17 +16,17 @@ preview_bucket_name = "file-storage-bucket-dev"  # wrangler pages dev 用 (要�
 [[kv_namespaces]]
 binding = "RATE_LIMIT_KV"
 id = "b745636fb9604ab3b9d08ac130b3d93b"
-preview_id = "b745636fb9604ab3b9d08ac130b3d93b"
+preview_id = "REPLACE_WITH_RATE_LIMIT_KV_PREVIEW_ID"
 
 [[kv_namespaces]]
 binding = "API_KEYS_KV"
 id = "27cb3101fc35470ea387057973b4dc4a"
-preview_id = "27cb3101fc35470ea387057973b4dc4a"
+preview_id = "REPLACE_WITH_API_KEYS_KV_PREVIEW_ID"
 
 [[kv_namespaces]]
 binding = "UPLOAD_STATE_KV"
 id = "ea03db0e3c76489ca237cbaf8b0c6225"
-preview_id = "ea03db0e3c76489ca237cbaf8b0c6225"
+preview_id = "REPLACE_WITH_UPLOAD_STATE_KV_PREVIEW_ID"
 
 [[unsafe.bindings]]
 name = "RATE_LIMITER_UPLOAD"

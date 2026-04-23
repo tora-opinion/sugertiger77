@@ -50,6 +50,7 @@ export async function checkRateLimit(
     };
   } catch (err) {
     console.error('Rate limit KV error:', err);
-    return { allowed: true, remaining: -1, resetAt: 0 };
+    const allowed = limiterName === 'cdn';
+    return { allowed, remaining: -1, resetAt: 0 };
   }
 }

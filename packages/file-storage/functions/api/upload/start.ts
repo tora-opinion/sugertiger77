@@ -18,7 +18,7 @@ interface Context {
 
 interface StartRequest {
   filename: string;
-  contentType: string;
+  contentType?: string;
   size: number;
 }
 
@@ -47,13 +47,28 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       return errorResponse('Invalid request body', 400, origin, context.env);
     }
 
-    const body = rawBody as StartRequest;
+    const body = rawBody as Partial<StartRequest>;
 
-    if (!body.filename) {
-      return errorResponse('Missing filename or size', 400, origin, context.env);
+    if (typeof body.filename !== 'string' || body.filename.trim().length === 0) {
+      return errorResponse(
+        'Invalid filename. filename must be a non-empty string.',
+        400,
+        origin,
+        context.env,
+      );
+    }
+
+    if (body.contentType !== undefined && typeof body.contentType !== 'string') {
+      return errorResponse(
+        'Invalid contentType. contentType must be a string when provided.',
+        400,
+        origin,
+        context.env,
+      );
     }
 
     if (
+      typeof body.size !== 'number' ||
       !Number.isInteger(body.size) ||
       body.size <= 0 ||
       body.size > cfg.maxFileSize
@@ -68,11 +83,15 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
 
     const fileId = generateId();
     const deleteToken = generateDeleteToken();
+    const contentType =
+      typeof body.contentType === 'string' && body.contentType.trim().length > 0
+        ? body.contentType
+        : 'application/octet-stream';
 
     const metadata: FileMetadata = {
       id: fileId,
       filename: body.filename,
-      contentType: body.contentType || 'application/octet-stream',
+      contentType,
       size: body.size,
       uploadedAt: new Date().toISOString(),
       deleteToken,
@@ -90,7 +109,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       fileId,
       uploadId: upload.uploadId,
       filename: body.filename,
-      contentType: body.contentType || 'application/octet-stream',
+      contentType,
       size: body.size,
       createdAt: new Date().toISOString(),
       apiKeyId: auth.apiKeyId,

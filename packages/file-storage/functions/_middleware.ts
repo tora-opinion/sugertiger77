@@ -11,7 +11,6 @@ interface Context {
   data: Record<string, unknown> & { auth?: RequestAuth };
 }
 
-const FILE_ID_PATTERN = /^\/[0-9a-f]{16}$/;
 // /{id} および /{id}/raw の両方にマッチ
 const CDN_PATH_PATTERN = /^\/[0-9a-f]{16}(\/raw)?$/;
 
@@ -45,6 +44,8 @@ async function domainRoutingMiddleware(context: Context): Promise<Response> {
 }
 
 async function securityMiddleware(context: Context): Promise<Response> {
+  const url = new URL(context.request.url);
+  const isApiPath = url.pathname.startsWith('/api/');
   try {
     const response = await context.next();
     const origin = context.request.headers.get('origin');
@@ -54,7 +55,7 @@ async function securityMiddleware(context: Context): Promise<Response> {
     headers.set('X-Content-Type-Options', 'nosniff');
     headers.set('X-Frame-Options', 'DENY');
     headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    if (!headers.has('Cache-Control')) {
+    if (isApiPath) {
       headers.set('Cache-Control', 'no-store');
     }
     for (const [k, v] of Object.entries(cors)) {
@@ -68,6 +69,9 @@ async function securityMiddleware(context: Context): Promise<Response> {
     });
   } catch (err) {
     console.error('securityMiddleware error:', err);
+    if (isApiPath) {
+      return errorResponse('Internal Server Error', 500, context.request.headers.get('origin'), context.env);
+    }
     return new Response('Internal Server Error', { status: 500 });
   }
 }
@@ -150,8 +154,8 @@ async function authMiddleware(context: Context): Promise<Response> {
 }
 
 export const onRequest = [
-  domainRoutingMiddleware,
   securityMiddleware,
+  domainRoutingMiddleware,
   authMiddleware,
   rateLimitMiddleware,
 ];

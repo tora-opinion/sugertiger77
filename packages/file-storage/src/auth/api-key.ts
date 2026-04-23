@@ -22,12 +22,3 @@ export async function validateApiKey(
 
   return { valid: true, keyId: keyInfo.id, keyData: keyInfo };
 }
-
-export function createApiKey(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  const randomPart = Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return `fsk_${randomPart}`;
-}
