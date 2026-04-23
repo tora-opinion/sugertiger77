@@ -23,7 +23,7 @@ interface StartRequest {
 }
 
 export const onRequestOptions = (context: Context): Response => {
-  return optionsResponse(context.request.headers.get('origin'));
+  return optionsResponse(context.request.headers.get('origin'), context.env);
 };
 
 export const onRequestPost = async (context: Context): Promise<Response> => {
@@ -32,7 +32,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   try {
     const auth = context.data.auth;
     if (!auth?.apiKeyId) {
-      return errorResponse('Invalid or missing API key', 401, origin);
+      return errorResponse('Invalid or missing API key', 401, origin, context.env);
     }
 
     const cfg = getConfig(context.env);
@@ -40,17 +40,17 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     try {
       rawBody = await context.request.json();
     } catch {
-      return errorResponse('Invalid JSON body', 400, origin);
+      return errorResponse('Invalid JSON body', 400, origin, context.env);
     }
 
     if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
-      return errorResponse('Invalid request body', 400, origin);
+      return errorResponse('Invalid request body', 400, origin, context.env);
     }
 
     const body = rawBody as StartRequest;
 
     if (!body.filename) {
-      return errorResponse('Missing filename or size', 400, origin);
+      return errorResponse('Missing filename or size', 400, origin, context.env);
     }
 
     if (
@@ -62,6 +62,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
         `Invalid file size. Size must be an integer between 1 and ${cfg.maxFileSize} bytes.`,
         400,
         origin,
+        context.env,
       );
     }
 
@@ -112,11 +113,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       200,
       undefined,
       origin,
+      context.env,
     );
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Failed to start upload';
     console.error('Start upload error:', err);
-    return errorResponse(message, 500, origin);
+    return errorResponse(message, 500, origin, context.env);
   }
 };

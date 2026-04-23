@@ -17,7 +17,7 @@ interface Context {
 const FILE_ID_PATTERN = /^[0-9a-f]{16}$/;
 
 export const onRequestOptions = (context: Context): Response => {
-  return optionsResponse(context.request.headers.get('origin'));
+  return optionsResponse(context.request.headers.get('origin'), context.env);
 };
 
 export const onRequestDelete = async (context: Context): Promise<Response> => {
@@ -26,7 +26,7 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
   try {
     const id = context.params.id;
     if (!id || !FILE_ID_PATTERN.test(id)) {
-      return errorResponse('Invalid file ID', 400, origin);
+      return errorResponse('Invalid file ID', 400, origin, context.env);
     }
 
     // Check delete token auth
@@ -35,7 +35,7 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
     // Get file metadata to verify
     const metadata = await getFileMetadata(context.env.FILE_BUCKET, id);
     if (!metadata) {
-      return errorResponse('File not found', 404, origin);
+      return errorResponse('File not found', 404, origin, context.env);
     }
 
     const requesterApiKeyId = context.data.auth?.apiKeyId;
@@ -44,27 +44,27 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
     if (ownerApiKeyId) {
       if (requesterApiKeyId) {
         if (requesterApiKeyId !== ownerApiKeyId) {
-          return errorResponse('Forbidden', 403, origin);
+          return errorResponse('Forbidden', 403, origin, context.env);
         }
       } else if (
         !deleteTokenHeader ||
         deleteTokenHeader !== metadata.deleteToken
       ) {
-        return errorResponse('Unauthorized', 401, origin);
+        return errorResponse('Unauthorized', 401, origin, context.env);
       }
     } else if (
       !deleteTokenHeader ||
       deleteTokenHeader !== metadata.deleteToken
     ) {
-      return errorResponse('Delete token required', 401, origin);
+      return errorResponse('Delete token required', 401, origin, context.env);
     }
 
     await deleteFile(context.env.FILE_BUCKET, id);
 
-    return jsonResponse({ success: true }, 200, undefined, origin);
+    return jsonResponse({ success: true }, 200, undefined, origin, context.env);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Delete failed';
     console.error('Delete error:', err);
-    return errorResponse(message, 500, origin);
+    return errorResponse(message, 500, origin, context.env);
   }
 };

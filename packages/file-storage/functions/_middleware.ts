@@ -19,18 +19,25 @@ const CDN_PATH_PATTERN = /^\/[0-9a-f]{16}(\/raw)?$/;
 async function domainRoutingMiddleware(context: Context): Promise<Response> {
   const url = new URL(context.request.url);
   const host = url.hostname;
+  const cdnHost = context.env.CDN_HOST || 'cdn.sugertiger77.com';
+  const uploadHost = context.env.UPLOAD_HOST || 'up.sugertiger77.com';
 
   // cdn.sugertiger77.com - CDN配信専用 (/{id} と /{id}/raw のみ許可)
-  if (host === 'cdn.sugertiger77.com') {
+  if (host === cdnHost) {
     if (!CDN_PATH_PATTERN.test(url.pathname)) {
-      return errorResponse('Not found', 404);
+      return errorResponse('Not found', 404, context.request.headers.get('origin'), context.env);
     }
   }
 
   // up.sugertiger77.com - アップロード/削除専用 (/{id} と /{id}/raw は不可)
-  if (host === 'up.sugertiger77.com') {
+  if (host === uploadHost) {
     if (CDN_PATH_PATTERN.test(url.pathname)) {
-      return errorResponse('File download not available on this domain. Use cdn.sugertiger77.com', 403);
+      return errorResponse(
+        `File download not available on this domain. Use ${cdnHost}`,
+        403,
+        context.request.headers.get('origin'),
+        context.env,
+      );
     }
   }
 
@@ -41,7 +48,7 @@ async function securityMiddleware(context: Context): Promise<Response> {
   try {
     const response = await context.next();
     const origin = context.request.headers.get('origin');
-    const cors = corsHeaders(origin);
+    const cors = corsHeaders(origin, context.env);
 
     const headers = new Headers(response.headers);
     headers.set('X-Content-Type-Options', 'nosniff');
@@ -75,13 +82,19 @@ async function rateLimitMiddleware(context: Context): Promise<Response> {
       const auth = context.data.auth;
       if (auth?.apiKeyId) {
         const result = await checkRateLimit(
-          context.env.RATE_LIMIT_KV,
+          context.env,
           `upload:${auth.apiKeyId}`,
           cfg.rateLimits.upload.max,
           cfg.rateLimits.upload.windowSec,
+          'upload',
         );
         if (!result.allowed) {
-          return errorResponse('Rate limit exceeded', 429);
+          return errorResponse(
+            'Rate limit exceeded',
+            429,
+            context.request.headers.get('origin'),
+            context.env,
+          );
         }
       }
     }
@@ -90,13 +103,19 @@ async function rateLimitMiddleware(context: Context): Promise<Response> {
     if (url.pathname.startsWith('/cdn/') || CDN_PATH_PATTERN.test(url.pathname)) {
       const ip = context.request.headers.get('cf-connecting-ip') || 'unknown';
       const result = await checkRateLimit(
-        context.env.RATE_LIMIT_KV,
+        context.env,
         `cdn:${ip}`,
         cfg.rateLimits.cdn.max,
         cfg.rateLimits.cdn.windowSec,
+        'cdn',
       );
       if (!result.allowed) {
-        return errorResponse('Rate limit exceeded', 429);
+        return errorResponse(
+          'Rate limit exceeded',
+          429,
+          context.request.headers.get('origin'),
+          context.env,
+        );
       }
     }
 

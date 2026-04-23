@@ -18,7 +18,7 @@ interface Context {
 }
 
 export const onRequestOptions = (context: Context): Response => {
-  return optionsResponse(context.request.headers.get('origin'));
+  return optionsResponse(context.request.headers.get('origin'), context.env);
 };
 
 export const onRequestDelete = async (context: Context): Promise<Response> => {
@@ -28,12 +28,12 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
     const { uploadId } = context.params;
 
     if (!uploadId) {
-      return errorResponse('Invalid uploadId', 400, origin);
+      return errorResponse('Invalid uploadId', 400, origin, context.env);
     }
 
     const auth = context.data.auth;
     if (!auth?.apiKeyId) {
-      return errorResponse('Invalid or missing API key', 401, origin);
+      return errorResponse('Invalid or missing API key', 401, origin, context.env);
     }
 
     // Get upload state
@@ -41,14 +41,14 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
       `upload:${uploadId}`,
     );
     if (!stateJson) {
-      return errorResponse('Upload not found', 404, origin);
+      return errorResponse('Upload not found', 404, origin, context.env);
     }
 
     const state = JSON.parse(stateJson) as UploadState;
 
     // Verify API key matches
     if (state.apiKeyId !== auth.apiKeyId) {
-      return errorResponse('Unauthorized', 403, origin);
+      return errorResponse('Unauthorized', 403, origin, context.env);
     }
 
     // Resume and abort
@@ -63,11 +63,11 @@ export const onRequestDelete = async (context: Context): Promise<Response> => {
     // Delete upload state
     await context.env.UPLOAD_STATE_KV.delete(`upload:${uploadId}`);
 
-    return jsonResponse({ success: true }, 200, undefined, origin);
+    return jsonResponse({ success: true }, 200, undefined, origin, context.env);
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Failed to abort upload';
     console.error('Abort upload error:', err);
-    return errorResponse(message, 500, origin);
+    return errorResponse(message, 500, origin, context.env);
   }
 };

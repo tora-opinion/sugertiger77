@@ -24,6 +24,7 @@ function buildBaseHeaders(contentType: string, contentDisposition: string): Reco
 }
 
 export const onRequestGet = async (context: Context): Promise<Response> => {
+  const origin = context.request.headers.get('origin');
   try {
     const id = context.params.id;
     if (!id || !FILE_ID_PATTERN.test(id)) {
@@ -33,7 +34,7 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
     // メタデータ取得（ファイルサイズ確認のため HEAD）
     const metadata = await getFileMetadata(context.env.FILE_BUCKET, id);
     if (!metadata) {
-      return errorResponse('File not found', 404);
+      return errorResponse('File not found', 404, origin, context.env);
     }
 
     let contentType = metadata.contentType;
@@ -65,7 +66,7 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
       const obj = await context.env.FILE_BUCKET.get(id, {
         range: { offset: parsedRange.start, length },
       });
-      if (!obj) return errorResponse('File not found', 404);
+      if (!obj) return errorResponse('File not found', 404, origin, context.env);
 
       return new Response(obj.body, {
         status: 206,
@@ -79,7 +80,7 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
 
     // Range なし → ファイル全体を返す
     const obj = await context.env.FILE_BUCKET.get(id);
-    if (!obj) return errorResponse('File not found', 404);
+    if (!obj) return errorResponse('File not found', 404, origin, context.env);
 
     return new Response(obj.body, {
       status: 200,
@@ -91,6 +92,6 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to serve file';
     console.error('CDN error:', err);
-    return errorResponse(message, 500);
+    return errorResponse(message, 500, origin, context.env);
   }
 };

@@ -28,8 +28,22 @@ binding = "UPLOAD_STATE_KV"
 id = "ea03db0e3c76489ca237cbaf8b0c6225"
 preview_id = "ea03db0e3c76489ca237cbaf8b0c6225"
 
+[[unsafe.bindings]]
+name = "RATE_LIMITER_UPLOAD"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
+
+[[unsafe.bindings]]
+name = "RATE_LIMITER_CDN"
+type = "ratelimit"
+namespace_id = "1002"
+simple = { limit = 200, period = 60 }
+
 [vars]
 MAX_FILE_SIZE = "1073741824"   # 1GB
 PART_SIZE = "16777216"         # 16MB (マルチパート分割サイズ)
 RATE_LIMIT_UPLOAD = "20"       # アップロード: 20回/分
 RATE_LIMIT_CDN = "200"         # CDN配信: 200回/分
+CDN_HOST = "cdn.sugertiger77.com"
+UPLOAD_HOST = "up.sugertiger77.com"

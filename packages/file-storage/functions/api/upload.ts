@@ -17,7 +17,7 @@ interface Context {
 }
 
 export const onRequestOptions = (context: Context): Response => {
-  return optionsResponse(context.request.headers.get('origin'));
+  return optionsResponse(context.request.headers.get('origin'), context.env);
 };
 
 export const onRequestPost = async (context: Context): Promise<Response> => {
@@ -26,21 +26,21 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   try {
     const auth = context.data.auth;
     if (!auth?.apiKeyId) {
-      return errorResponse('Invalid or missing API key', 401, origin);
+      return errorResponse('Invalid or missing API key', 401, origin, context.env);
     }
 
     const cfg = getConfig(context.env);
     const contentType = context.request.headers.get('content-type') || '';
 
     if (!contentType.includes('multipart/form-data')) {
-      return errorResponse('Expected multipart/form-data', 400, origin);
+      return errorResponse('Expected multipart/form-data', 400, origin, context.env);
     }
 
     const formData = await context.request.formData();
     const file = formData.get('file') as File | null;
 
     if (!file) {
-      return errorResponse('No file provided', 400, origin);
+      return errorResponse('No file provided', 400, origin, context.env);
     }
 
     if (
@@ -52,15 +52,17 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
         `Invalid file size. Size must be an integer between 1 and ${cfg.maxFileSize} bytes.`,
         400,
         origin,
+        context.env,
       );
     }
 
     // Check size (small file upload only, use multipart for larger)
     if (file.size > cfg.smallFileThreshold) {
       return errorResponse(
-        `File too large for direct upload. Max: ${cfg.smallFileThreshold / 1024 / 1024}MB. Use multipart upload for larger files.`,
+        `File too large for direct upload. Max: ${cfg.smallFileThreshold / 1024 / 1024}MB. Use multipart upload via /api/upload/start for larger files.`,
         400,
         origin,
+        context.env,
       );
     }
 
@@ -86,7 +88,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       metadata.contentType,
     );
 
-    const cdnUrl = `https://cdn.sugertiger77.com/${id}`;
+    const cdnHost = context.env.CDN_HOST || 'cdn.sugertiger77.com';
+    const cdnUrl = `https://${cdnHost}/${id}`;
 
     return jsonResponse(
       {
@@ -98,10 +101,11 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       200,
       undefined,
       origin,
+      context.env,
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Upload failed';
     console.error('Upload error:', err);
-    return errorResponse(message, 500, origin);
+    return errorResponse(message, 500, origin, context.env);
   }
 };

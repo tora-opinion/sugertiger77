@@ -18,7 +18,7 @@ interface Context {
 const PART_SIZE_MARGIN_BYTES = 1024 * 1024; // 1MB
 
 export const onRequestOptions = (context: Context): Response => {
-  return optionsResponse(context.request.headers.get('origin'));
+  return optionsResponse(context.request.headers.get('origin'), context.env);
 };
 
 export const onRequestPut = async (context: Context): Promise<Response> => {
@@ -27,14 +27,14 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
   try {
     const { uploadId, partNumber } = context.params;
     if (!uploadId || !/^(?:[1-9]\d{0,3}|10000)$/.test(partNumber)) {
-      return errorResponse('Invalid uploadId or partNumber', 400, origin);
+      return errorResponse('Invalid uploadId or partNumber', 400, origin, context.env);
     }
 
     const partNum = Number(partNumber);
 
     const auth = context.data.auth;
     if (!auth?.apiKeyId) {
-      return errorResponse('Invalid or missing API key', 401, origin);
+      return errorResponse('Invalid or missing API key', 401, origin, context.env);
     }
 
     // Get upload state
@@ -42,14 +42,14 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
       `upload:${uploadId}`,
     );
     if (!stateJson) {
-      return errorResponse('Upload not found', 404, origin);
+      return errorResponse('Upload not found', 404, origin, context.env);
     }
 
     const state = JSON.parse(stateJson) as UploadState;
 
     // Verify API key matches
     if (state.apiKeyId !== auth.apiKeyId) {
-      return errorResponse('Unauthorized', 403, origin);
+      return errorResponse('Unauthorized', 403, origin, context.env);
     }
 
     const cfg = getConfig(context.env);
@@ -67,6 +67,7 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
           `Part size exceeds allowed limit (${maxPartSize} bytes).`,
           413,
           origin,
+          context.env,
         );
       }
     }
@@ -74,13 +75,14 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
     // Get part data
     const data = await context.request.arrayBuffer();
     if (data.byteLength === 0) {
-      return errorResponse('Empty part data', 400, origin);
+      return errorResponse('Empty part data', 400, origin, context.env);
     }
     if (data.byteLength > maxPartSize) {
       return errorResponse(
         `Part size exceeds allowed limit (${maxPartSize} bytes).`,
         413,
         origin,
+        context.env,
       );
     }
 
@@ -101,11 +103,12 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
       200,
       undefined,
       origin,
+      context.env,
     );
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Failed to upload part';
     console.error('Upload part error:', err);
-    return errorResponse(message, 500, origin);
+    return errorResponse(message, 500, origin, context.env);
   }
 };

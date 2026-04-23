@@ -1,12 +1,27 @@
-import type { RateLimitEntry } from '../types';
+import type { Env, RateLimitEntry } from '../types';
+
+type LimiterName = 'upload' | 'cdn';
 
 export async function checkRateLimit(
-  kv: KVNamespace,
+  env: Env,
   key: string,
   max: number,
   windowSec: number,
+  limiterName: LimiterName,
 ): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
   try {
+    const rateLimiter =
+      limiterName === 'upload' ? env.RATE_LIMITER_UPLOAD : env.RATE_LIMITER_CDN;
+    if (rateLimiter) {
+      const result = await rateLimiter.limit({ key });
+      return {
+        allowed: result.success,
+        remaining: -1,
+        resetAt: 0,
+      };
+    }
+
+    const kv = env.RATE_LIMIT_KV;
     const kvKey = `rl:${key}`;
     const now = Math.floor(Date.now() / 1000);
     const entry = await kv.get<RateLimitEntry>(kvKey, 'json');

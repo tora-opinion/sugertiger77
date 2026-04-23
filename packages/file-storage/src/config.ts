@@ -1,7 +1,7 @@
 export const config = {
   maxFileSize: 1024 * 1024 * 1024, // 1GB
   partSize: 16 * 1024 * 1024, // 16MB
-  smallFileThreshold: 100 * 1024 * 1024, // 100MB
+  smallFileThreshold: 10 * 1024 * 1024, // 10MB
   rateLimits: {
     upload: { max: 20, windowSec: 60 },
     cdn: { max: 200, windowSec: 60 },
@@ -18,7 +18,11 @@ export function getConfig(env: {
   PART_SIZE?: string;
   RATE_LIMIT_UPLOAD?: string;
   RATE_LIMIT_CDN?: string;
+  CDN_HOST?: string;
+  UPLOAD_HOST?: string;
 }) {
+  const cdnHost = env.CDN_HOST || 'cdn.sugertiger77.com';
+  const uploadHost = env.UPLOAD_HOST || 'up.sugertiger77.com';
   return {
     maxFileSize: Number(env.MAX_FILE_SIZE) || config.maxFileSize,
     partSize: Number(env.PART_SIZE) || config.partSize,
@@ -33,6 +37,10 @@ export function getConfig(env: {
         windowSec: 60,
       },
     },
-    corsOrigins: [...config.corsOrigins],
+    corsOrigins: [
+      `https://${cdnHost}`,
+      `https://${uploadHost}`,
+      'http://localhost:8788',
+    ],
   };
 }

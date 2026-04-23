@@ -92,7 +92,7 @@ function validateParts(parts: CompleteRequest['parts']): {
 }
 
 export const onRequestOptions = (context: Context): Response => {
-  return optionsResponse(context.request.headers.get('origin'));
+  return optionsResponse(context.request.headers.get('origin'), context.env);
 };
 
 export const onRequestPost = async (context: Context): Promise<Response> => {
@@ -102,12 +102,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     const { uploadId } = context.params;
 
     if (!uploadId) {
-      return errorResponse('Invalid uploadId', 400, origin);
+      return errorResponse('Invalid uploadId', 400, origin, context.env);
     }
 
     const auth = context.data.auth;
     if (!auth?.apiKeyId) {
-      return errorResponse('Invalid or missing API key', 401, origin);
+      return errorResponse('Invalid or missing API key', 401, origin, context.env);
     }
 
     // Get upload state
@@ -115,31 +115,31 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       `upload:${uploadId}`,
     );
     if (!stateJson) {
-      return errorResponse('Upload not found', 404, origin);
+      return errorResponse('Upload not found', 404, origin, context.env);
     }
 
     const state = JSON.parse(stateJson) as UploadState;
 
     // Verify API key matches
     if (state.apiKeyId !== auth.apiKeyId) {
-      return errorResponse('Unauthorized', 403, origin);
+      return errorResponse('Unauthorized', 403, origin, context.env);
     }
 
     let rawBody: unknown;
     try {
       rawBody = await context.request.json();
     } catch {
-      return errorResponse('Invalid request body', 400, origin);
+      return errorResponse('Invalid request body', 400, origin, context.env);
     }
 
     if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
-      return errorResponse('Invalid request body', 400, origin);
+      return errorResponse('Invalid request body', 400, origin, context.env);
     }
 
     const body = rawBody as CompleteRequest;
     const validatedParts = validateParts(body.parts);
     if (!validatedParts.ok) {
-      return errorResponse(validatedParts.message, 400, origin);
+      return errorResponse(validatedParts.message, 400, origin, context.env);
     }
 
     const cfg = getConfig(context.env);
@@ -155,7 +155,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
 
     const completedObject = await context.env.FILE_BUCKET.head(state.fileId);
     if (!completedObject) {
-      return errorResponse('Failed to verify uploaded object', 500, origin);
+      return errorResponse('Failed to verify uploaded object', 500, origin, context.env);
     }
 
     if (completedObject.size > cfg.maxFileSize) {
@@ -181,7 +181,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           error: kvErr instanceof Error ? kvErr.message : String(kvErr),
         });
       }
-      return errorResponse('Uploaded size exceeds MAX_FILE_SIZE', 413, origin);
+      return errorResponse('Uploaded size exceeds MAX_FILE_SIZE', 413, origin, context.env);
     }
 
     // Delete upload state (best-effort; object is already persisted)
@@ -195,7 +195,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       });
     }
 
-    const cdnUrl = `https://cdn.sugertiger77.com/${state.fileId}`;
+    const cdnHost = context.env.CDN_HOST || 'cdn.sugertiger77.com';
+    const cdnUrl = `https://${cdnHost}/${state.fileId}`;
 
     return jsonResponse(
       {
@@ -207,11 +208,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       200,
       undefined,
       origin,
+      context.env,
     );
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Failed to complete upload';
     console.error('Complete upload error:', err);
-    return errorResponse(message, 500, origin);
+    return errorResponse(message, 500, origin, context.env);
   }
 };
