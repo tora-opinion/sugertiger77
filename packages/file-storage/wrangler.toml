@@ -1,0 +1,49 @@
+name = "file-storage"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
+
+# ドメイン別ルーティング (functions/_middleware.ts で制御)
+#   cdn.sugertiger77.com → CDN配信専用 (/{16桁hex} のみ応答)
+#   up.sugertiger77.com  → アップロード/削除専用 (UI + API)
+# 両ドメインは Cloudflare Pages ダッシュボードでカスタムドメインとして追加すること
+
+[[r2_buckets]]
+binding = "FILE_BUCKET"
+bucket_name = "file-storage-bucket"
+preview_bucket_name = "file-storage-bucket-dev"  # wrangler pages dev 用 (要作成: wrangler r2 bucket create file-storage-bucket-dev)
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "b745636fb9604ab3b9d08ac130b3d93b"
+preview_id = "REPLACE_WITH_RATE_LIMIT_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "API_KEYS_KV"
+id = "27cb3101fc35470ea387057973b4dc4a"
+preview_id = "REPLACE_WITH_API_KEYS_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "UPLOAD_STATE_KV"
+id = "ea03db0e3c76489ca237cbaf8b0c6225"
+preview_id = "REPLACE_WITH_UPLOAD_STATE_KV_PREVIEW_ID"
+
+[[unsafe.bindings]]
+name = "RATE_LIMITER_UPLOAD"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
+
+[[unsafe.bindings]]
+name = "RATE_LIMITER_CDN"
+type = "ratelimit"
+namespace_id = "1002"
+simple = { limit = 200, period = 60 }
+
+[vars]
+MAX_FILE_SIZE = "1073741824"   # 1GB
+PART_SIZE = "16777216"         # 16MB (マルチパート分割サイズ)
+RATE_LIMIT_UPLOAD = "20"       # アップロード: 20回/分
+RATE_LIMIT_CDN = "200"         # CDN配信: 200回/分
+CDN_HOST = "cdn.sugertiger77.com"
+UPLOAD_HOST = "up.sugertiger77.com"
