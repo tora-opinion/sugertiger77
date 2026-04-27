@@ -106,11 +106,11 @@ export async function uploadPart(
     if (typeof options?.contentLength !== 'number') {
       throw new Error('contentLength is required when uploading a stream');
     }
-    return upload.uploadPart(
-      partNumber,
-      data,
-      { contentLength: options.contentLength } as R2UploadPartOptions,
-    );
+    // `contentLength` is required by the R2 runtime when uploading a stream,
+    // but is not present in the older R2UploadPartOptions type definition.
+    return upload.uploadPart(partNumber, data, {
+      contentLength: options.contentLength,
+    } as R2UploadPartOptions);
   }
   return upload.uploadPart(partNumber, data);
 }

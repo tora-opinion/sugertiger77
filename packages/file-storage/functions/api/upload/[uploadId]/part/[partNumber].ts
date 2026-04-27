@@ -60,6 +60,10 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
       return errorResponse('Content-Length header is required', 411, origin, context.env);
     }
 
+    if (!context.request.body) {
+      return errorResponse('Empty part data', 400, origin, context.env);
+    }
+
     const contentLength = Number(contentLengthHeader);
     if (
       !Number.isInteger(contentLength) ||
@@ -72,10 +76,6 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
         origin,
         context.env,
       );
-    }
-
-    if (!context.request.body) {
-      return errorResponse('Empty part data', 400, origin, context.env);
     }
 
     // Resume and upload part (stream body directly to R2 to avoid double-buffering)
