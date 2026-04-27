@@ -99,8 +99,19 @@ export async function resumeMultipartUpload(
 export async function uploadPart(
   upload: R2MultipartUpload,
   partNumber: number,
-  data: ArrayBuffer,
+  data: ArrayBuffer | ReadableStream,
+  options?: { contentLength?: number },
 ): Promise<R2UploadedPart> {
+  if (data instanceof ReadableStream) {
+    if (typeof options?.contentLength !== 'number') {
+      throw new Error('contentLength is required when uploading a stream');
+    }
+    return upload.uploadPart(
+      partNumber,
+      data,
+      { contentLength: options.contentLength } as R2UploadPartOptions,
+    );
+  }
   return upload.uploadPart(partNumber, data);
 }
 

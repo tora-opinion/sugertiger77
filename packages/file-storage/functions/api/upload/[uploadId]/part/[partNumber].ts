@@ -56,28 +56,16 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
     const maxPartSize = cfg.partSize + PART_SIZE_MARGIN_BYTES;
 
     const contentLengthHeader = context.request.headers.get('content-length');
-    if (contentLengthHeader !== null) {
-      const contentLength = Number(contentLengthHeader);
-      if (
-        !Number.isInteger(contentLength) ||
-        contentLength <= 0 ||
-        contentLength > maxPartSize
-      ) {
-        return errorResponse(
-          `Part size exceeds allowed limit (${maxPartSize} bytes).`,
-          413,
-          origin,
-          context.env,
-        );
-      }
+    if (contentLengthHeader === null) {
+      return errorResponse('Content-Length header is required', 411, origin, context.env);
     }
 
-    // Get part data
-    const data = await context.request.arrayBuffer();
-    if (data.byteLength === 0) {
-      return errorResponse('Empty part data', 400, origin, context.env);
-    }
-    if (data.byteLength > maxPartSize) {
+    const contentLength = Number(contentLengthHeader);
+    if (
+      !Number.isInteger(contentLength) ||
+      contentLength <= 0 ||
+      contentLength > maxPartSize
+    ) {
       return errorResponse(
         `Part size exceeds allowed limit (${maxPartSize} bytes).`,
         413,
@@ -86,14 +74,23 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
       );
     }
 
-    // Resume and upload part
+    if (!context.request.body) {
+      return errorResponse('Empty part data', 400, origin, context.env);
+    }
+
+    // Resume and upload part (stream body directly to R2 to avoid double-buffering)
     const upload = await resumeMultipartUpload(
       context.env.FILE_BUCKET,
       state.fileId,
       uploadId,
     );
 
-    const uploadedPart = await uploadPart(upload, partNum, data);
+    const uploadedPart = await uploadPart(
+      upload,
+      partNum,
+      context.request.body,
+      { contentLength },
+    );
 
     return jsonResponse(
       {
