@@ -1,6 +1,6 @@
 export const config = {
   maxFileSize: 1024 * 1024 * 1024, // 1GB
-  partSize: 16 * 1024 * 1024, // 16MB
+  partSize: 8 * 1024 * 1024, // 8MB
   smallFileThreshold: 10 * 1024 * 1024, // 10MB
   rateLimits: {
     upload: { max: 20, windowSec: 60 },

@@ -42,7 +42,7 @@ simple = { limit = 200, period = 60 }
 
 [vars]
 MAX_FILE_SIZE = "1073741824"   # 1GB
-PART_SIZE = "16777216"         # 16MB (マルチパート分割サイズ)
+PART_SIZE = "8388608"          # 8MB (マルチパート分割サイズ)
 RATE_LIMIT_UPLOAD = "20"       # アップロード: 20回/分
 RATE_LIMIT_CDN = "200"         # CDN配信: 200回/分
 CDN_HOST = "cdn.sugertiger77.com"
