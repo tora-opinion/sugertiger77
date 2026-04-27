@@ -3,7 +3,7 @@ export const config = {
   partSize: 8 * 1024 * 1024, // 8MB
   smallFileThreshold: 10 * 1024 * 1024, // 10MB
   rateLimits: {
-    upload: { max: 20, windowSec: 60 },
+    upload: { max: 100, windowSec: 60 },
     cdn: { max: 200, windowSec: 60 },
   },
   corsOrigins: [
