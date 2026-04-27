@@ -65,11 +65,15 @@ export const onRequestPut = async (context: Context): Promise<Response> => {
     }
 
     const contentLength = Number(contentLengthHeader);
-    if (
-      !Number.isInteger(contentLength) ||
-      contentLength <= 0 ||
-      contentLength > maxPartSize
-    ) {
+    if (!Number.isInteger(contentLength) || contentLength <= 0) {
+      return errorResponse(
+        'Invalid Content-Length header',
+        400,
+        origin,
+        context.env,
+      );
+    }
+    if (contentLength > maxPartSize) {
       return errorResponse(
         `Part size exceeds allowed limit (${maxPartSize} bytes).`,
         413,

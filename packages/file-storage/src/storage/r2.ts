@@ -99,17 +99,26 @@ export async function resumeMultipartUpload(
 export async function uploadPart(
   upload: R2MultipartUpload,
   partNumber: number,
-  data: ArrayBuffer | ReadableStream,
-  options?: { contentLength?: number },
+  data: ArrayBuffer,
+): Promise<R2UploadedPart>;
+export async function uploadPart(
+  upload: R2MultipartUpload,
+  partNumber: number,
+  data: ReadableStream<Uint8Array>,
+  options: { contentLength: number },
+): Promise<R2UploadedPart>;
+export async function uploadPart(
+  upload: R2MultipartUpload,
+  partNumber: number,
+  data: ArrayBuffer | ReadableStream<Uint8Array>,
+  options?: { contentLength: number },
 ): Promise<R2UploadedPart> {
   if (data instanceof ReadableStream) {
-    if (typeof options?.contentLength !== 'number') {
-      throw new Error('contentLength is required when uploading a stream');
-    }
     // `contentLength` is required by the R2 runtime when uploading a stream,
-    // but is not present in the older R2UploadPartOptions type definition.
+    // but is not declared on R2UploadPartOptions in @cloudflare/workers-types
+    // (verified up to 4.20260426.1). Cast is needed until the types catch up.
     return upload.uploadPart(partNumber, data, {
-      contentLength: options.contentLength,
+      contentLength: options!.contentLength,
     } as R2UploadPartOptions);
   }
   return upload.uploadPart(partNumber, data);
