@@ -28,17 +28,13 @@ binding = "UPLOAD_STATE_KV"
 id = "ea03db0e3c76489ca237cbaf8b0c6225"
 preview_id = "REPLACE_WITH_UPLOAD_STATE_KV_PREVIEW_ID"
 
-[[unsafe.bindings]]
-name = "RATE_LIMITER_UPLOAD"
-type = "ratelimit"
-namespace_id = "1001"
-simple = { limit = 20, period = 60 }
-
-[[unsafe.bindings]]
-name = "RATE_LIMITER_CDN"
-type = "ratelimit"
-namespace_id = "1002"
-simple = { limit = 200, period = 60 }
+# Rate Limiter bindings (RATE_LIMITER_UPLOAD / RATE_LIMITER_CDN) は
+# Pages の wrangler.toml では設定できないため、Cloudflare ダッシュボードの
+# Pages プロジェクト → Settings → Functions → Bindings → Rate Limiting で
+# 以下の binding を追加してください:
+#   - RATE_LIMITER_UPLOAD : namespace 1001, limit 20 / 60s
+#   - RATE_LIMITER_CDN    : namespace 1002, limit 200 / 60s
+# binding が未設定でも src/protection/rate-limiter.ts が KV フォールバックで動作します。
 
 [vars]
 MAX_FILE_SIZE = "1073741824"   # 1GB
