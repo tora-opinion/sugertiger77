@@ -39,7 +39,7 @@ preview_id = "REPLACE_WITH_UPLOAD_STATE_KV_PREVIEW_ID"
 [vars]
 MAX_FILE_SIZE = "1073741824"   # 1GB
 PART_SIZE = "8388608"          # 8MB (マルチパート分割サイズ)
-RATE_LIMIT_UPLOAD = "20"       # アップロード: 20回/分
+RATE_LIMIT_UPLOAD = "100"      # アップロード: 100回/分
 RATE_LIMIT_CDN = "200"         # CDN配信: 200回/分
 CDN_HOST = "cdn.sugertiger77.com"
 UPLOAD_HOST = "up.sugertiger77.com"
