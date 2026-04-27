@@ -114,11 +114,16 @@ export async function uploadPart(
   options?: { contentLength: number },
 ): Promise<R2UploadedPart> {
   if (data instanceof ReadableStream) {
+    if (!options || typeof options.contentLength !== 'number') {
+      throw new TypeError(
+        'uploadPart requires options.contentLength when data is a ReadableStream',
+      );
+    }
     // `contentLength` is required by the R2 runtime when uploading a stream,
     // but is not declared on R2UploadPartOptions in @cloudflare/workers-types
     // (verified up to 4.20260426.1). Cast is needed until the types catch up.
     return upload.uploadPart(partNumber, data, {
-      contentLength: options!.contentLength,
+      contentLength: options.contentLength,
     } as R2UploadPartOptions);
   }
   return upload.uploadPart(partNumber, data);
