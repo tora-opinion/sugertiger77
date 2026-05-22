@@ -1,0 +1,16 @@
+name = "agent"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
+
+[[kv_namespaces]]
+binding = "AGENT_PAYMENTS_KV"
+id = "d63eae7e9c4e4d4ca23b7d383681c7ee"
+
+[[kv_namespaces]]
+binding = "AGENT_CARDS_KV"
+id = "59d1ae14dafa471797cce1a05c485ab4"
+
+[[kv_namespaces]]
+binding = "AGENT_KEYS_KV"
+id = "68280700cc724f4fb29f312b80cc397f"
