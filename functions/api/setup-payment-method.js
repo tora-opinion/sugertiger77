@@ -106,6 +106,7 @@ async function createSetupSession(request, env) {
   const params = new URLSearchParams();
 
   params.set("mode", "setup");
+  params.set("currency", "jpy");
   params.set("customer", customerId);
   params.set("success_url", `${baseUrl}/?payment_method=success&session_id={CHECKOUT_SESSION_ID}`);
   params.set("cancel_url", `${baseUrl}/?payment_method=cancel`);
