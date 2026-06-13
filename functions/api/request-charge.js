@@ -120,95 +120,6 @@ async function createCheckoutSession(request, env) {
   );
 }
 
-async function getOrCreateCustomer(request, env, payload) {
-  if (typeof payload.customer_id === "string" && payload.customer_id) {
-    return payload.customer_id;
-  }
-
-  const params = new URLSearchParams();
-  if (typeof payload.email === "string" && payload.email) {
-    params.set("email", payload.email);
-  }
-  if (typeof payload.name === "string" && payload.name) {
-    params.set("name", payload.name);
-  }
-  params.set("metadata[purpose]", "api_request_payment_method");
-
-  const customer = await stripePost(
-    "customers",
-    env,
-    params,
-    request.headers.get("Idempotency-Key")
-      ? `${request.headers.get("Idempotency-Key")}:customer`
-      : undefined,
-  );
-
-  return customer.id;
-}
-
-async function createSetupSession(request, env, payload) {
-  const customerId = await getOrCreateCustomer(request, env, payload);
-  const baseUrl = getBaseUrl(request, env);
-  const params = new URLSearchParams();
-
-  params.set("mode", "setup");
-  params.set("currency", "jpy");
-  params.set("customer", customerId);
-  params.set("success_url", `${baseUrl}/?payment_method=success&session_id={CHECKOUT_SESSION_ID}`);
-  params.set("cancel_url", `${baseUrl}/?payment_method=cancel`);
-  params.set("metadata[purpose]", "api_request_payment_method");
-
-  const session = await stripePost(
-    "checkout/sessions",
-    env,
-    params,
-    request.headers.get("Idempotency-Key")
-      ? `${request.headers.get("Idempotency-Key")}:setup-session`
-      : undefined,
-  );
-
-  return jsonResponse(
-    {
-      setup_url: session.url,
-      session_id: session.id,
-      customer_id: customerId,
-    },
-    201,
-  );
-}
-
-async function finalizePaymentMethod(env, sessionId) {
-  const session = await stripeGet(`checkout/sessions/${sessionId}`, env);
-  if (session.mode !== "setup" || !session.customer || !session.setup_intent) {
-    return jsonResponse(
-      { error: "The session is not a setup Checkout Session." },
-      400,
-    );
-  }
-
-  const setupIntent = await stripeGet(`setup_intents/${session.setup_intent}`, env);
-  if (setupIntent.status !== "succeeded" || !setupIntent.payment_method) {
-    return jsonResponse(
-      {
-        error: "Payment method setup is not complete.",
-        status: setupIntent.status,
-      },
-      400,
-    );
-  }
-
-  const params = new URLSearchParams();
-  params.set("invoice_settings[default_payment_method]", setupIntent.payment_method);
-
-  await stripePost(`customers/${session.customer}`, env, params);
-
-  return jsonResponse({
-    customer_id: session.customer,
-    payment_method_id: setupIntent.payment_method,
-    ready_for_request_charge: true,
-  });
-}
-
 async function getDefaultPaymentMethod(env, customerId, suppliedPaymentMethodId) {
   if (typeof suppliedPaymentMethodId === "string" && suppliedPaymentMethodId) {
     return suppliedPaymentMethodId;
@@ -219,6 +130,10 @@ async function getDefaultPaymentMethod(env, customerId, suppliedPaymentMethodId)
 }
 
 async function chargeSavedPaymentMethod(request, env, payload) {
+  if (typeof payload.customer_id !== "string" || !payload.customer_id) {
+    return createCheckoutSession(request, env);
+  }
+
   const paymentMethodId = await getDefaultPaymentMethod(
     env,
     payload.customer_id,
@@ -229,7 +144,7 @@ async function chargeSavedPaymentMethod(request, env, payload) {
     return jsonResponse(
       {
         error: "No saved default payment method for this customer.",
-        next_step: "POST /api/request-charge with {\"action\":\"setup\"}, complete setup_url, then POST /api/request-charge with the returned session_id.",
+        next_step: "POST /api/setup-payment-method to save or finalize a payment method first.",
       },
       400,
     );
@@ -265,13 +180,7 @@ async function chargeSavedPaymentMethod(request, env, payload) {
   );
 }
 
-function wantsSetup(payload) {
-  return payload.action === "setup" ||
-    payload.action === "setup_payment_method" ||
-    payload.save_payment_method === true;
-}
-
-async function handleRequest(request, env) {
+export async function onRequestPost({ request, env }) {
   if (!env.STRIPE_SECRET_KEY) {
     return jsonResponse(
       { error: "STRIPE_SECRET_KEY is not configured." },
@@ -279,33 +188,16 @@ async function handleRequest(request, env) {
     );
   }
 
-  const payload = await readJson(request);
-
-  if (wantsSetup(payload)) {
-    return createSetupSession(request, env, payload);
-  }
-
-  if (typeof payload.session_id === "string" && payload.session_id) {
-    return finalizePaymentMethod(env, payload.session_id);
-  }
-
-  if (typeof payload.customer_id === "string" && payload.customer_id) {
-    return chargeSavedPaymentMethod(request, env, payload);
-  }
-
-  return createCheckoutSession(request, env);
-}
-
-export async function onRequestPost({ request, env }) {
   try {
-    return await handleRequest(request, env);
+    const payload = await readJson(request);
+    return await chargeSavedPaymentMethod(request, env, payload);
   } catch (error) {
     if (error instanceof Response) {
       return error;
     }
 
     return jsonResponse(
-      { error: "Failed to process Stripe request." },
+      { error: "Failed to create Stripe payment." },
       500,
     );
   }
