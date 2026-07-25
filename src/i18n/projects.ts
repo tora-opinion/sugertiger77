@@ -9,7 +9,8 @@ export interface Project {
   description: string;
   tech: string[];
   features: string[];
-  contact: string;
+  /** Contact address. Omit along with `url` while the domain is not yet finalized. */
+  contact?: string;
   status: "In Development" | "Live" | "Beta";
 }
 
@@ -125,7 +126,6 @@ export const projects: Record<Locale, Project[]> = {
         "Creator dashboard",
         "Permission management with Supabase RLS",
       ],
-      contact: "admin@creatorpay.com",
       status: "In Development",
     },
     {
@@ -141,7 +141,6 @@ export const projects: Record<Locale, Project[]> = {
         "Electronic wallet functionality",
         "PDF report export",
       ],
-      contact: "admin@kaihi-os.com",
       status: "In Development",
     },
     {
@@ -157,7 +156,6 @@ export const projects: Record<Locale, Project[]> = {
         "Check-in functionality",
         "Expo push notification integration",
       ],
-      contact: "admin@focuspair.com",
       status: "In Development",
     },
     {
@@ -172,7 +170,6 @@ export const projects: Record<Locale, Project[]> = {
         "Stripe payment integration",
         "Supabase authentication",
       ],
-      contact: "admin@styleshield.com",
       status: "In Development",
     },
     {
@@ -187,7 +184,6 @@ export const projects: Record<Locale, Project[]> = {
         "Automatic abnormal access detection",
         "Admin dashboard",
       ],
-      contact: "admin@dojinshield.com",
       status: "In Development",
     },
     {
@@ -203,7 +199,6 @@ export const projects: Record<Locale, Project[]> = {
         "Twilio Webhook integration",
         "Payment status synchronization",
       ],
-      contact: "admin@callshield.com",
       status: "In Development",
     },
   ],
@@ -318,7 +313,6 @@ export const projects: Record<Locale, Project[]> = {
         "クリエイター向けダッシュボード",
         "Supabase RLSによる権限管理",
       ],
-      contact: "admin@creatorpay.com",
       status: "In Development",
     },
     {
@@ -334,7 +328,6 @@ export const projects: Record<Locale, Project[]> = {
         "電子ウォレット機能",
         "PDF帳票出力",
       ],
-      contact: "admin@kaihi-os.com",
       status: "In Development",
     },
     {
@@ -350,7 +343,6 @@ export const projects: Record<Locale, Project[]> = {
         "チェックイン機能",
         "Expoプッシュ通知連携",
       ],
-      contact: "admin@focuspair.com",
       status: "In Development",
     },
     {
@@ -365,7 +357,6 @@ export const projects: Record<Locale, Project[]> = {
         "Stripe決済連携",
         "Supabase認証",
       ],
-      contact: "admin@styleshield.com",
       status: "In Development",
     },
     {
@@ -380,7 +371,6 @@ export const projects: Record<Locale, Project[]> = {
         "異常アクセスの自動検知",
         "管理者ダッシュボード",
       ],
-      contact: "admin@dojinshield.com",
       status: "In Development",
     },
     {
@@ -396,7 +386,6 @@ export const projects: Record<Locale, Project[]> = {
         "Twilio Webhook連携",
         "決済状態の同期",
       ],
-      contact: "admin@callshield.com",
       status: "In Development",
     },
   ],
