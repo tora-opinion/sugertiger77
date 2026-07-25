@@ -4,7 +4,8 @@ export interface Project {
   id: string;
   name: string;
   japaneseName?: string;
-  url: string;
+  /** Production URL. Omit while the domain is not yet finalized — ProjectCard renders a disabled state instead of linking to an unverified/placeholder domain. */
+  url?: string;
   description: string;
   tech: string[];
   features: string[];
@@ -108,7 +109,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "creatorpay",
       name: "Creatorpay",
       japaneseName: "クリエイターペイ",
-      url: "https://creatorpay.com",
       description:
         "A payments and tax support platform for creators. It intermediates creator payouts with Stripe Connect (Separate Charges and Transfers) and automatically generates tax documents as PDFs.",
       tech: [
@@ -132,7 +132,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "kaihi-os",
       name: "Kaihi-OS",
       japaneseName: "会費ペイ",
-      url: "https://kaihi-os.com",
       description:
         "A membership fee collection SaaS for clubs and organizations. It notifies members of fee requests through LINE and streamlines collection and management with Stripe payments and an electronic wallet.",
       tech: ["Next.js 15", "Prisma", "Auth.js", "Stripe", "LINE API", "Vercel"],
@@ -149,7 +148,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "focuspair",
       name: "FocusPair",
       japaneseName: "いっしょロック",
-      url: "https://focuspair.com",
       description:
         "A focus support app that lets two people mutually block smartphone app usage. It detects leaving the session, notifies the partner, and supports continued focus with check-ins.",
       tech: ["Expo (React Native)", "Next.js", "Supabase", "Stripe"],
@@ -165,7 +163,6 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "styleshield",
       name: "StyleShield",
-      url: "https://styleshield.com",
       description:
         "A cloud service for doujin creators and illustrators that protects their artistic style. It provides processing to protect illustrations from AI style imitation and unauthorized training.",
       tech: ["Next.js 16", "Supabase", "Stripe", "Cloudflare Pages", "Sharp"],
@@ -181,7 +178,6 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "dojinshield",
       name: "DojinShield",
-      url: "https://dojinshield.com",
       description:
         "A digital bonus distribution tool for doujin publications with anti-piracy measures. It generates unique watermarked PDFs for each authenticated user and detects unauthorized redistribution.",
       tech: ["Next.js 16", "Prisma", "pdf-lib", "PostgreSQL"],
@@ -198,7 +194,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "callshield",
       name: "CallShield",
       japaneseName: "迷惑電話対策コンソール",
-      url: "https://callshield.com",
       description:
         "A nuisance-call prevention console for stores. It automatically classifies and anonymizes incoming calls and provides a management screen where store staff can see the situation at a glance.",
       tech: ["Next.js 16", "Supabase", "Twilio", "Stripe"],
@@ -307,7 +302,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "creatorpay",
       name: "Creatorpay",
       japaneseName: "クリエイターペイ",
-      url: "https://creatorpay.com",
       description:
         "クリエイター向けの決済・税務支援プラットフォーム。Stripe Connect（Separate Charges and Transfers）でクリエイターへの支払いを仲介し、税務書類をPDFで自動生成します。",
       tech: [
@@ -331,7 +325,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "kaihi-os",
       name: "Kaihi-OS",
       japaneseName: "会費ペイ",
-      url: "https://kaihi-os.com",
       description:
         "サークル・団体向けの会費徴収SaaS。LINE連携で会員に会費請求を通知し、Stripe決済と電子ウォレット機能で徴収・管理を効率化します。",
       tech: ["Next.js 15", "Prisma", "Auth.js", "Stripe", "LINE API", "Vercel"],
@@ -348,7 +341,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "focuspair",
       name: "FocusPair",
       japaneseName: "いっしょロック",
-      url: "https://focuspair.com",
       description:
         "二人一組でスマホアプリの使用を相互にブロックする集中支援アプリ。離脱を検知してペアに通知し、チェックイン機能で継続をサポートします。",
       tech: ["Expo (React Native)", "Next.js", "Supabase", "Stripe"],
@@ -364,7 +356,6 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "styleshield",
       name: "StyleShield",
-      url: "https://styleshield.com",
       description:
         "同人作家・イラストレーター向けの画風保護クラウドサービス。AIによる画風模倣や無断学習からイラストを守る処理を提供します。",
       tech: ["Next.js 16", "Supabase", "Stripe", "Cloudflare Pages", "Sharp"],
@@ -380,7 +371,6 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "dojinshield",
       name: "DojinShield",
-      url: "https://dojinshield.com",
       description:
         "同人誌向けの海賊版対策付き電子特典配布ツール。認証済みユーザーごとに一点物の透かし入りPDFを生成し、不正拡散を検知します。",
       tech: ["Next.js 16", "Prisma", "pdf-lib", "PostgreSQL"],
@@ -397,7 +387,6 @@ export const projects: Record<Locale, Project[]> = {
       id: "callshield",
       name: "CallShield",
       japaneseName: "迷惑電話対策コンソール",
-      url: "https://callshield.com",
       description:
         "店舗向けの迷惑電話対策コンソール。着信を自動判定・匿名化し、店舗スタッフが状況を一目で確認できる管理画面を提供します。",
       tech: ["Next.js 16", "Supabase", "Twilio", "Stripe"],

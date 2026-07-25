@@ -35,6 +35,7 @@ export const translations = {
     ja: "教育・フィンテック・クラウドインフラ・クリエイティブツールの4プロダクトを開発中。",
   },
   "projects.visitSite": { en: "Visit Site ↗", ja: "サイトを見る ↗" },
+  "projects.comingSoon": { en: "Coming soon", ja: "準備中" },
   "status.inDevelopment": { en: "In Development", ja: "開発中" },
   "status.live": { en: "Live", ja: "公開中" },
   "status.beta": { en: "Beta", ja: "ベータ" },
