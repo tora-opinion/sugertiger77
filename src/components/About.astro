@@ -9,9 +9,9 @@ const techStack = [
   "Tailwind CSS", "Astro",
 ];
 ---
-<section id="about" class="min-h-screen flex items-center">
+<section id="about" aria-labelledby="about-heading" class="min-h-screen scroll-mt-24 flex items-center">
   <div class="max-w-5xl mx-auto px-6 w-full">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 animate-on-scroll animate-fade-in-up">
+    <h2 id="about-heading" tabindex="-1" class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 animate-on-scroll animate-fade-in-up">
       {t("about.title", lang)}
     </h2>
     <p class="mt-8 text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl animate-on-scroll animate-fade-in-up" style="animation-delay: 0.15s">

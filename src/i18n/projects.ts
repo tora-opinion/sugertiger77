@@ -6,6 +6,7 @@ export interface Project {
   japaneseName?: string;
   /** Production URL. Omit while the domain is not yet finalized — ProjectCard renders a disabled state instead of linking to an unverified/placeholder domain. */
   url?: string;
+  isPublic?: boolean;
   description: string;
   tech: string[];
   features: string[];
@@ -20,6 +21,7 @@ export const projects: Record<Locale, Project[]> = {
       id: "studyai",
       name: "StudyAI",
       url: "https://studyai.jp",
+      isPublic: false,
       description:
         "AI-powered learning support iPad app for Japanese students. Capture problems with OCR, get AI-generated explanations, track learning progress, and review mistake history.",
       tech: ["Swift", "SwiftUI", "Supabase", "OpenAI API", "RevenueCat"],
@@ -207,6 +209,7 @@ export const projects: Record<Locale, Project[]> = {
       id: "studyai",
       name: "StudyAI",
       url: "https://studyai.jp",
+      isPublic: false,
       description:
         "日本の学生向けAI学習支援iPadアプリ。OCRで問題を読み取り、AIが解説を生成。学習進捗の追跡やミス履歴の復習も可能。",
       tech: ["Swift", "SwiftUI", "Supabase", "OpenAI API", "RevenueCat"],

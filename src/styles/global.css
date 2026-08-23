@@ -18,38 +18,66 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: calc(5rem + env(safe-area-inset-top));
   }
   body {
     font-family: var(--font-sans);
   }
+
+  :focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
+  }
+}
+
+.site-header {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.mobile-nav-open {
+  overflow: hidden;
+}
+
+.skip-link {
+  position: fixed;
+  top: calc(0.5rem + env(safe-area-inset-top));
+  left: calc(0.5rem + env(safe-area-inset-left));
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 0.5rem;
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  color: #111827;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 @layer utilities {
   /* Immediate animations (hero etc.) */
   .animate-fade-in-up {
     animation: fadeInUp 0.6s ease-out forwards;
-    opacity: 0;
   }
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
-    opacity: 0;
   }
   .animate-slide-in-left {
     animation: slideInLeft 0.6s ease-out forwards;
-    opacity: 0;
   }
   .animate-slide-in-right {
     animation: slideInRight 0.6s ease-out forwards;
-    opacity: 0;
   }
   .animate-scale-in {
     animation: scaleIn 0.5s ease-out forwards;
-    opacity: 0;
   }
 
   /* Scroll-triggered: hidden until IntersectionObserver fires */
   .animate-on-scroll {
-    opacity: 0;
     animation: none;
   }
   .animate-on-scroll.animate-visible.animate-fade-in-up {
@@ -69,24 +97,24 @@
   }
 
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { transform: translateY(24px); }
+    to { transform: translateY(0); }
   }
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { transform: translateY(4px); }
+    to { transform: translateY(0); }
   }
   @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { transform: translateX(-30px); }
+    to { transform: translateX(0); }
   }
   @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { transform: translateX(30px); }
+    to { transform: translateX(0); }
   }
   @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    from { transform: scale(0.96); }
+    to { transform: scale(1); }
   }
 
   .animation-delay-100 { animation-delay: 0.1s; }
@@ -97,4 +125,30 @@
   .animation-delay-600 { animation-delay: 0.6s; }
   .animation-delay-700 { animation-delay: 0.7s; }
   .animation-delay-800 { animation-delay: 0.8s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-on-scroll,
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-slide-in-left,
+  .animate-slide-in-right,
+  .animate-scale-in {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

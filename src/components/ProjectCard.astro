@@ -42,23 +42,26 @@ const statusMap = {
       </li>
     ))}
   </ul>
-  <div class="mt-6 flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
-    {project.url ? (
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
+    {project.isPublic === false ? (
+      <span class="inline-flex min-h-11 items-center text-sm font-medium text-gray-600 dark:text-gray-300">
+        {t("projects.privatePreview", lang)}
+      </span>
+    ) : (
       <a
         href={project.url}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+        aria-label={t("projects.visitSiteLabel", lang, { name: project.name })}
+        class="inline-flex min-h-11 items-center rounded-md text-sm font-medium text-blue-700 transition-colors hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
       >
         {t("projects.visitSite", lang)}
       </a>
-    ) : (
-      <span class="text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed">
-        {t("projects.comingSoon", lang)}
-      </span>
     )}
-    {project.contact && (
-      <span class="text-xs text-gray-500 dark:text-gray-500">{project.contact}</span>
-    )}
+    <a
+      href={`mailto:${project.contact}`}
+      aria-label={t("projects.emailLabel", lang, { name: project.name, email: project.contact })}
+      class="inline-flex min-h-11 items-center rounded-md text-xs text-gray-600 underline-offset-4 hover:underline dark:text-gray-300"
+    >{project.contact}</a>
   </div>
 </article>

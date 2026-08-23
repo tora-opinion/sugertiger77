@@ -12,7 +12,11 @@ export const translations = {
   "nav.about": { en: "About", ja: "About" },
   "nav.projects": { en: "Projects", ja: "Projects" },
   "nav.contact": { en: "Contact", ja: "Contact" },
+  "nav.openMenu": { en: "Open menu", ja: "メニューを開く" },
+  "nav.closeMenu": { en: "Close menu", ja: "メニューを閉じる" },
   "theme.toggle": { en: "Toggle dark mode", ja: "ダークモード切替" },
+  "theme.useDark": { en: "Use dark mode", ja: "ダークモードにする" },
+  "theme.useLight": { en: "Use light mode", ja: "ライトモードにする" },
   "lang.switch": { en: "日本語", ja: "English" },
   "hero.subtitle": {
     en: "Full-stack developer crafting AI-powered products",
@@ -23,6 +27,11 @@ export const translations = {
     ja: "Cloudflare · Vercel · Supabase · AWS",
   },
   "hero.github": { en: "GitHub", ja: "GitHub" },
+  "hero.githubLabel": {
+    en: "View sugertiger77 on GitHub (opens in a new tab)",
+    ja: "sugertiger77のGitHubを見る（新しいタブで開きます）",
+  },
+  "a11y.skipToContent": { en: "Skip to main content", ja: "本文へ移動" },
   "hero.viewProjects": { en: "View Projects ↓", ja: "プロジェクトを見る ↓" },
   "about.title": { en: "About", ja: "About" },
   "about.description": {
@@ -36,6 +45,15 @@ export const translations = {
   },
   "projects.visitSite": { en: "Visit Site ↗", ja: "サイトを見る ↗" },
   "projects.comingSoon": { en: "Coming soon", ja: "準備中" },
+  "projects.privatePreview": { en: "Private preview", ja: "限定公開" },
+  "projects.visitSiteLabel": {
+    en: "Visit {name} (opens in a new tab)",
+    ja: "{name}のサイトを見る（新しいタブで開きます）",
+  },
+  "projects.emailLabel": {
+    en: "Email the {name} team at {email}",
+    ja: "{name}チームへメール（{email}）",
+  },
   "status.inDevelopment": { en: "In Development", ja: "開発中" },
   "status.live": { en: "Live", ja: "公開中" },
   "status.beta": { en: "Beta", ja: "ベータ" },
@@ -43,6 +61,16 @@ export const translations = {
   "contact.subtitle": {
     en: "Interested in collaboration? Feel free to reach out.",
     ja: "ご興味がありましたら、お気軽にご連絡ください。",
+  },
+  "contact.emailLabel": {
+    en: "Email admin@sugertiger77.com",
+    ja: "admin@sugertiger77.comへメール",
+  },
+  "contact.copyEmail": { en: "Copy email", ja: "メールをコピー" },
+  "contact.copied": { en: "Email copied", ja: "メールをコピーしました" },
+  "contact.copyFailed": {
+    en: "Select and copy the email address above",
+    ja: "上のメールアドレスを選択してコピーしてください",
   },
   "footer.rights": {
     en: "© {year} sugertiger77. All rights reserved.",
