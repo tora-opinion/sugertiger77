@@ -69,6 +69,7 @@ export const translations = {
     en: "What the ten products are built on. The number beside each tool is how many of them use it.",
     ja: "10のプロダクトを支える道具。右の数字は、そのうち何本で使っているか。",
   },
+  "stack.single": { en: "Used in one product each — ", ja: "1本ずつで使用 — " },
   "stack.count": { en: "{count} of {total} products", ja: "{total}本中{count}本" },
   "status.inDevelopment": { en: "In Development", ja: "開発中" },
   "status.live": { en: "Live", ja: "公開中" },

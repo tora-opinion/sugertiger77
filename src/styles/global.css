@@ -461,8 +461,10 @@
   padding: clamp(72px, 12vh, 140px) clamp(20px, 4vw, 56px) clamp(80px, 14vh, 160px);
 }
 .index-hint {
+  display: none;
   margin-bottom: 28px;
 }
+.js .index-hint { display: block; }
 .index-list {
   border-top: 1px solid var(--line);
 }
@@ -680,6 +682,7 @@
   letter-spacing: 0.04em;
   line-height: 2;
 }
+.stack-rest-label { color: var(--fg); }
 @media (max-width: 760px) {
   .stack-head { grid-template-columns: minmax(0, 1fr); }
 }
