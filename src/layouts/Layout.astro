@@ -44,6 +44,11 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <script is:inline>
       document.documentElement.classList.add('js');
       try {
+        // Play the opening shutter once per visit.
+        if (sessionStorage.getItem('intro-played')) document.documentElement.classList.add('intro-done');
+        else sessionStorage.setItem('intro-played', '1');
+      } catch {}
+      try {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
         } else {
@@ -65,6 +70,8 @@ const altPath = lang === "en" ? "/ja/" : "/";
   </head>
   <body class="min-h-screen">
     <a href="#main-content" class="skip-link">{t("a11y.skipToContent", lang)}</a>
+    <div class="shutter" aria-hidden="true"><i></i><i></i><span class="mono">sugertiger77</span></div>
+    <div class="grain" aria-hidden="true"></div>
     <slot />
     <script is:inline>
       const animatedElements = document.querySelectorAll('.animate-on-scroll');

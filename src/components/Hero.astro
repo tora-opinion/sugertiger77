@@ -2,13 +2,23 @@
 import Photo from "./Photo.astro";
 import { getLang, t } from "../i18n/utils";
 const lang = getLang(Astro.currentLocale);
+// Each letter drifts at its own speed while the hero scrolls away.
+const drift = [1.6, 0.4, 1.1, 2.0, 0.7, 1.4, 0.2, 1.8, 0.9, 1.3, 0.5, 1.7];
+let n = 0;
+const letters = (word: string) => Array.from(word).map((ch) => ({ ch, i: n, d: drift[n++ % drift.length] }));
+const lines = [letters("suger"), letters("tiger77")];
 ---
-<section aria-labelledby="hero-heading" class="hero">
-  <div class="hero-bg" data-par="0.25"><Photo name="hero" eager /></div>
+<section aria-labelledby="hero-heading" class="hero" data-hero>
+  <div class="hero-bg" data-hero-bg><Photo name="hero" eager /></div>
   <div class="hero-copy">
     <h1 id="hero-heading" class="hero-title" aria-label="sugertiger77">
-      <span class="l" aria-hidden="true"><span>suger</span></span>
-      <span class="l" aria-hidden="true"><span>tiger77</span></span>
+      {lines.map((line) => (
+        <span class="l" aria-hidden="true">
+          {line.map(({ ch, i, d }) => (
+            <span class="drift" style={`--d: ${d}`}><span class="ch" style={`--i: ${i}`}>{ch}</span></span>
+          ))}
+        </span>
+      ))}
     </h1>
     <div class="hero-sub">
       <div>
