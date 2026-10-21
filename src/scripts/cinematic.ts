@@ -77,12 +77,13 @@ export function initCinematic() {
     let near = false;
     const loadScenePhotos = () => {
       const theme = document.documentElement.classList.contains("dark") ? ".photo-dark" : ".photo-light";
-      photoLayers.forEach((layer) => {
+      // One decode at a time, so the work never piles up into a stall of its own.
+      photoLayers.reduce<Promise<void>>((queue, layer) => {
         const img = layer.querySelector<HTMLImageElement>(theme);
-        if (!img) return;
+        if (!img) return queue;
         img.loading = "eager";
-        img.decode().catch(() => {});
-      });
+        return queue.then(() => img.decode().catch(() => {}));
+      }, Promise.resolve());
     };
     const nearObserver = new IntersectionObserver(
       ([entry]) => {
