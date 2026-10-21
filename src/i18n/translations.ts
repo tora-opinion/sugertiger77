@@ -43,8 +43,11 @@ export const translations = {
   "projects.listLabel": { en: "Project list", ja: "プロジェクト一覧" },
   "projects.stack": { en: "Stack", ja: "技術" },
   "projects.features": { en: "Features", ja: "主な機能" },
-  "footer.photos": { en: "Photos", ja: "写真" },
-  "footer.photosOn": { en: "on Unsplash", ja: "（Unsplash）" },
+  "footer.photos": { en: "Photo credits", ja: "写真クレジット" },
+  "footer.photosNote": {
+    en: "All photos are from Unsplash under the Unsplash License.",
+    ja: "写真はすべて Unsplash のもので、Unsplash License に基づき使用しています。",
+  },
   "projects.title": { en: "Projects", ja: "Projects" },
   "projects.subtitle": {
     en: "Currently building 10 products across education, fintech, cloud infrastructure, and creative tooling.",

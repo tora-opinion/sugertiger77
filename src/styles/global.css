@@ -952,14 +952,61 @@ html:not(.js) .works-progress { display: none; }
   color: var(--mute);
 }
 .site-footer .credit {
-  max-width: 760px;
+  margin-left: auto;
+}
+.site-footer .credit[open] {
+  flex-basis: 100%;
+}
+.site-footer .credit summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.site-footer .credit summary::-webkit-details-marker {
+  display: none;
+}
+.site-footer .credit summary::after {
+  content: "+";
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 0.3s var(--ease, ease);
+}
+.site-footer .credit[open] summary::after {
+  transform: rotate(45deg);
+}
+.site-footer .credit summary:hover {
+  color: var(--fg);
+}
+.site-footer .credit-n {
+  padding: 1px 7px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  font-size: 10px;
+}
+.site-footer .credit-note {
+  margin: 16px 0 12px;
+}
+.site-footer .credit-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px 24px;
+  padding-bottom: 8px;
 }
 .site-footer .credit a {
   text-decoration: underline;
+  text-decoration-color: var(--line);
   text-underline-offset: 3px;
 }
 .site-footer .credit a:hover {
   color: var(--fg);
+  text-decoration-color: currentColor;
 }
 
 @layer utilities {
