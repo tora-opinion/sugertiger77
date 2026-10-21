@@ -364,6 +364,40 @@
   .scroll-hint { display: none; }
   .hero-title { font-size: 22vw; }
 }
+/* Hero exit tied straight to the scroll (no script per frame), where supported.
+   Mirrors the --hp fallback that cinematic.ts drives elsewhere. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-title .drift,
+    .hero-sub > *,
+    .hero::before,
+    .hero-bg {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0 max(100svh, 640px);
+    }
+    .hero-title .drift { animation-name: hero-drift; transform: none; opacity: 1; }
+    .hero-sub > * { animation-name: hero-sub-away; transform: none; }
+    .hero::before { animation-name: hero-dim; opacity: 0; }
+    .hero-bg { animation-name: hero-bg-away; }
+  }
+}
+@keyframes hero-drift {
+  to {
+    transform: translate3d(0, calc(var(--d) * -38vh), 0) rotate(calc((var(--d) - 1) * 14deg));
+    opacity: calc(1 - var(--d) * 0.7);
+  }
+}
+@keyframes hero-sub-away {
+  to { transform: translateY(60px); }
+}
+@keyframes hero-dim {
+  to { opacity: 0.75; }
+}
+@keyframes hero-bg-away {
+  to { transform: translate3d(0, calc(max(100svh, 640px) * 0.3), 0) scale(1.22); }
+}
 /* phones and touch screens: animated blur on twelve letters and a full-screen photo
    is too heavy, so the opening keeps its motion but drops the blur */
 @media (max-width: 900px), (hover: none) {
