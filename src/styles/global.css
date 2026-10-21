@@ -410,6 +410,10 @@
   .hero-title .drift {
     will-change: transform, opacity;
   }
+  /* blur transitions on every scene change are too heavy for phones */
+  .scene .fx {
+    filter: none;
+  }
   .grain {
     animation: none;
   }
