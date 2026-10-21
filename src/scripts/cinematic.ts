@@ -5,6 +5,7 @@ const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export function initCinematic() {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const scrollTimeline = CSS.supports("animation-timeline: scroll()");
 
   const header = document.querySelector<HTMLElement>(".site-header");
   const hero = document.querySelector<HTMLElement>("[data-hero]");
@@ -140,7 +141,8 @@ export function initCinematic() {
 
     if (reduceMotion) return;
 
-    if (hero && heroBg) {
+    // Browsers with scroll-driven animations run the hero exit in CSS, in step with the scroll itself.
+    if (hero && heroBg && !scrollTimeline) {
       const r = hero.getBoundingClientRect();
       const hp = clamp(-r.top / r.height);
       hero.style.setProperty("--hp", hp.toFixed(4));
