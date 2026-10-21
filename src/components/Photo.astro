@@ -4,14 +4,10 @@ import { photos, type PhotoKey } from "../data/photos";
 interface Props {
   name: PhotoKey;
   eager?: boolean;
-  /** Use the 800px copy in /img/thumb/ (for small tiles). */
-  thumb?: boolean;
 }
-const { name, eager = false, thumb = false } = Astro.props;
+const { name, eager = false } = Astro.props;
 const slot = photos[name];
 const loading = eager ? "eager" : "lazy";
-const src = (path: string) => (thumb ? path.replace("/img/", "/img/thumb/") : path);
-const [width, height] = thumb ? [800, 560] : [2000, 1333];
 ---
-<img class="photo photo-light" src={src(slot.light.src)} alt="" width={width} height={height} loading={loading} decoding="async" fetchpriority={eager ? "high" : undefined} />
-<img class="photo photo-dark" src={src(slot.dark.src)} alt="" width={width} height={height} loading={loading} decoding="async" />
+<img class="photo photo-light" src={slot.light.src} alt="" width="2000" height="1333" loading={loading} decoding="async" fetchpriority={eager ? "high" : undefined} />
+<img class="photo photo-dark" src={slot.dark.src} alt="" width="2000" height="1333" loading={loading} decoding="async" />
