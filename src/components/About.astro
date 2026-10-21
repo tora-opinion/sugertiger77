@@ -1,13 +1,7 @@
 ---
-import TechBadge from "./TechBadge.astro";
 import { getLang, t } from "../i18n/utils";
 
 const lang = getLang(Astro.currentLocale);
-const techStack = [
-  "Cloudflare", "Vercel", "Supabase", "AWS", "Next.js",
-  "Swift / SwiftUI", "TypeScript", "React", "Prisma", "Stripe",
-  "Tailwind CSS", "Astro",
-];
 // Japanese lights up character by character, English word by word.
 const description = t("about.description", lang);
 const units = lang === "ja" ? Array.from(description) : description.split(/(\s+)/);
@@ -19,11 +13,4 @@ const units = lang === "ja" ? Array.from(description) : description.split(/(\s+)
   <p class="intro-text" data-reveal>
     {units.map((unit) => (/^\s+$/.test(unit) ? unit : <span class="reveal-word">{unit}</span>))}
   </p>
-  <ul class="stack" aria-label={t("about.stackLabel", lang)}>
-    {techStack.map((tech, i) => (
-      <li class="animate-on-scroll animate-scale-in" style={`animation-delay: ${0.1 + i * 0.04}s`}>
-        <TechBadge name={tech} />
-      </li>
-    ))}
-  </ul>
 </section>

@@ -1,5 +1,6 @@
 ---
-const words = ["Cloudflare", "Vercel", "Supabase", "AWS", "Swift", "Stripe", "TypeScript", "Astro"];
+import { projects } from "../i18n/projects";
+const words = projects.en.map((project) => project.name);
 ---
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
