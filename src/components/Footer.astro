@@ -7,13 +7,15 @@ const credits = Object.values(photos).flatMap((slot) => [slot.light, slot.dark])
 ---
 <footer class="site-footer">
   <p>{t("footer.rights", lang, { year })}</p>
-  <p class="credit">
-    {t("footer.photos", lang)}:{" "}
-    {credits.map((photo, i) => (
-      <Fragment>
-        <a href={`https://unsplash.com/photos/${photo.id}`} target="_blank" rel="noopener noreferrer">{photo.author}</a>{i < credits.length - 1 ? ", " : " "}
-      </Fragment>
-    ))}
-    {t("footer.photosOn", lang)}
-  </p>
+  <details class="credit">
+    <summary>{t("footer.photos", lang)} <span class="credit-n">{credits.length}</span></summary>
+    <p class="credit-note">
+      {t("footer.photosNote", lang).split("Unsplash License")[0]}<a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash License</a>{t("footer.photosNote", lang).split("Unsplash License")[1]}
+    </p>
+    <ul class="credit-list">
+      {credits.map((photo) => (
+        <li><a href={`https://unsplash.com/photos/${photo.id}`} target="_blank" rel="noopener noreferrer">{photo.author}</a></li>
+      ))}
+    </ul>
+  </details>
 </footer>
