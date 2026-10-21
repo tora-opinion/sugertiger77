@@ -69,6 +69,33 @@ export function initCinematic() {
     });
   });
 
+  // Scene photos sit fully clipped until their cut, so lazy loading never sees them.
+  // Fetch the current theme's set once the stage is near, and the other set if the theme flips.
+  if (works && photoLayers.length) {
+    let near = false;
+    const loadScenePhotos = () => {
+      const theme = document.documentElement.classList.contains("dark") ? ".photo-dark" : ".photo-light";
+      photoLayers.forEach((layer) => {
+        const img = layer.querySelector<HTMLImageElement>(theme);
+        if (img) img.loading = "eager";
+      });
+    };
+    const nearObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        near = true;
+        loadScenePhotos();
+        nearObserver.disconnect();
+      },
+      { rootMargin: "100% 0px" },
+    );
+    nearObserver.observe(works);
+    new MutationObserver(() => near && loadScenePhotos()).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+
   // ---------- marquee driven by scroll velocity ----------
   let marqueeX = 0;
   let velocity = 0;
