@@ -1,13 +1,14 @@
-// Scroll-linked motion: parallax, word reveal, expanding frame and the pinned project switcher.
+// Scroll-linked motion: hero dispersal, word reveal, expanding frame, project scenes,
+// velocity-driven marquee and the photo-filled closing title.
 const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export function initCinematic() {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const pinned = window.matchMedia("(min-width: 901px)");
 
   const header = document.querySelector<HTMLElement>(".site-header");
-  const parallax = Array.from(document.querySelectorAll<HTMLElement>("[data-par]"));
+  const hero = document.querySelector<HTMLElement>("[data-hero]");
+  const heroBg = hero?.querySelector<HTMLElement>("[data-hero-bg]");
   const words = Array.from(document.querySelectorAll<HTMLElement>(".reveal-word"));
   const wordsHost = document.querySelector<HTMLElement>("[data-reveal]");
   const expand = document.querySelector<HTMLElement>("[data-expand]");
@@ -15,75 +16,104 @@ export function initCinematic() {
   const frameImgs = Array.from(frame?.querySelectorAll<HTMLElement>(".photo") ?? []);
   const caption = expand?.querySelector<HTMLElement>("[data-expand-cap]");
   const works = document.querySelector<HTMLElement>("[data-works]");
-  const items = Array.from(works?.querySelectorAll<HTMLElement>("[data-work]") ?? []);
-  const views = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-view]") ?? []);
+  const scenes = Array.from(works?.querySelectorAll<HTMLElement>("[data-work]") ?? []);
+  const ticks = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-btn]") ?? []);
+  const photoHost = works?.querySelector<HTMLElement>("[data-work-photos]");
   const photoLayers = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-photo]") ?? []);
+  const finale = document.querySelector<HTMLElement>("[data-final]");
+  const marquee = document.querySelector<HTMLElement>(".marquee-track");
 
-  let current = -1;
-  const setWork = (index: number) => {
+  // ---------- project scenes ----------
+  let current = 0;
+  let currentPhoto = 0;
+  const setScene = (index: number) => {
     if (index === current) return;
+    const forward = index > current;
     current = index;
-    items.forEach((item, i) => {
-      item.classList.toggle("on", i === index);
-      if (pinned.matches) item.querySelector("[data-work-btn]")?.setAttribute("aria-expanded", String(i === index));
+    scenes.forEach((scene, i) => {
+      scene.classList.toggle("on", i === index);
+      scene.classList.toggle("past", i < index);
     });
-    views.forEach((view, i) => view.classList.toggle("on", i === index));
-    const photoIndex = index % Math.max(photoLayers.length, 1);
-    photoLayers.forEach((layer, i) => layer.classList.toggle("on", i === photoIndex));
-  };
-  setWork(0);
-
-  // The list buttons only drive the pinned layout; on narrow screens every card is already expanded.
-  const syncButtons = () => {
-    items.forEach((item, i) => {
-      const btn = item.querySelector<HTMLElement>("[data-work-btn]");
-      if (!btn) return;
-      if (pinned.matches) {
-        btn.removeAttribute("tabindex");
-        btn.setAttribute("aria-expanded", String(i === current));
-      } else {
-        btn.setAttribute("tabindex", "-1");
-        btn.removeAttribute("aria-expanded");
-      }
+    ticks.forEach((tick, i) => {
+      tick.classList.toggle("on", i === index);
+      if (i === index) tick.setAttribute("aria-current", "true");
+      else tick.removeAttribute("aria-current");
     });
+    const nextPhoto = index % Math.max(photoLayers.length, 1);
+    if (nextPhoto !== currentPhoto && photoLayers.length) {
+      photoHost?.setAttribute("data-dir", forward ? "down" : "up");
+      photoLayers.forEach((layer, i) => {
+        layer.classList.toggle("prev", i === currentPhoto);
+        layer.classList.toggle("on", i === nextPhoto);
+      });
+      currentPhoto = nextPhoto;
+    }
   };
-  syncButtons();
-  pinned.addEventListener("change", syncButtons);
 
-  const workProgressTop = (index: number) => {
+  const sceneScrollTop = (index: number) => {
     if (!works) return 0;
     const total = works.offsetHeight - window.innerHeight;
     const top = works.getBoundingClientRect().top + window.scrollY;
-    return top + total * ((index + 0.5) / items.length);
+    return top + total * ((index + 0.5) / scenes.length);
   };
-
-  items.forEach((item, i) => {
-    item.querySelector("[data-work-btn]")?.addEventListener("click", () => {
-      if (!pinned.matches) return;
-      setWork(i);
-      window.scrollTo({ top: workProgressTop(i), behavior: reduceMotion ? "auto" : "smooth" });
+  ticks.forEach((tick, i) => {
+    tick.addEventListener("click", () => {
+      window.scrollTo({ top: sceneScrollTop(i), behavior: reduceMotion ? "auto" : "smooth" });
+      setScene(i);
+    });
+  });
+  // Keyboard users tabbing into a hidden scene's link jump to that scene.
+  scenes.forEach((scene, i) => {
+    scene.addEventListener("focusin", () => {
+      if (i !== current) window.scrollTo({ top: sceneScrollTop(i), behavior: "auto" });
     });
   });
 
+  // ---------- marquee driven by scroll velocity ----------
+  let marqueeX = 0;
+  let velocity = 0;
+  let lastY = window.scrollY;
+  let marqueeVisible = false;
+  if (marquee && !reduceMotion) {
+    new IntersectionObserver(([entry]) => {
+      marqueeVisible = entry.isIntersecting;
+    }).observe(marquee);
+    const loop = () => {
+      const y = window.scrollY;
+      velocity += (y - lastY - velocity) * 0.12;
+      lastY = y;
+      if (marqueeVisible) {
+        const half = marquee.scrollWidth / 2;
+        marqueeX -= 0.7 + Math.abs(velocity) * 0.35;
+        if (half > 0 && -marqueeX >= half) marqueeX += half;
+        const skew = clamp(velocity * -0.25, -14, 14);
+        marquee.style.transform = `translate3d(${marqueeX}px, 0, 0) skewX(${skew}deg)`;
+      }
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+
+  // ---------- scroll frame ----------
   const update = () => {
     const vh = window.innerHeight;
     header?.setAttribute("data-scrolled", String(window.scrollY > 24));
 
-    if (works && items.length && pinned.matches) {
+    if (works && scenes.length) {
       const r = works.getBoundingClientRect();
       const p = clamp(-r.top / Math.max(works.offsetHeight - vh, 1));
-      setWork(Math.min(items.length - 1, Math.floor(p * items.length)));
+      works.style.setProperty("--wp", p.toFixed(4));
+      setScene(Math.min(scenes.length - 1, Math.floor(p * scenes.length)));
     }
 
     if (reduceMotion) return;
 
-    parallax.forEach((el) => {
-      const host = el.parentElement;
-      if (!host) return;
-      const r = host.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > vh + 200) return;
-      el.style.transform = `translate3d(0, ${-(r.top + r.height / 2 - vh / 2) * Number(el.dataset.par)}px, 0)`;
-    });
+    if (hero && heroBg) {
+      const r = hero.getBoundingClientRect();
+      const hp = clamp(-r.top / r.height);
+      hero.style.setProperty("--hp", hp.toFixed(4));
+      heroBg.style.transform = `translate3d(0, ${hp * r.height * 0.3}px, 0) scale(${1 + hp * 0.22})`;
+    }
 
     if (wordsHost && words.length) {
       const r = wordsHost.getBoundingClientRect();
@@ -99,14 +129,22 @@ export function initCinematic() {
       frame.style.width = `${34 + 66 * k}vw`;
       frame.style.height = `${44 + 56 * k}vh`;
       frame.style.borderRadius = `${28 * (1 - k)}px`;
+      frame.style.transform = `rotate(${-7 * (1 - k)}deg)`;
       frame.style.setProperty("--dim", String(0.1 + 0.4 * k));
-      frameImgs.forEach((img) => (img.style.transform = `scale(${1.25 - 0.25 * k})`));
+      frameImgs.forEach((img) => (img.style.transform = `scale(${1.25 - 0.25 * k}) rotate(${7 * (1 - k)}deg)`));
       caption.style.setProperty("--t", String(clamp((p - 0.5) / 0.3)));
+    }
+
+    if (finale) {
+      const r = finale.getBoundingClientRect();
+      const fp = easeOut(clamp((vh - r.top) / (vh * 0.9)));
+      finale.style.setProperty("--fp", fp.toFixed(4));
     }
   };
 
   if (reduceMotion) {
     words.forEach((w) => w.classList.add("on"));
+    finale?.style.setProperty("--fp", "1");
     if (frame && caption) {
       frame.style.width = "100vw";
       frame.style.height = "100vh";

@@ -1,12 +1,17 @@
 ---
 import { projects } from "../i18n/projects";
 import { projectPhotoKeys } from "../data/photos";
-import ProjectCard from "./ProjectCard.astro";
 import Photo from "./Photo.astro";
 import { getLang, t } from "../i18n/utils";
 
 const lang = getLang(Astro.currentLocale);
 const list = projects[lang];
+const pad = (n: number) => String(n).padStart(2, "0");
+const statusMap = {
+  "In Development": "status.inDevelopment",
+  "Live": "status.live",
+  "Beta": "status.beta",
+} as const;
 ---
 <section id="projects" aria-labelledby="projects-heading">
   <div class="expand" data-expand>
@@ -21,40 +26,78 @@ const list = projects[lang];
 
   <div class="works" data-works style={`--count: ${list.length}`}>
     <div class="works-stick">
-      <div class="works-photos" aria-hidden="true">
+      <div class="works-photos" aria-hidden="true" data-work-photos>
         {projectPhotoKeys.map((key, i) => (
           <div class:list={["ph", { on: i === 0 }]} data-work-photo><Photo name={key} /></div>
         ))}
       </div>
-      <div class="works-inner">
-        <ul class="wl" aria-label={t("projects.listLabel", lang)}>
-          {list.map((project, i) => (
-            <li class:list={{ on: i === 0 }} data-work>
-              <h3>
-                <button type="button" class="wl-btn" data-work-btn aria-expanded={i === 0 ? "true" : "false"} aria-controls={`work-${project.id}`}>
-                  <span class="wl-name">{project.name}</span>
-                  {project.japaneseName && <span class="wl-jp">{project.japaneseName}</span>}
-                </button>
-              </h3>
-              <div class="wl-body">
-                <div>
-                  <p class="wl-desc">{project.description}</p>
-                  <div class="wl-details">
-                    <ProjectCard project={project} lang={lang} />
-                  </div>
-                </div>
+
+      <ol class="scenes" aria-label={t("projects.listLabel", lang)}>
+        {list.map((project, i) => (
+          <li id={`work-${project.id}`} class:list={["scene", { on: i === 0 }]} data-work>
+            <p class="scene-meta mono fx" style="--d: 0">
+              <span>{pad(i + 1)} / {pad(list.length)}</span>
+              {project.japaneseName && <span>{project.japaneseName}</span>}
+              <span class="scene-status">{t(statusMap[project.status], lang)}</span>
+            </p>
+            <h3 class="scene-name" aria-label={project.name}>
+              <span class="mask" aria-hidden="true">
+                {Array.from(project.name).map((ch, ci) => (
+                  <span class="ch" style={`--i: ${ci}`}>{ch === " " ? " " : ch}</span>
+                ))}
+              </span>
+            </h3>
+            <p class="scene-desc fx" style="--d: 1">{project.description}</p>
+            <dl class="scene-facts">
+              <div class="fx" style="--d: 2">
+                <dt class="mono">{t("projects.stack", lang)}</dt>
+                <dd>{project.tech.join(" / ")}</dd>
               </div>
-            </li>
-          ))}
-        </ul>
-        <div class="panel">
-          {list.map((project, i) => (
-            <div id={`work-${project.id}`} class:list={["pv", { on: i === 0 }]} data-work-view>
-              <ProjectCard project={project} lang={lang} showTitle />
-            </div>
-          ))}
-        </div>
+              <div class="fx" style="--d: 3">
+                <dt class="mono">{t("projects.features", lang)}</dt>
+                <dd>{project.features.join(" · ")}</dd>
+              </div>
+            </dl>
+            <p class="scene-links fx" style="--d: 4">
+              {project.isPublic === false ? (
+                <span>{t("projects.privatePreview", lang)}</span>
+              ) : project.url ? (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t("projects.visitSiteLabel", lang, { name: project.name })}
+                  class="scene-site"
+                >{t("projects.visitSite", lang)}</a>
+              ) : (
+                <span>{t("projects.comingSoon", lang)}</span>
+              )}
+              {project.contact && (
+                <a
+                  href={`mailto:${project.contact}`}
+                  aria-label={t("projects.emailLabel", lang, { name: project.name, email: project.contact })}
+                  class="scene-mail"
+                >{project.contact}</a>
+              )}
+            </p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="rail" role="group" aria-label={t("projects.listLabel", lang)}>
+        {list.map((project, i) => (
+          <button
+            type="button"
+            class:list={["rail-tick", { on: i === 0 }]}
+            data-work-btn
+            aria-controls={`work-${project.id}`}
+            aria-current={i === 0 ? "true" : undefined}
+          >
+            <span class="rail-label">{project.name}</span>
+          </button>
+        ))}
       </div>
+      <div class="works-progress" aria-hidden="true"><span></span></div>
     </div>
   </div>
 </section>

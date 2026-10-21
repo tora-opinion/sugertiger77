@@ -4,7 +4,7 @@ export interface Project {
   id: string;
   name: string;
   japaneseName?: string;
-  /** Production URL. Omit while the domain is not yet finalized — ProjectCard renders a disabled state instead of linking to an unverified/placeholder domain. */
+  /** Production URL. Omit while the domain is not yet finalized — the projects section shows "Coming soon" instead of linking to an unverified/placeholder domain. */
   url?: string;
   isPublic?: boolean;
   description: string;

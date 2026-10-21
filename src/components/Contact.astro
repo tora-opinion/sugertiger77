@@ -1,12 +1,10 @@
 ---
-import Photo from "./Photo.astro";
 import { getLang, t } from "../i18n/utils";
 const lang = getLang(Astro.currentLocale);
 ---
-<section id="contact" aria-labelledby="contact-heading" class="final">
-  <div class="final-bg" data-par="0.2"><Photo name="final" /></div>
+<section id="contact" aria-labelledby="contact-heading" class="final" data-final>
   <div class="final-c">
-    <h2 id="contact-heading" tabindex="-1" class="final-title animate-on-scroll animate-fade-in-up">
+    <h2 id="contact-heading" tabindex="-1" class="final-title">
       {t("contact.title", lang)}
     </h2>
     <p class="final-lead animate-on-scroll animate-fade-in-up" style="animation-delay: 0.15s">
