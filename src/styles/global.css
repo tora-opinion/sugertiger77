@@ -771,9 +771,10 @@ html:not(.js) .scene {
   position: relative;
   min-height: 100svh;
   visibility: visible;
+  pointer-events: auto;
 }
-html:not(.js) .scene-name .ch,
-html:not(.js) .fx {
+html:not(.js) .scene .scene-name .ch,
+html:not(.js) .scene .fx {
   opacity: 1;
   transform: none;
   filter: none;
@@ -781,6 +782,32 @@ html:not(.js) .fx {
 html:not(.js) .final { --fp: 1; }
 html:not(.js) .rail,
 html:not(.js) .works-progress { display: none; }
+
+/* short viewports (landscape phones, heavy zoom) can't fit a scene, so stack them too */
+@media (max-height: 600px) {
+  .works { height: auto; }
+  .works-stick { position: relative; height: auto; overflow: visible; }
+  .works-photos { position: sticky; top: 0; height: 100svh; margin-bottom: -100svh; }
+  .scenes { position: relative; }
+  .scene,
+  .scene:not(.on) {
+    position: relative;
+    min-height: 100svh;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .scene .scene-name .ch,
+  .scene.past .scene-name .ch,
+  .scene .fx,
+  .scene.past .fx {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .rail,
+  .works-progress { display: none; }
+  .scene-name .mask { white-space: normal; }
+}
 
 /* ---------- marquee ---------- */
 .marquee {
