@@ -878,6 +878,10 @@ html:not(.js) .works-progress { display: none; }
   /* light: the deep blue of the sea; dark: the star field above the ridge */
   --fill: url("/img/light-p3.webp");
   --fill-y: calc(62% + var(--fp) * 38%);
+  /* soften the top edge so the rotating glow never meets the marquee as a hard coloured seam;
+     the mask also clips the glow where iOS Safari lets transformed children escape overflow */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 120px);
+  mask-image: linear-gradient(to bottom, transparent, #000 120px);
 }
 .dark .final {
   --fill: url("/img/dark-final.webp");
@@ -920,6 +924,10 @@ html:not(.js) .works-progress { display: none; }
 .final-title:lang(ja) {
   font-size: clamp(56px, 13vw, 210px);
   letter-spacing: -0.04em;
+}
+@media (max-width: 640px) {
+  .final-title { font-size: 23vw; }
+  .final-title:lang(ja) { font-size: 15vw; }
 }
 .final-lead {
   margin: 32px auto 40px;
