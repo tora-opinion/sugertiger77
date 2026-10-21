@@ -205,79 +205,6 @@
   transform: translateY(0);
 }
 
-/* ---------- opening: photo through the name, then zoom through it ---------- */
-.intro-mask {
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  pointer-events: none;
-  transition: opacity 0.8s var(--ease) 0.55s;
-}
-html:not(.js) .intro-mask,
-.intro-done .intro-mask {
-  display: none;
-}
-.intro-zoom .intro-mask {
-  opacity: 0;
-}
-.intro-svg {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-.intro-fill {
-  fill: #05070c;
-}
-.intro-word {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 1.5s cubic-bezier(0.8, 0, 0.2, 1);
-}
-.intro-zoom .intro-word {
-  transform: scale(18);
-}
-.intro-word text {
-  fill: #000;
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-size: 13.5vw;
-  letter-spacing: -0.05em;
-}
-.intro-word tspan {
-  fill-opacity: 0;
-  animation: cut-in 0.9s calc(0.15s + var(--i) * 0.06s) var(--ease) forwards;
-}
-@keyframes cut-in {
-  to { fill-opacity: 1; }
-}
-.intro-progress {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(32px, 8vh, 72px);
-  width: min(240px, 50vw);
-  height: 1px;
-  background: rgb(244 246 251 / 0.18);
-  transform: translateX(-50%);
-  transition: opacity 0.3s var(--ease);
-}
-.intro-progress i {
-  display: block;
-  height: 100%;
-  background: #f4f6fb;
-  transform: scaleX(0);
-  transform-origin: left;
-}
-.intro-zoom .intro-progress {
-  opacity: 0;
-}
-
-/* everything in the first view waits for the frame to open */
-.js:not(.is-open) .hero-title .ch,
-.js:not(.is-open) .hero-sub,
-.js:not(.is-open) .site-nav > *,
-.js:not(.is-open) .scroll-hint {
-  animation-play-state: paused;
-}
 .site-nav > * {
   animation: drop 1s 0.7s var(--ease) both;
 }
@@ -1030,7 +957,6 @@ html:not(.js) .works-progress { display: none; }
     transition-delay: 0ms !important;
   }
 
-  .intro-mask,
   .scroll-hint::after {
     display: none;
   }

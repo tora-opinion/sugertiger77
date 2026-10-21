@@ -43,16 +43,6 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <meta name="twitter:image" content={new URL("/og-image.png", Astro.site).href} />
     <script is:inline>
       document.documentElement.classList.add('js');
-      // The opening plays once per visit; skip it for repeat visits and reduced motion.
-      try {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || sessionStorage.getItem('intro-played')) {
-          document.documentElement.classList.add('is-open', 'intro-done');
-        } else {
-          sessionStorage.setItem('intro-played', '1');
-        }
-      } catch {
-        document.documentElement.classList.add('is-open', 'intro-done');
-      }
       try {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
@@ -75,20 +65,6 @@ const altPath = lang === "en" ? "/ja/" : "/";
   </head>
   <body class="min-h-screen">
     <a href="#main-content" class="skip-link">{t("a11y.skipToContent", lang)}</a>
-    <div class="intro-mask" aria-hidden="true">
-      <svg class="intro-svg" width="100%" height="100%">
-        <defs>
-          <mask id="intro-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
-            <rect width="100%" height="100%" fill="#fff" />
-            <g class="intro-word">
-              <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"><tspan style="--i: 0">s</tspan><tspan style="--i: 1">u</tspan><tspan style="--i: 2">g</tspan><tspan style="--i: 3">e</tspan><tspan style="--i: 4">r</tspan><tspan style="--i: 5">t</tspan><tspan style="--i: 6">i</tspan><tspan style="--i: 7">g</tspan><tspan style="--i: 8">e</tspan><tspan style="--i: 9">r</tspan><tspan style="--i: 10">7</tspan><tspan style="--i: 11">7</tspan></text>
-            </g>
-          </mask>
-        </defs>
-        <rect class="intro-fill" width="100%" height="100%" mask="url(#intro-cut)" />
-      </svg>
-      <span class="intro-progress"><i data-intro-bar></i></span>
-    </div>
     <div class="grain" aria-hidden="true"></div>
     <slot />
     <script is:inline>
@@ -106,45 +82,6 @@ const altPath = lang === "en" ? "/ja/" : "/";
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         animatedElements.forEach((element) => observer.observe(element));
       }
-    </script>
-    <script is:inline>
-      // Opening: the hero photo shows through a giant cut-out of the name, then we zoom through the letters.
-      // The progress line follows the real load of the hero photo and fonts; any input skips ahead.
-      (function () {
-        var root = document.documentElement;
-        if (root.classList.contains('is-open')) return;
-        var bar = document.querySelector('[data-intro-bar]');
-        var events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
-        var hero = document.querySelector(root.classList.contains('dark') ? '.hero-bg .photo-dark' : '.hero-bg .photo-light');
-        var waits = [document.fonts ? document.fonts.ready : Promise.resolve()];
-        if (hero && hero.decode) waits.push(hero.decode().catch(function () {}));
-        var ready = false;
-        var finished = false;
-        var start = performance.now();
-        var shown = 0;
-        Promise.all(waits).then(function () { ready = true; });
-        var finish = function () {
-          if (finished) return;
-          finished = true;
-          events.forEach(function (name) { window.removeEventListener(name, finish); });
-          if (bar) bar.style.transform = 'scaleX(1)';
-          root.classList.add('intro-zoom');
-          setTimeout(function () { root.classList.add('is-open'); }, 700);
-          setTimeout(function () { root.classList.add('intro-done'); }, 1700);
-        };
-        events.forEach(function (name) { window.addEventListener(name, finish, { passive: true }); });
-        setTimeout(finish, 4000);
-        var frame = function (now) {
-          if (finished) return;
-          var t = (now - start) / 1000;
-          var target = ready && t > 1.6 ? 1 : 0.85 * (1 - Math.exp(-t * 1.4));
-          shown += (target - shown) * 0.1;
-          if (bar) bar.style.transform = 'scaleX(' + shown.toFixed(3) + ')';
-          if (target === 1 && shown > 0.99) finish();
-          else requestAnimationFrame(frame);
-        };
-        requestAnimationFrame(frame);
-      })();
     </script>
     <script>
       import { initCinematic } from "../scripts/cinematic";
