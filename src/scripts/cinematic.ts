@@ -108,9 +108,6 @@ export function initCinematic() {
       const r = works.getBoundingClientRect();
       const p = clamp(-r.top / Math.max(works.offsetHeight - vh, 1));
       works.style.setProperty("--wp", p.toFixed(4));
-      // Bars close as the section pins and open again on the way out.
-      const lb = reduceMotion ? 0 : Math.min(clamp(p / 0.06), clamp((1 - p) / 0.06));
-      works.style.setProperty("--lb", lb.toFixed(3));
       setScene(Math.min(scenes.length - 1, Math.floor(p * scenes.length)));
     }
 
