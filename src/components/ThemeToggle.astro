@@ -31,13 +31,12 @@ const useLightLabel = t("theme.useLight", lang);
   syncThemeToggle();
   themeToggle?.addEventListener('click', () => {
     const html = document.documentElement;
-    if (html.classList.contains('dark')) {
-      html.classList.remove('dark');
-      localStorage.theme = 'light';
-    } else {
-      html.classList.add('dark');
-      localStorage.theme = 'dark';
-    }
+    const isDark = html.classList.toggle('dark');
     syncThemeToggle();
+    try {
+      localStorage.theme = isDark ? 'dark' : 'light';
+    } catch {
+      // Storage can be unavailable; the theme still applies for this visit.
+    }
   });
 </script>
