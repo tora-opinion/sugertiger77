@@ -31,6 +31,7 @@ export const translations = {
     en: "View sugertiger77 on GitHub (opens in a new tab)",
     ja: "sugertiger77のGitHubを見る（新しいタブで開きます）",
   },
+  "hero.scroll": { en: "Scroll", ja: "スクロール" },
   "a11y.skipToContent": { en: "Skip to main content", ja: "本文へ移動" },
   "hero.viewProjects": { en: "View Projects ↓", ja: "プロジェクトを見る ↓" },
   "about.title": { en: "About", ja: "About" },

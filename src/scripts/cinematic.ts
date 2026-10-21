@@ -25,13 +25,30 @@ export function initCinematic() {
     current = index;
     items.forEach((item, i) => {
       item.classList.toggle("on", i === index);
-      item.querySelector("[data-work-btn]")?.setAttribute("aria-expanded", String(i === index));
+      if (pinned.matches) item.querySelector("[data-work-btn]")?.setAttribute("aria-expanded", String(i === index));
     });
     views.forEach((view, i) => view.classList.toggle("on", i === index));
     const photoIndex = index % Math.max(photoLayers.length, 1);
     photoLayers.forEach((layer, i) => layer.classList.toggle("on", i === photoIndex));
   };
   setWork(0);
+
+  // The list buttons only drive the pinned layout; on narrow screens every card is already expanded.
+  const syncButtons = () => {
+    items.forEach((item, i) => {
+      const btn = item.querySelector<HTMLElement>("[data-work-btn]");
+      if (!btn) return;
+      if (pinned.matches) {
+        btn.removeAttribute("tabindex");
+        btn.setAttribute("aria-expanded", String(i === current));
+      } else {
+        btn.setAttribute("tabindex", "-1");
+        btn.removeAttribute("aria-expanded");
+      }
+    });
+  };
+  syncButtons();
+  pinned.addEventListener("change", syncButtons);
 
   const workProgressTop = (index: number) => {
     if (!works) return 0;

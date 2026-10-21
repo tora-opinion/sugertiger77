@@ -386,6 +386,10 @@
   opacity: var(--t, 0);
   transform: translateY(calc((1 - var(--t, 0)) * 40px));
 }
+.js .expand-cap:focus-within > * {
+  opacity: 1;
+  transform: none;
+}
 .expand-cap h2 {
   font-size: clamp(56px, 11vw, 180px);
   font-weight: 800;
@@ -664,6 +668,22 @@
   }
 }
 
+/* without JS nothing drives the pinned switcher, so show every project as a card */
+html:not(.js) .works { height: auto; }
+html:not(.js) .works-stick { position: relative; height: auto; overflow: visible; }
+html:not(.js) .works-inner { display: block; height: auto; max-width: 760px; margin: 0 auto; padding: 96px 16px; }
+html:not(.js) .wl > li {
+  opacity: 1;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--glass);
+  padding: 18px;
+}
+html:not(.js) .wl-body { grid-template-rows: 1fr; }
+html:not(.js) .wl-details { display: block; }
+html:not(.js) .panel { display: none; }
+
 /* ---------- marquee ---------- */
 .marquee {
   overflow: hidden;
@@ -833,6 +853,9 @@
   .js .animate-on-scroll {
     opacity: 1 !important;
     transform: none !important;
+  }
+  .works-photos .ph .photo {
+    transform: none;
   }
   /* keep crossfades (theme switch, project backgrounds) */
   .photo,
