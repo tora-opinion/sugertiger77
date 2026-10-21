@@ -24,73 +24,81 @@ const statusMap = {
     </div>
   </div>
 
-  <div class="index" data-index>
-    <p class="index-hint mono">{t("projects.hint", lang)}</p>
-    <ol class="index-list" aria-label={t("projects.listLabel", lang)}>
-      {list.map((project, i) => (
-        <li id={`work-${project.id}`} class="row" data-row data-photo={i % projectPhotoKeys.length}>
-          <h3>
-            <button
-              type="button"
-              class="row-head"
-              aria-expanded="true"
-              aria-controls={`work-${project.id}-body`}
-              data-row-btn
-            >
-              <span class="row-num mono">{pad(i + 1)}</span>
-              <span class="row-name">{project.name}</span>
-              <span class="row-ja">{project.japaneseName}</span>
-              <span class="row-status mono">{t(statusMap[project.status], lang)}</span>
-              <span class="row-plus" aria-hidden="true"></span>
-            </button>
-          </h3>
-          <div id={`work-${project.id}-body`} class="row-body" data-row-body>
-            <div class="row-inner">
-              <p class="row-desc">{project.description}</p>
-              <dl class="row-facts">
-                <div>
-                  <dt class="mono">{t("projects.stack", lang)}</dt>
-                  <dd>{project.tech.join(" / ")}</dd>
-                </div>
-                <div>
-                  <dt class="mono">{t("projects.features", lang)}</dt>
-                  <dd>
-                    <ul>{project.features.map((feature) => <li>{feature}</li>)}</ul>
-                  </dd>
-                </div>
-              </dl>
-              <p class="row-links">
-                {project.isPublic === false ? (
-                  <span class="mono">{t("projects.privatePreview", lang)}</span>
-                ) : project.url ? (
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={t("projects.visitSiteLabel", lang, { name: project.name })}
-                    class="btn"
-                  >{t("projects.visitSite", lang)}</a>
-                ) : (
-                  <span class="mono">{t("projects.comingSoon", lang)}</span>
-                )}
-                {project.contact && (
-                  <a
-                    href={`mailto:${project.contact}`}
-                    aria-label={t("projects.emailLabel", lang, { name: project.name, email: project.contact })}
-                    class="row-mail"
-                  >{project.contact}</a>
-                )}
-              </p>
-            </div>
-          </div>
-        </li>
-      ))}
-    </ol>
+  <div class="works" data-works style={`--count: ${list.length}`}>
+    <div class="works-stick">
+      <div class="works-photos" aria-hidden="true" data-work-photos>
+        {projectPhotoKeys.map((key, i) => (
+          <div class:list={["ph", { on: i === 0 }]} data-work-photo><Photo name={key} /></div>
+        ))}
+      </div>
 
-    <div class="peek" aria-hidden="true" data-peek>
-      {projectPhotoKeys.map((key) => (
-        <div class="peek-ph" data-peek-photo><Photo name={key} /></div>
-      ))}
+      <div class="rail" role="group" aria-label={t("projects.listLabel", lang)}>
+        {list.map((project, i) => (
+          <button
+            type="button"
+            class:list={["rail-tick", { on: i === 0 }]}
+            data-work-btn
+            aria-label={project.name}
+            aria-controls={`work-${project.id}`}
+            aria-current={i === 0 ? "true" : undefined}
+          >
+            <span class="rail-label" aria-hidden="true">{project.name}</span>
+          </button>
+        ))}
+      </div>
+      <ol class="scenes" aria-label={t("projects.listLabel", lang)}>
+        {list.map((project, i) => (
+          <li id={`work-${project.id}`} class:list={["scene", { on: i === 0 }]} data-work>
+            <p class="scene-meta mono fx" style="--d: 0">
+              <span>{pad(i + 1)} / {pad(list.length)}</span>
+              {project.japaneseName && <span>{project.japaneseName}</span>}
+              <span class="scene-status">{t(statusMap[project.status], lang)}</span>
+            </p>
+            <h3 class="scene-name" aria-label={project.name}>
+              <span class="mask" aria-hidden="true">
+                {Array.from(project.name).map((ch, ci) => (
+                  <span class="ch" style={`--i: ${ci}`}>{ch === " " ? " " : ch}</span>
+                ))}
+              </span>
+            </h3>
+            <p class="scene-desc fx" style="--d: 1">{project.description}</p>
+            <dl class="scene-facts">
+              <div class="fx" style="--d: 2">
+                <dt class="mono">{t("projects.stack", lang)}</dt>
+                <dd>{project.tech.join(" / ")}</dd>
+              </div>
+              <div class="fx" style="--d: 3">
+                <dt class="mono">{t("projects.features", lang)}</dt>
+                <dd>{project.features.join(" · ")}</dd>
+              </div>
+            </dl>
+            <p class="scene-links fx" style="--d: 4">
+              {project.isPublic === false ? (
+                <span>{t("projects.privatePreview", lang)}</span>
+              ) : project.url ? (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t("projects.visitSiteLabel", lang, { name: project.name })}
+                  class="scene-site"
+                >{t("projects.visitSite", lang)}</a>
+              ) : (
+                <span>{t("projects.comingSoon", lang)}</span>
+              )}
+              {project.contact && (
+                <a
+                  href={`mailto:${project.contact}`}
+                  aria-label={t("projects.emailLabel", lang, { name: project.name, email: project.contact })}
+                  class="scene-mail"
+                >{project.contact}</a>
+              )}
+            </p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="works-progress" aria-hidden="true"><span></span></div>
     </div>
   </div>
 </section>
