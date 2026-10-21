@@ -72,14 +72,18 @@ export function initCinematic() {
 
   // Scene photos sit fully clipped until their cut, so lazy loading never sees them.
   // Fetch the current theme's set once the stage is near, and the other set if the theme flips.
+  // Decode them up front too, so a cut that shows a photo for the first time doesn't stall the scroll.
   if (works && photoLayers.length) {
     let near = false;
     const loadScenePhotos = () => {
       const theme = document.documentElement.classList.contains("dark") ? ".photo-dark" : ".photo-light";
-      photoLayers.forEach((layer) => {
+      // One decode at a time, so the work never piles up into a stall of its own.
+      photoLayers.reduce<Promise<void>>((queue, layer) => {
         const img = layer.querySelector<HTMLImageElement>(theme);
-        if (img) img.loading = "eager";
-      });
+        if (!img) return queue;
+        img.loading = "eager";
+        return queue.then(() => img.decode().catch(() => {}));
+      }, Promise.resolve());
     };
     const nearObserver = new IntersectionObserver(
       ([entry]) => {
