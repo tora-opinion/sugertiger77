@@ -43,7 +43,7 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <meta name="twitter:image" content={new URL("/og-image.png", Astro.site).href} />
     <script is:inline>
       document.documentElement.classList.add('js');
-      // The opening loader plays once per visit; skip it for repeat visits and reduced motion.
+      // The film opening plays once per visit; skip it for repeat visits and reduced motion.
       try {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || sessionStorage.getItem('intro-played')) {
           document.documentElement.classList.add('is-open', 'intro-done');
@@ -75,15 +75,16 @@ const altPath = lang === "en" ? "/ja/" : "/";
   </head>
   <body class="min-h-screen">
     <a href="#main-content" class="skip-link">{t("a11y.skipToContent", lang)}</a>
-    <div class="loader" aria-hidden="true">
-      <i class="loader-panel loader-top"></i>
-      <i class="loader-panel loader-bottom"></i>
-      <span class="loader-corner tl"></span><span class="loader-corner tr"></span>
-      <span class="loader-corner bl"></span><span class="loader-corner br"></span>
-      <span class="loader-gate" data-loader-gate></span>
-      <span class="loader-title mono" data-loader-title>sugertiger77</span>
-      <span class="loader-count mono" data-loader-count>000</span>
-      <span class="loader-caption mono">{title}</span>
+    <div class="opening" aria-hidden="true">
+      <i class="opening-black"></i>
+      <i class="opening-scrim"></i>
+      <div class="credits">
+        <p class="credit credit-1">sugertiger77 <span>presents</span></p>
+        <p class="credit credit-2">{t("hero.subtitle", lang)}</p>
+      </div>
+      <i class="flare"></i>
+      <i class="opening-bar top"></i>
+      <i class="opening-bar bottom"></i>
     </div>
     <div class="grain" aria-hidden="true"></div>
     <slot />
@@ -104,54 +105,36 @@ const altPath = lang === "en" ? "/ja/" : "/";
       }
     </script>
     <script is:inline>
-      // Opening loader: the gate line and counter follow the real load of the hero photo and fonts.
+      // Film opening: fade up inside a letterbox, two credits, then a flare cuts to the full frame.
+      // Any click, key, wheel or touch skips straight to the end.
       (function () {
         var root = document.documentElement;
         if (root.classList.contains('is-open')) return;
-        var count = document.querySelector('[data-loader-count]');
-        var title = document.querySelector('[data-loader-title]');
-        var gate = document.querySelector('[data-loader-gate]');
-        var word = 'sugertiger77';
-        var glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/#*+';
+        var events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+        var timers = [];
+        var started = false;
+        var finished = false;
+        var finish = function () {
+          if (finished) return;
+          finished = true;
+          timers.forEach(clearTimeout);
+          events.forEach(function (name) { window.removeEventListener(name, finish); });
+          root.classList.add('op-1', 'op-2', 'is-open');
+          setTimeout(function () { root.classList.add('intro-done'); }, 1700);
+        };
+        var start = function () {
+          if (started || finished) return;
+          started = true;
+          timers.push(setTimeout(function () { root.classList.add('op-1'); }, 120));
+          timers.push(setTimeout(function () { root.classList.add('op-2'); }, 1900));
+          timers.push(setTimeout(finish, 3600));
+        };
+        events.forEach(function (name) { window.addEventListener(name, finish, { passive: true }); });
+        // Start once the hero photo can actually fade up, but never wait longer than 1.5s.
         var hero = document.querySelector(root.classList.contains('dark') ? '.hero-bg .photo-dark' : '.hero-bg .photo-light');
-        var waits = [document.fonts ? document.fonts.ready : Promise.resolve()];
-        if (hero && hero.decode) waits.push(hero.decode().catch(function () {}));
-        var ready = false;
-        var opened = false;
-        Promise.all(waits).then(function () { ready = true; });
-        var start = performance.now();
-        var shown = 0;
-        var tick = 0;
-        var open = function () {
-          if (opened) return;
-          opened = true;
-          if (title) title.textContent = word;
-          if (count) count.textContent = '100';
-          if (gate) gate.style.transform = 'scaleX(1)';
-          root.classList.add('is-ready');
-          setTimeout(function () { root.classList.add('is-open'); }, 600);
-          setTimeout(function () { root.classList.add('intro-done'); }, 2400);
-        };
-        // Never hold the page hostage: open after 4s whatever happens.
-        setTimeout(open, 4000);
-        var frame = function (now) {
-          if (opened) return;
-          var t = (now - start) / 1000;
-          var target = ready && t > 1.3 ? 1 : 0.88 * (1 - Math.exp(-t * 1.5));
-          shown += (target - shown) * 0.09;
-          if (target === 1 && shown > 0.995) shown = 1;
-          if (count) count.textContent = String(Math.round(shown * 100)).padStart(3, '0');
-          if (gate) gate.style.transform = 'scaleX(' + shown + ')';
-          if (title && tick++ % 3 === 0) {
-            var fixed = Math.floor(shown * word.length);
-            var text = word.slice(0, fixed);
-            for (var i = fixed; i < word.length; i++) text += glyphs[Math.floor(Math.random() * glyphs.length)];
-            title.textContent = text;
-          }
-          if (shown === 1) open();
-          else requestAnimationFrame(frame);
-        };
-        requestAnimationFrame(frame);
+        if (hero && hero.decode) hero.decode().then(start, start);
+        else start();
+        setTimeout(start, 1500);
       })();
     </script>
     <script>
