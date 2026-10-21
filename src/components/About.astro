@@ -1,5 +1,6 @@
 ---
 import TechBadge from "./TechBadge.astro";
+import { facts } from "../data/facts";
 import { getLang, t } from "../i18n/utils";
 
 const lang = getLang(Astro.currentLocale);
@@ -8,6 +9,12 @@ const techStack = [
   "Swift / SwiftUI", "TypeScript", "React", "Prisma", "Stripe",
   "Tailwind CSS", "Astro",
 ];
+const factRows = [
+  ["facts.products", facts.products],
+  ["facts.inDevelopment", facts.inDevelopment],
+  ["facts.domains", facts.domains],
+  ["facts.tools", facts.tools],
+] as const;
 // Japanese lights up character by character, English word by word.
 const description = t("about.description", lang);
 const units = lang === "ja" ? Array.from(description) : description.split(/(\s+)/);
@@ -19,6 +26,14 @@ const units = lang === "ja" ? Array.from(description) : description.split(/(\s+)
   <p class="intro-text" data-reveal>
     {units.map((unit) => (/^\s+$/.test(unit) ? unit : <span class="reveal-word">{unit}</span>))}
   </p>
+  <dl class="facts" aria-label={t("facts.label", lang)}>
+    {factRows.map(([key, value], i) => (
+      <div class="animate-on-scroll animate-fade-in-up" style={`animation-delay: ${i * 0.08}s`}>
+        <dt class="mono">{t(key, lang)}</dt>
+        <dd>{String(value).padStart(2, "0")}</dd>
+      </div>
+    ))}
+  </dl>
   <ul class="stack" aria-label={t("about.stackLabel", lang)}>
     {techStack.map((tech, i) => (
       <li class="animate-on-scroll animate-scale-in" style={`animation-delay: ${0.1 + i * 0.04}s`}>

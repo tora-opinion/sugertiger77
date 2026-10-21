@@ -62,6 +62,36 @@ export function initCinematic() {
       setScene(i);
     });
   });
+  // Lineup tiles jump straight to their scene inside the pinned stage.
+  document.querySelectorAll<HTMLElement>("[data-work-jump]").forEach((tile) => {
+    tile.addEventListener("click", (e) => {
+      const i = Number(tile.dataset.workJump);
+      // Short viewports show the scenes stacked, where the plain anchor already works.
+      if (!works || !scenes[i] || window.matchMedia("(max-height: 600px)").matches) return;
+      e.preventDefault();
+      // Focus the scene's heading once the scroll has landed, so it is never hidden mid-way.
+      // If the reader takes over (wheel, touch, keys), drop the jump and let the scroll position decide.
+      const target = sceneScrollTop(i);
+      const started = performance.now();
+      const takeover = ["wheel", "touchstart", "keydown"] as const;
+      let interrupted = false;
+      const interrupt = () => (interrupted = true);
+      takeover.forEach((type) => window.addEventListener(type, interrupt, { passive: true }));
+      const waitForLanding = () => {
+        const landed = Math.abs(window.scrollY - target) <= 4;
+        if (!landed && !interrupted && performance.now() - started < 5000) {
+          setTimeout(waitForLanding, 100);
+          return;
+        }
+        takeover.forEach((type) => window.removeEventListener(type, interrupt));
+        if (!landed || interrupted) return;
+        setScene(i);
+        scenes[i].querySelector<HTMLElement>("[data-work-heading]")?.focus({ preventScroll: true });
+      };
+      window.scrollTo({ top: target, behavior: reduceMotion ? "auto" : "smooth" });
+      waitForLanding();
+    });
+  });
   // Keyboard users tabbing into a hidden scene's link jump to that scene.
   scenes.forEach((scene, i) => {
     scene.addEventListener("focusin", () => {

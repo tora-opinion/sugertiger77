@@ -54,7 +54,7 @@ const statusMap = {
               {project.japaneseName && <span>{project.japaneseName}</span>}
               <span class="scene-status">{t(statusMap[project.status], lang)}</span>
             </p>
-            <h3 class="scene-name" aria-label={project.name}>
+            <h3 class="scene-name" aria-label={project.name} tabindex="-1" data-work-heading>
               <span class="mask" aria-hidden="true">
                 {Array.from(project.name).map((ch, ci) => (
                   <span class="ch" style={`--i: ${ci}`}>{ch === " " ? " " : ch}</span>
