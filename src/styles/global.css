@@ -372,6 +372,8 @@
     .hero-sub > *,
     .hero::before,
     .hero-bg {
+      /* Firefox needs a duration before it applies a scroll timeline */
+      animation-duration: 1ms;
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: scroll(root);
