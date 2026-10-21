@@ -70,16 +70,26 @@ export function initCinematic() {
       if (!works || !scenes[i] || window.matchMedia("(max-height: 600px)").matches) return;
       e.preventDefault();
       // Focus the scene's heading once the scroll has landed, so it is never hidden mid-way.
-      let done = false;
-      const land = () => {
-        if (done) return;
-        done = true;
+      // If the reader takes over (wheel, touch, keys), drop the jump and let the scroll position decide.
+      const target = sceneScrollTop(i);
+      const started = performance.now();
+      const takeover = ["wheel", "touchstart", "keydown"] as const;
+      let interrupted = false;
+      const interrupt = () => (interrupted = true);
+      takeover.forEach((type) => window.addEventListener(type, interrupt, { passive: true }));
+      const waitForLanding = () => {
+        const landed = Math.abs(window.scrollY - target) <= 4;
+        if (!landed && !interrupted && performance.now() - started < 5000) {
+          setTimeout(waitForLanding, 100);
+          return;
+        }
+        takeover.forEach((type) => window.removeEventListener(type, interrupt));
+        if (!landed || interrupted) return;
         setScene(i);
         scenes[i].querySelector<HTMLElement>("[data-work-heading]")?.focus({ preventScroll: true });
       };
-      window.addEventListener("scrollend", land, { once: true });
-      setTimeout(land, reduceMotion ? 50 : 1500);
-      window.scrollTo({ top: sceneScrollTop(i), behavior: reduceMotion ? "auto" : "smooth" });
+      window.scrollTo({ top: target, behavior: reduceMotion ? "auto" : "smooth" });
+      waitForLanding();
     });
   });
   // Keyboard users tabbing into a hidden scene's link jump to that scene.
