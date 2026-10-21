@@ -32,6 +32,20 @@ const statusMap = {
         ))}
       </div>
 
+      <div class="rail" role="group" aria-label={t("projects.listLabel", lang)}>
+        {list.map((project, i) => (
+          <button
+            type="button"
+            class:list={["rail-tick", { on: i === 0 }]}
+            data-work-btn
+            aria-label={project.name}
+            aria-controls={`work-${project.id}`}
+            aria-current={i === 0 ? "true" : undefined}
+          >
+            <span class="rail-label" aria-hidden="true">{project.name}</span>
+          </button>
+        ))}
+      </div>
       <ol class="scenes" aria-label={t("projects.listLabel", lang)}>
         {list.map((project, i) => (
           <li id={`work-${project.id}`} class:list={["scene", { on: i === 0 }]} data-work>
@@ -84,19 +98,6 @@ const statusMap = {
         ))}
       </ol>
 
-      <div class="rail" role="group" aria-label={t("projects.listLabel", lang)}>
-        {list.map((project, i) => (
-          <button
-            type="button"
-            class:list={["rail-tick", { on: i === 0 }]}
-            data-work-btn
-            aria-controls={`work-${project.id}`}
-            aria-current={i === 0 ? "true" : undefined}
-          >
-            <span class="rail-label">{project.name}</span>
-          </button>
-        ))}
-      </div>
       <div class="works-progress" aria-hidden="true"><span></span></div>
     </div>
   </div>

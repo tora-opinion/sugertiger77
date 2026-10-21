@@ -73,25 +73,30 @@ export function initCinematic() {
   let marqueeX = 0;
   let velocity = 0;
   let lastY = window.scrollY;
-  let marqueeVisible = false;
+  let marqueeFrame = 0;
   if (marquee && !reduceMotion) {
-    new IntersectionObserver(([entry]) => {
-      marqueeVisible = entry.isIntersecting;
-    }).observe(marquee);
     const loop = () => {
       const y = window.scrollY;
       velocity += (y - lastY - velocity) * 0.12;
       lastY = y;
-      if (marqueeVisible) {
-        const half = marquee.scrollWidth / 2;
-        marqueeX -= 0.7 + Math.abs(velocity) * 0.35;
-        if (half > 0 && -marqueeX >= half) marqueeX += half;
-        const skew = clamp(velocity * -0.25, -14, 14);
-        marquee.style.transform = `translate3d(${marqueeX}px, 0, 0) skewX(${skew}deg)`;
-      }
-      requestAnimationFrame(loop);
+      const half = marquee.scrollWidth / 2;
+      marqueeX -= 0.7 + Math.abs(velocity) * 0.35;
+      if (half > 0 && -marqueeX >= half) marqueeX += half;
+      const skew = clamp(velocity * -0.25, -14, 14);
+      marquee.style.transform = `translate3d(${marqueeX}px, 0, 0) skewX(${skew}deg)`;
+      marqueeFrame = requestAnimationFrame(loop);
     };
-    requestAnimationFrame(loop);
+    // Only animate while the marquee is on screen.
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !marqueeFrame) {
+        lastY = window.scrollY;
+        velocity = 0;
+        marqueeFrame = requestAnimationFrame(loop);
+      } else if (!entry.isIntersecting && marqueeFrame) {
+        cancelAnimationFrame(marqueeFrame);
+        marqueeFrame = 0;
+      }
+    }).observe(marquee);
   }
 
   // ---------- scroll frame ----------

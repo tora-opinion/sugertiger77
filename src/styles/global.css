@@ -245,7 +245,7 @@
 
 .grain {
   position: fixed;
-  inset: -50%;
+  inset: -10%;
   z-index: 110;
   pointer-events: none;
   opacity: 0.06;
@@ -255,10 +255,10 @@
 .dark .grain { opacity: 0.09; }
 @keyframes grain {
   0% { transform: translate(0, 0); }
-  20% { transform: translate(-6%, 4%); }
-  40% { transform: translate(5%, -7%); }
-  60% { transform: translate(-3%, 8%); }
-  80% { transform: translate(7%, 2%); }
+  20% { transform: translate(-4%, 3%); }
+  40% { transform: translate(3%, -5%); }
+  60% { transform: translate(-2%, 5%); }
+  80% { transform: translate(5%, 1%); }
   100% { transform: translate(0, 0); }
 }
 
@@ -569,6 +569,9 @@
   visibility: hidden;
   transition: visibility 0s 0.9s;
 }
+.scene:not(.on) {
+  pointer-events: none;
+}
 .scene.on {
   visibility: visible;
   transition-delay: 0s;
@@ -775,6 +778,7 @@ html:not(.js) .fx {
   transform: none;
   filter: none;
 }
+html:not(.js) .final { --fp: 1; }
 html:not(.js) .rail,
 html:not(.js) .works-progress { display: none; }
 
