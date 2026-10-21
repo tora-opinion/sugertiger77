@@ -1,5 +1,5 @@
-// Scroll-linked motion: hero dispersal, word reveal, expanding frame, project scenes,
-// velocity-driven marquee and the photo-filled closing title.
+// Scroll-linked motion: hero dispersal, word reveal, expanding frame, the project index
+// (accordion + cursor-trailing photo), velocity-driven marquee and the photo-filled closing title.
 const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -15,59 +15,65 @@ export function initCinematic() {
   const frame = expand?.querySelector<HTMLElement>("[data-expand-frame]");
   const frameImgs = Array.from(frame?.querySelectorAll<HTMLElement>(".photo") ?? []);
   const caption = expand?.querySelector<HTMLElement>("[data-expand-cap]");
-  const works = document.querySelector<HTMLElement>("[data-works]");
-  const scenes = Array.from(works?.querySelectorAll<HTMLElement>("[data-work]") ?? []);
-  const ticks = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-btn]") ?? []);
-  const photoHost = works?.querySelector<HTMLElement>("[data-work-photos]");
-  const photoLayers = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-photo]") ?? []);
+  const index = document.querySelector<HTMLElement>("[data-index]");
+  const rows = Array.from(index?.querySelectorAll<HTMLElement>("[data-row]") ?? []);
+  const peek = index?.querySelector<HTMLElement>("[data-peek]");
+  const peekPhotos = Array.from(peek?.querySelectorAll<HTMLElement>("[data-peek-photo]") ?? []);
   const finale = document.querySelector<HTMLElement>("[data-final]");
   const marquee = document.querySelector<HTMLElement>(".marquee-track");
 
-  // ---------- project scenes ----------
-  let current = 0;
-  let currentPhoto = 0;
-  const setScene = (index: number) => {
-    if (index === current) return;
-    const forward = index > current;
-    current = index;
-    scenes.forEach((scene, i) => {
-      scene.classList.toggle("on", i === index);
-      scene.classList.toggle("past", i < index);
-    });
-    ticks.forEach((tick, i) => {
-      tick.classList.toggle("on", i === index);
-      if (i === index) tick.setAttribute("aria-current", "true");
-      else tick.removeAttribute("aria-current");
-    });
-    const nextPhoto = index % Math.max(photoLayers.length, 1);
-    if (nextPhoto !== currentPhoto && photoLayers.length) {
-      photoHost?.setAttribute("data-dir", forward ? "down" : "up");
-      photoLayers.forEach((layer, i) => {
-        layer.classList.toggle("prev", i === currentPhoto);
-        layer.classList.toggle("on", i === nextPhoto);
-      });
-      currentPhoto = nextPhoto;
-    }
+  // ---------- project index: one row open at a time ----------
+  const setOpen = (row: HTMLElement, open: boolean) => {
+    row.classList.toggle("open", open);
+    row.querySelector("[data-row-btn]")?.setAttribute("aria-expanded", String(open));
+    const body = row.querySelector<HTMLElement>("[data-row-body]");
+    if (body) body.inert = !open;
   };
+  rows.forEach((row) => {
+    setOpen(row, false);
+    row.querySelector("[data-row-btn]")?.addEventListener("click", () => {
+      const open = !row.classList.contains("open");
+      rows.forEach((other) => other !== row && setOpen(other, false));
+      setOpen(row, open);
+    });
+  });
 
-  const sceneScrollTop = (index: number) => {
-    if (!works) return 0;
-    const total = works.offsetHeight - window.innerHeight;
-    const top = works.getBoundingClientRect().top + window.scrollY;
-    return top + total * ((index + 0.5) / scenes.length);
-  };
-  ticks.forEach((tick, i) => {
-    tick.addEventListener("click", () => {
-      window.scrollTo({ top: sceneScrollTop(i), behavior: reduceMotion ? "auto" : "smooth" });
-      setScene(i);
+  // ---------- photo trailing the cursor over the index ----------
+  if (index && peek && peekPhotos.length && !reduceMotion && window.matchMedia("(hover: hover)").matches) {
+    let tx = 0;
+    let ty = 0;
+    let x = 0;
+    let y = 0;
+    let peekFrame = 0;
+    const follow = () => {
+      x += (tx - x) * 0.14;
+      y += (ty - y) * 0.14;
+      const tilt = clamp((tx - x) * 0.04, -8, 8);
+      peek.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${tilt}deg)`;
+      peekFrame = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(follow) : 0;
+    };
+    rows.forEach((row) => {
+      const head = row.querySelector<HTMLElement>("[data-row-btn]");
+      head?.addEventListener("pointerenter", (e) => {
+        // An open row is for reading; keep the photo off it.
+        if (row.classList.contains("open")) return;
+        if (!peek.classList.contains("on")) {
+          x = tx = e.clientX;
+          y = ty = e.clientY;
+        }
+        const n = Number(row.dataset.photo ?? 0);
+        peekPhotos.forEach((ph, i) => ph.classList.toggle("on", i === n));
+        peek.classList.add("on");
+      });
+      head?.addEventListener("pointerleave", () => peek.classList.remove("on"));
+      head?.addEventListener("click", () => peek.classList.remove("on"));
     });
-  });
-  // Keyboard users tabbing into a hidden scene's link jump to that scene.
-  scenes.forEach((scene, i) => {
-    scene.addEventListener("focusin", () => {
-      if (i !== current) window.scrollTo({ top: sceneScrollTop(i), behavior: "auto" });
+    index.addEventListener("pointermove", (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      if (!peekFrame) peekFrame = requestAnimationFrame(follow);
     });
-  });
+  }
 
   // ---------- marquee driven by scroll velocity ----------
   let marqueeX = 0;
@@ -103,13 +109,6 @@ export function initCinematic() {
   const update = () => {
     const vh = window.innerHeight;
     header?.setAttribute("data-scrolled", String(window.scrollY > 24));
-
-    if (works && scenes.length) {
-      const r = works.getBoundingClientRect();
-      const p = clamp(-r.top / Math.max(works.offsetHeight - vh, 1));
-      works.style.setProperty("--wp", p.toFixed(4));
-      setScene(Math.min(scenes.length - 1, Math.floor(p * scenes.length)));
-    }
 
     if (reduceMotion) return;
 

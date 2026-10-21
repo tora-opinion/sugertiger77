@@ -19,8 +19,8 @@ export const translations = {
   "theme.useLight": { en: "Use light mode", ja: "ライトモードにする" },
   "lang.switch": { en: "日本語", ja: "English" },
   "hero.subtitle": {
-    en: "Full-stack developer crafting AI-powered products",
-    ja: "AI搭載プロダクトを開発するフルスタックエンジニア",
+    en: "Full-stack developer, building AI-powered products.",
+    ja: "AIを組み込んだプロダクトを、つくっています。",
   },
   "hero.platforms": {
     en: "Cloudflare · Vercel · Supabase · AWS",
@@ -36,10 +36,9 @@ export const translations = {
   "hero.viewProjects": { en: "View Projects ↓", ja: "プロジェクトを見る ↓" },
   "about.title": { en: "About", ja: "About" },
   "about.description": {
-    en: "I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms. Currently developing 10 products across education, fintech, cloud infrastructure, and creative tooling.",
-    ja: "行動経済学ツールからマルチAIプラットフォームまで、AIを活用したWebアプリ・モバイルアプリを開発しています。教育・フィンテック・クラウドインフラ・クリエイティブツールの10プロダクトを開発中。",
+    en: "I build AI-powered web and mobile apps — a screen-time tool grounded in behavioral economics, a platform that brings several AIs together, a shield for illustrators' style. Ten are in development right now, across education, fintech, cloud infrastructure and creative tooling.",
+    ja: "AIを活かしたWebアプリとモバイルアプリをつくっています。行動経済学でスマホ依存に向き合うアプリ、複数のAIをひとつにまとめる基盤、イラストの画風を守るサービス。いま開発中のものは10本。教育、フィンテック、クラウドインフラ、クリエイティブツールにまたがります。",
   },
-  "about.stackLabel": { en: "Tech stack", ja: "使用技術" },
   "projects.listLabel": { en: "Project list", ja: "プロジェクト一覧" },
   "projects.stack": { en: "Stack", ja: "技術" },
   "projects.features": { en: "Features", ja: "主な機能" },
@@ -47,8 +46,8 @@ export const translations = {
   "footer.photosOn": { en: "on Unsplash", ja: "（Unsplash）" },
   "projects.title": { en: "Projects", ja: "Projects" },
   "projects.subtitle": {
-    en: "Currently building 10 products across education, fintech, cloud infrastructure, and creative tooling.",
-    ja: "教育・フィンテック・クラウドインフラ・クリエイティブツールの10プロダクトを開発中。",
+    en: "Ten products. All of them in development.",
+    ja: "10のプロダクト。すべて、開発中。",
   },
   "projects.visitSite": { en: "Visit Site ↗", ja: "サイトを見る ↗" },
   "projects.comingSoon": { en: "Coming soon", ja: "準備中" },
@@ -61,13 +60,23 @@ export const translations = {
     en: "Email the {name} team at {email}",
     ja: "{name}チームへメール（{email}）",
   },
+  "projects.hint": {
+    en: "Select a name to open its details.",
+    ja: "名前を押すと、詳細が開きます。",
+  },
+  "stack.title": { en: "Stack", ja: "Stack" },
+  "stack.lead": {
+    en: "What the ten products are built on. The number beside each tool is how many of them use it.",
+    ja: "10のプロダクトを支える道具。右の数字は、そのうち何本で使っているか。",
+  },
+  "stack.count": { en: "{count} of {total} products", ja: "{total}本中{count}本" },
   "status.inDevelopment": { en: "In Development", ja: "開発中" },
   "status.live": { en: "Live", ja: "公開中" },
   "status.beta": { en: "Beta", ja: "ベータ" },
-  "contact.title": { en: "Get in Touch", ja: "お問い合わせ" },
+  "contact.title": { en: "Let's talk.", ja: "話しましょう。" },
   "contact.subtitle": {
-    en: "Interested in collaboration? Feel free to reach out.",
-    ja: "ご興味がありましたら、お気軽にご連絡ください。",
+    en: "Work, collaboration, or a question about one of the products — send a note anytime.",
+    ja: "お仕事のご相談、協業、各プロダクトへのご質問など。お気軽にどうぞ。",
   },
   "contact.emailLabel": {
     en: "Email admin@sugertiger77.com",
