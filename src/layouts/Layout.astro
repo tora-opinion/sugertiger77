@@ -29,7 +29,7 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL("/og-image.png", Astro.site).href} />
@@ -41,8 +41,8 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL("/og-image.png", Astro.site).href} />
-    <noscript><style>.animate-on-scroll { opacity: 1 !important; }</style></noscript>
     <script is:inline>
+      document.documentElement.classList.add('js');
       try {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
@@ -63,7 +63,7 @@ const altPath = lang === "en" ? "/ja/" : "/";
       ]
     })} />
   </head>
-  <body class="min-h-screen bg-white text-gray-900 antialiased transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
+  <body class="min-h-screen">
     <a href="#main-content" class="skip-link">{t("a11y.skipToContent", lang)}</a>
     <slot />
     <script is:inline>
@@ -81,6 +81,10 @@ const altPath = lang === "en" ? "/ja/" : "/";
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         animatedElements.forEach((element) => observer.observe(element));
       }
+    </script>
+    <script>
+      import { initCinematic } from "../scripts/cinematic";
+      initCinematic();
     </script>
   </body>
 </html>

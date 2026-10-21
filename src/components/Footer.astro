@@ -1,12 +1,19 @@
 ---
+import { photos } from "../data/photos";
 import { getLang, t } from "../i18n/utils";
 const lang = getLang(Astro.currentLocale);
 const year = new Date().getFullYear().toString();
+const credits = Object.values(photos).flatMap((slot) => [slot.light, slot.dark]);
 ---
-<footer class="border-t border-gray-200 dark:border-gray-800 py-8">
-  <div class="max-w-5xl mx-auto px-6 text-center">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-      {t("footer.rights", lang, { year })}
-    </p>
-  </div>
+<footer class="site-footer">
+  <p>{t("footer.rights", lang, { year })}</p>
+  <p class="credit">
+    {t("footer.photos", lang)}:{" "}
+    {credits.map((photo, i) => (
+      <Fragment>
+        <a href={`https://unsplash.com/photos/${photo.id}`} target="_blank" rel="noopener noreferrer">{photo.author}</a>{i < credits.length - 1 ? ", " : " "}
+      </Fragment>
+    ))}
+    {t("footer.photosOn", lang)}
+  </p>
 </footer>

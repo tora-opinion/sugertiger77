@@ -8,18 +8,18 @@ const homePath = lang === "ja" ? "/ja/" : "/";
 const sectionHref = (section: string) => `${homePath}#${section}`;
 ---
 
-<header class="site-header fixed top-0 left-0 right-0 z-50 border-b border-gray-200/70 bg-white/90 backdrop-blur-md dark:border-gray-800/70 dark:bg-gray-950/90">
-  <nav aria-label="Primary" class="site-nav mx-auto flex min-h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-    <a href={homePath} aria-current="page" class="inline-flex min-h-11 items-center rounded-md text-lg font-bold tracking-tight text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-gray-100">
+<header class="site-header fixed top-0 left-0 right-0 z-50">
+  <nav aria-label="Primary" class="site-nav flex min-h-16 items-center justify-between px-4 sm:px-[clamp(20px,4vw,56px)]">
+    <a href={homePath} aria-current="page" class="logo rounded-md">
       sugertiger77
     </a>
-    <div class="flex items-center gap-1 sm:gap-2">
-      <a href={sectionHref("about")} data-section-link="about" class="hidden min-h-11 items-center rounded-md px-2 text-sm text-gray-600 transition-colors hover:text-gray-900 aria-[current=location]:font-semibold aria-[current=location]:text-blue-700 sm:inline-flex dark:text-gray-300 dark:hover:text-white dark:aria-[current=location]:text-blue-300">{t("nav.about", lang)}</a>
-      <a href={sectionHref("projects")} data-section-link="projects" class="hidden min-h-11 items-center rounded-md px-2 text-sm text-gray-600 transition-colors hover:text-gray-900 aria-[current=location]:font-semibold aria-[current=location]:text-blue-700 sm:inline-flex dark:text-gray-300 dark:hover:text-white dark:aria-[current=location]:text-blue-300">{t("nav.projects", lang)}</a>
-      <a href={sectionHref("contact")} data-section-link="contact" class="hidden min-h-11 items-center rounded-md px-2 text-sm text-gray-600 transition-colors hover:text-gray-900 aria-[current=location]:font-semibold aria-[current=location]:text-blue-700 sm:inline-flex dark:text-gray-300 dark:hover:text-white dark:aria-[current=location]:text-blue-300">{t("nav.contact", lang)}</a>
+    <div class="flex items-center gap-1 sm:gap-3">
+      <a href={sectionHref("about")} data-section-link="about" class="nav-link max-sm:!hidden">{t("nav.about", lang)}</a>
+      <a href={sectionHref("projects")} data-section-link="projects" class="nav-link max-sm:!hidden">{t("nav.projects", lang)}</a>
+      <a href={sectionHref("contact")} data-section-link="contact" class="nav-link max-sm:!hidden">{t("nav.contact", lang)}</a>
       <details class="relative sm:hidden" data-mobile-nav>
         <summary
-          class="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 [&::-webkit-details-marker]:hidden"
+          class="icon-btn list-none [&::-webkit-details-marker]:hidden"
           aria-label={t("nav.openMenu", lang)}
           aria-expanded="false"
           aria-controls="mobile-navigation"
@@ -33,10 +33,10 @@ const sectionHref = (section: string) => `${homePath}#${section}`;
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" />
           </svg>
         </summary>
-        <div id="mobile-navigation" class="mobile-nav-panel absolute right-0 top-12 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-xl dark:border-gray-700 dark:bg-gray-900">
-          <a href={sectionHref("about")} data-section-link="about" class="flex min-h-11 items-center rounded-lg px-3 text-sm text-gray-700 hover:bg-gray-100 aria-[current=location]:font-semibold aria-[current=location]:text-blue-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:aria-[current=location]:text-blue-300">{t("nav.about", lang)}</a>
-          <a href={sectionHref("projects")} data-section-link="projects" class="flex min-h-11 items-center rounded-lg px-3 text-sm text-gray-700 hover:bg-gray-100 aria-[current=location]:font-semibold aria-[current=location]:text-blue-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:aria-[current=location]:text-blue-300">{t("nav.projects", lang)}</a>
-          <a href={sectionHref("contact")} data-section-link="contact" class="flex min-h-11 items-center rounded-lg px-3 text-sm text-gray-700 hover:bg-gray-100 aria-[current=location]:font-semibold aria-[current=location]:text-blue-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:aria-[current=location]:text-blue-300">{t("nav.contact", lang)}</a>
+        <div id="mobile-navigation" class="mobile-nav-panel absolute right-0 top-12 w-52 overflow-hidden rounded-2xl p-1">
+          <a href={sectionHref("about")} data-section-link="about" class="nav-link">{t("nav.about", lang)}</a>
+          <a href={sectionHref("projects")} data-section-link="projects" class="nav-link">{t("nav.projects", lang)}</a>
+          <a href={sectionHref("contact")} data-section-link="contact" class="nav-link">{t("nav.contact", lang)}</a>
         </div>
       </details>
       <LanguageToggle />

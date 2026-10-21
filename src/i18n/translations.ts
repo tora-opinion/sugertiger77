@@ -38,6 +38,12 @@ export const translations = {
     en: "I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms. Currently developing 10 products across education, fintech, cloud infrastructure, and creative tooling.",
     ja: "行動経済学ツールからマルチAIプラットフォームまで、AIを活用したWebアプリ・モバイルアプリを開発しています。教育・フィンテック・クラウドインフラ・クリエイティブツールの10プロダクトを開発中。",
   },
+  "about.stackLabel": { en: "Tech stack", ja: "使用技術" },
+  "projects.listLabel": { en: "Project list", ja: "プロジェクト一覧" },
+  "projects.stack": { en: "Stack", ja: "技術" },
+  "projects.features": { en: "Features", ja: "主な機能" },
+  "footer.photos": { en: "Photos", ja: "写真" },
+  "footer.photosOn": { en: "on Unsplash", ja: "（Unsplash）" },
   "projects.title": { en: "Projects", ja: "Projects" },
   "projects.subtitle": {
     en: "Currently building 10 products across education, fintech, cloud infrastructure, and creative tooling.",

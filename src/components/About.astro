@@ -8,21 +8,22 @@ const techStack = [
   "Swift / SwiftUI", "TypeScript", "React", "Prisma", "Stripe",
   "Tailwind CSS", "Astro",
 ];
+// Japanese lights up character by character, English word by word.
+const description = t("about.description", lang);
+const units = lang === "ja" ? Array.from(description) : description.split(/(\s+)/);
 ---
-<section id="about" aria-labelledby="about-heading" class="min-h-screen scroll-mt-24 flex items-center">
-  <div class="max-w-5xl mx-auto px-6 w-full">
-    <h2 id="about-heading" tabindex="-1" class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 animate-on-scroll animate-fade-in-up">
-      {t("about.title", lang)}
-    </h2>
-    <p class="mt-8 text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl animate-on-scroll animate-fade-in-up" style="animation-delay: 0.15s">
-      {t("about.description", lang)}
-    </p>
-    <div class="mt-10 flex flex-wrap gap-2">
-      {techStack.map((tech, i) => (
-        <div class="animate-on-scroll animate-scale-in" style={`animation-delay: ${0.2 + i * 0.05}s`}>
-          <TechBadge name={tech} />
-        </div>
-      ))}
-    </div>
-  </div>
+<section id="about" aria-labelledby="about-heading" class="intro">
+  <h2 id="about-heading" tabindex="-1" class="mono mb-9 animate-on-scroll animate-fade-in-up">
+    — {t("about.title", lang)}
+  </h2>
+  <p class="intro-text" data-reveal>
+    {units.map((unit) => (/^\s+$/.test(unit) ? unit : <span class="reveal-word">{unit}</span>))}
+  </p>
+  <ul class="stack" aria-label={t("about.stackLabel", lang)}>
+    {techStack.map((tech, i) => (
+      <li class="animate-on-scroll animate-scale-in" style={`animation-delay: ${0.1 + i * 0.04}s`}>
+        <TechBadge name={tech} />
+      </li>
+    ))}
+  </ul>
 </section>
