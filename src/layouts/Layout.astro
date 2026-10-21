@@ -17,7 +17,7 @@ const altLang = lang === "en" ? "ja" : "en";
 const altPath = lang === "en" ? "/ja/" : "/";
 ---
 <!doctype html>
-<html lang={lang} class="scroll-smooth">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,7 +29,7 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL("/og-image.png", Astro.site).href} />
@@ -41,15 +41,19 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL("/og-image.png", Astro.site).href} />
-    <noscript><style>.animate-on-scroll { opacity: 1 !important; }</style></noscript>
     <script is:inline>
-      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('js');
+      try {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
       }
     </script>
-    <script type="application/ld+json" set:html={JSON.stringify({
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "sugertiger77",
@@ -59,18 +63,28 @@ const altPath = lang === "en" ? "/ja/" : "/";
       ]
     })} />
   </head>
-  <body class="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-300">
+  <body class="min-h-screen">
+    <a href="#main-content" class="skip-link">{t("a11y.skipToContent", lang)}</a>
     <slot />
     <script is:inline>
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-      document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
+      const animatedElements = document.querySelectorAll('.animate-on-scroll');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        animatedElements.forEach((element) => element.classList.add('animate-visible'));
+      } else {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('animate-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        animatedElements.forEach((element) => observer.observe(element));
+      }
+    </script>
+    <script>
+      import { initCinematic } from "../scripts/cinematic";
+      initCinematic();
     </script>
   </body>
 </html>

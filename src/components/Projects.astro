@@ -1,24 +1,60 @@
 ---
 import { projects } from "../i18n/projects";
+import { projectPhotoKeys } from "../data/photos";
 import ProjectCard from "./ProjectCard.astro";
+import Photo from "./Photo.astro";
 import { getLang, t } from "../i18n/utils";
 
 const lang = getLang(Astro.currentLocale);
+const list = projects[lang];
 ---
-<section id="projects" class="py-24 md:py-32 scroll-mt-20">
-  <div class="max-w-5xl mx-auto px-6">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 animate-on-scroll animate-fade-in-up">
-      {t("projects.title", lang)}
-    </h2>
-    <p class="mt-4 text-base text-gray-600 dark:text-gray-400 animate-on-scroll animate-fade-in-up" style="animation-delay: 0.1s">
-      {t("projects.subtitle", lang)}
-    </p>
-    <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-      {projects[lang].map((project, i) => (
-        <div class="animate-on-scroll animate-fade-in-up" style={`animation-delay: ${0.1 + i * 0.15}s`}>
-          <ProjectCard project={project} lang={lang} />
+<section id="projects" aria-labelledby="projects-heading">
+  <div class="expand" data-expand>
+    <div class="expand-stick">
+      <div class="expand-frame" data-expand-frame><Photo name="frame" /></div>
+      <div class="expand-cap" data-expand-cap>
+        <h2 id="projects-heading" tabindex="-1">{t("projects.title", lang)}</h2>
+        <p class="lead">{t("projects.subtitle", lang)}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="works" data-works style={`--count: ${list.length}`}>
+    <div class="works-stick">
+      <div class="works-photos" aria-hidden="true">
+        {projectPhotoKeys.map((key, i) => (
+          <div class:list={["ph", { on: i === 0 }]} data-work-photo><Photo name={key} /></div>
+        ))}
+      </div>
+      <div class="works-inner">
+        <ul class="wl" aria-label={t("projects.listLabel", lang)}>
+          {list.map((project, i) => (
+            <li class:list={{ on: i === 0 }} data-work>
+              <h3>
+                <button type="button" class="wl-btn" data-work-btn aria-expanded={i === 0 ? "true" : "false"} aria-controls={`work-${project.id}`}>
+                  <span class="wl-name">{project.name}</span>
+                  {project.japaneseName && <span class="wl-jp">{project.japaneseName}</span>}
+                </button>
+              </h3>
+              <div class="wl-body">
+                <div>
+                  <p class="wl-desc">{project.description}</p>
+                  <div class="wl-details">
+                    <ProjectCard project={project} lang={lang} />
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div class="panel">
+          {list.map((project, i) => (
+            <div id={`work-${project.id}`} class:list={["pv", { on: i === 0 }]} data-work-view>
+              <ProjectCard project={project} lang={lang} showTitle />
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   </div>
 </section>

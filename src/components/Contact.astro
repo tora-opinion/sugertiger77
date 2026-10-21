@@ -1,37 +1,64 @@
 ---
+import Photo from "./Photo.astro";
 import { getLang, t } from "../i18n/utils";
 const lang = getLang(Astro.currentLocale);
 ---
-<section id="contact" class="py-24 md:py-32 scroll-mt-20">
-  <div class="max-w-3xl mx-auto px-6 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 animate-on-scroll animate-fade-in-up">
+<section id="contact" aria-labelledby="contact-heading" class="final">
+  <div class="final-bg" data-par="0.2"><Photo name="final" /></div>
+  <div class="final-c">
+    <h2 id="contact-heading" tabindex="-1" class="final-title animate-on-scroll animate-fade-in-up">
       {t("contact.title", lang)}
     </h2>
-    <p class="mt-4 text-gray-600 dark:text-gray-400 animate-on-scroll animate-fade-in-up" style="animation-delay: 0.15s">
+    <p class="final-lead animate-on-scroll animate-fade-in-up" style="animation-delay: 0.15s">
       {t("contact.subtitle", lang)}
     </p>
-    <div class="mt-8 animate-on-scroll animate-scale-in" style="animation-delay: 0.25s">
+    <div class="final-btns animate-on-scroll animate-fade-in-up" style="animation-delay: 0.25s">
       <a
         href="mailto:admin@sugertiger77.com"
-        class="inline-flex items-center gap-2 rounded-full bg-gray-900 dark:bg-gray-100 px-6 py-3 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+        aria-label={t("contact.emailLabel", lang)}
+        class="btn"
       >
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg aria-hidden="true" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
         admin@sugertiger77.com
       </a>
-    </div>
-    <div class="mt-6 flex items-center justify-center gap-4 animate-on-scroll animate-fade-in-up" style="animation-delay: 0.35s">
+      <button
+        type="button"
+        data-copy-email="admin@sugertiger77.com"
+        data-success-message={t("contact.copied", lang)}
+        data-failure-message={t("contact.copyFailed", lang)}
+        class="btn btn-ghost"
+      >
+        {t("contact.copyEmail", lang)}
+      </button>
       <a
         href="https://github.com/tora-opinion"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 rounded-full border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        aria-label={t("hero.githubLabel", lang)}
+        class="btn btn-ghost"
       >
-        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+        <svg aria-hidden="true" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
         GitHub
       </a>
-
     </div>
+    <p data-copy-status class="mt-4 min-h-6 text-sm font-medium" role="status" aria-live="polite"></p>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-email]").forEach((button) => {
+    if (button.dataset.bound === "true") return;
+    button.dataset.bound = "true";
+    button.addEventListener("click", async () => {
+      const status = button.closest("section")?.querySelector<HTMLElement>("[data-copy-status]");
+      try {
+        await navigator.clipboard.writeText(button.dataset.copyEmail ?? "");
+        if (status) status.textContent = button.dataset.successMessage ?? "Email copied";
+      } catch {
+        if (status) status.textContent = button.dataset.failureMessage ?? "Select and copy the email address above";
+      }
+    });
+  });
+</script>

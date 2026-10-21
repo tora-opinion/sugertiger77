@@ -1,0 +1,8 @@
+---
+const words = ["Cloudflare", "Vercel", "Supabase", "AWS", "Swift", "Stripe", "TypeScript", "Astro"];
+---
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    {[...words, ...words].map((word) => <span>{word}</span>)}
+  </div>
+</div>
