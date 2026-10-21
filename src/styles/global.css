@@ -1113,6 +1113,7 @@ html:not(.js) .works-progress { display: none; }
   .hero-sub > *,
   .hero-bg .photo,
   .site-nav > *,
+  .tile-ph .photo,
   .scene-name .ch,
   .scene.past .scene-name .ch,
   .fx,

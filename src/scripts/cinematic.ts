@@ -69,9 +69,17 @@ export function initCinematic() {
       // Short viewports show the scenes stacked, where the plain anchor already works.
       if (!works || !scenes[i] || window.matchMedia("(max-height: 600px)").matches) return;
       e.preventDefault();
+      // Focus the scene's heading once the scroll has landed, so it is never hidden mid-way.
+      let done = false;
+      const land = () => {
+        if (done) return;
+        done = true;
+        setScene(i);
+        scenes[i].querySelector<HTMLElement>("[data-work-heading]")?.focus({ preventScroll: true });
+      };
+      window.addEventListener("scrollend", land, { once: true });
+      setTimeout(land, reduceMotion ? 50 : 1500);
       window.scrollTo({ top: sceneScrollTop(i), behavior: reduceMotion ? "auto" : "smooth" });
-      setScene(i);
-      scenes[i].querySelector<HTMLElement>("a, [tabindex]")?.focus({ preventScroll: true });
     });
   });
   // Keyboard users tabbing into a hidden scene's link jump to that scene.
