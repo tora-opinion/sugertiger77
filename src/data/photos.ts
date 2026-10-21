@@ -41,6 +41,30 @@ export const photos = {
     light: { src: "/img/light-p4.webp", id: "R-wQExeiGrc", author: "Rubén García", username: "rubengargar" },
     dark: { src: "/img/dark-p4.webp", id: "phIFdC6lA4E", author: "Benjamin Voros", username: "vorosbenisop" },
   },
+  p5: {
+    light: { src: "/img/light-p5.webp", id: "oiLFf3_C_FU", author: "Red Shuheart", username: "mirrors_are_more_fun" },
+    dark: { src: "/img/dark-p5.webp", id: "oiXkO7p2UfI", author: "Klara Kulikova", username: "kkalerry" },
+  },
+  p6: {
+    light: { src: "/img/light-p6.webp", id: "2XPHSXVT_Ls", author: "Simone Viani", username: "flik185" },
+    dark: { src: "/img/dark-p6.webp", id: "xk1wWf6YPmY", author: "yash rai", username: "yashzucced" },
+  },
+  p7: {
+    light: { src: "/img/light-p7.webp", id: "L7NBzS16kZg", author: "Jason Leung", username: "ninjason" },
+    dark: { src: "/img/dark-p7.webp", id: "okUB5th8QtQ", author: "Beth Stevenson", username: "bthstvn" },
+  },
+  p8: {
+    light: { src: "/img/light-p8.webp", id: "GmcZ_kxKvKA", author: "Pierre Bamin", username: "bamin" },
+    dark: { src: "/img/dark-p8.webp", id: "ZbpWKYQvHoU", author: "Sema Martin", username: "learnmycraft" },
+  },
+  p9: {
+    light: { src: "/img/light-p9.webp", id: "vjz868Cu_QI", author: "Declan Sun", username: "declansun" },
+    dark: { src: "/img/dark-p9.webp", id: "8V9MUCKyPw0", author: "amandazi photography", username: "amandazi_photography" },
+  },
+  p10: {
+    light: { src: "/img/light-p10.webp", id: "sfukhR8hMrg", author: "ayumi kubo", username: "ayumikubo" },
+    dark: { src: "/img/dark-p10.webp", id: "0IvwihAQy5s", author: "Yuya Yoshioka", username: "superyuyakun" },
+  },
   final: {
     light: { src: "/img/light-final.webp", id: "3YrppYQPoCI", author: "Guillaume Galtier", username: "paititi" },
     dark: { src: "/img/dark-final.webp", id: "0289jpHHk0o", author: "Joshua Woroniecki", username: "joshuaworoniecki" },
@@ -49,4 +73,5 @@ export const photos = {
 
 export type PhotoKey = keyof typeof photos;
 
-export const projectPhotoKeys: PhotoKey[] = ["p1", "p2", "p3", "p4"];
+/** One photo per project, in the order of projects.ts. */
+export const projectPhotoKeys: PhotoKey[] = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"];

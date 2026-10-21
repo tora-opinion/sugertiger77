@@ -62,6 +62,18 @@ export function initCinematic() {
       setScene(i);
     });
   });
+  // Lineup tiles jump straight to their scene inside the pinned stage.
+  document.querySelectorAll<HTMLElement>("[data-work-jump]").forEach((tile) => {
+    tile.addEventListener("click", (e) => {
+      const i = Number(tile.dataset.workJump);
+      // Short viewports show the scenes stacked, where the plain anchor already works.
+      if (!works || !scenes[i] || window.matchMedia("(max-height: 600px)").matches) return;
+      e.preventDefault();
+      window.scrollTo({ top: sceneScrollTop(i), behavior: reduceMotion ? "auto" : "smooth" });
+      setScene(i);
+      scenes[i].querySelector<HTMLElement>("a, [tabindex]")?.focus({ preventScroll: true });
+    });
+  });
   // Keyboard users tabbing into a hidden scene's link jump to that scene.
   scenes.forEach((scene, i) => {
     scene.addEventListener("focusin", () => {
