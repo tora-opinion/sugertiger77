@@ -364,6 +364,20 @@
   .scroll-hint { display: none; }
   .hero-title { font-size: 22vw; }
 }
+/* phones and touch screens: animated blur on twelve letters and a full-screen photo
+   is too heavy, so the opening keeps its motion but drops the blur */
+@media (max-width: 900px), (hover: none) {
+  .hero-title .ch,
+  .hero-bg .photo {
+    filter: none;
+  }
+  .hero-title .drift {
+    will-change: transform, opacity;
+  }
+  .grain {
+    animation: none;
+  }
+}
 /* ---------- intro (about) ---------- */
 .intro {
   max-width: 1500px;
@@ -713,6 +727,8 @@
   bottom: 0;
   height: 2px;
   background: var(--line);
+  /* fade out as the last scene ends, so no coloured line trails into the next section */
+  opacity: clamp(0, calc((1 - var(--wp, 0)) * 25), 1);
 }
 .works-progress span {
   display: block;
