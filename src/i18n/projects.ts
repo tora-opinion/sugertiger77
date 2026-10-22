@@ -38,7 +38,7 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "sugupena",
       name: "Sugupena",
-      japaneseName: "スグペナ",
+      japaneseName: "スグペナ！",
       url: "https://sugupena.com",
       description:
         "Behavioral economics-based smartphone addiction management app. Set screen time goals with financial penalties to build better digital habits.",
@@ -131,21 +131,6 @@ export const projects: Record<Locale, Project[]> = {
       status: "In Development",
     },
     {
-      id: "kaihi-os",
-      name: "Kaihi-OS",
-      japaneseName: "会費ペイ",
-      description:
-        "A membership fee collection SaaS for clubs and organizations. It notifies members of fee requests through LINE and streamlines collection and management with Stripe payments and an electronic wallet.",
-      tech: ["Next.js 15", "Prisma", "Auth.js", "Stripe", "LINE API", "Vercel"],
-      features: [
-        "Automated membership fee collection",
-        "LINE notification integration",
-        "Electronic wallet functionality",
-        "PDF report export",
-      ],
-      status: "In Development",
-    },
-    {
       id: "focuspair",
       name: "FocusPair",
       japaneseName: "いっしょロック",
@@ -161,34 +146,6 @@ export const projects: Record<Locale, Project[]> = {
       status: "In Development",
     },
     {
-      id: "styleshield",
-      name: "StyleShield",
-      description:
-        "A cloud service for doujin creators and illustrators that protects their artistic style. It provides processing to protect illustrations from AI style imitation and unauthorized training.",
-      tech: ["Next.js 16", "Supabase", "Stripe", "Cloudflare Pages", "Sharp"],
-      features: [
-        "Artistic style protection pipeline",
-        "GPU processing backend switching",
-        "Stripe payment integration",
-        "Supabase authentication",
-      ],
-      status: "In Development",
-    },
-    {
-      id: "dojinshield",
-      name: "DojinShield",
-      description:
-        "A digital bonus distribution tool for doujin publications with anti-piracy measures. It generates unique watermarked PDFs for each authenticated user and detects unauthorized redistribution.",
-      tech: ["Next.js 16", "Prisma", "pdf-lib", "PostgreSQL"],
-      features: [
-        "Individual watermarked PDF generation",
-        "Claim and redemption management",
-        "Automatic abnormal access detection",
-        "Admin dashboard",
-      ],
-      status: "In Development",
-    },
-    {
       id: "callshield",
       name: "CallShield",
       japaneseName: "迷惑電話対策コンソール",
@@ -200,6 +157,48 @@ export const projects: Record<Locale, Project[]> = {
         "Anonymized data display",
         "Twilio Webhook integration",
         "Payment status synchronization",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "bantou",
+      name: "Bantou",
+      description:
+        "A booking and payment platform for hourly and whole-facility rentals, such as private saunas. A multi-tenant service where each facility takes payments through Stripe Connect.",
+      tech: ["Next.js 15", "Prisma", "PostgreSQL", "Auth.js", "Stripe Connect"],
+      features: [
+        "Hourly and whole-facility booking",
+        "Multi-tenant data isolation with row-level security",
+        "Payment links and POS QR codes",
+        "Authorization holds and no-show charges",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "zerosec-pay",
+      name: "BoothPay",
+      japaneseName: "0秒決済",
+      description:
+        "A cashless payment platform for doujinshi conventions. Buyers finish paying while still waiting in line, saving time for both buyers and circles.",
+      tech: ["Next.js", "TypeScript", "Drizzle ORM", "Neon", "Stripe", "Cloudflare R2"],
+      features: [
+        "Checkout by entering the amount agreed with the circle",
+        "Payment captured only after the in-person handoff",
+        "Payments to each circle's Stripe connected account",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "creator-incentive-market",
+      name: "Creator Market",
+      description:
+        "A digital content marketplace for creators. Its Dynamic Incentive Allocation Engine works back from each creator's desired minimum payout to set sale prices and promotions.",
+      tech: ["Next.js 15", "TypeScript", "Prisma", "PostgreSQL", "Stripe"],
+      features: [
+        "Pricing from the creator's minimum payout",
+        "Price candidate evaluation",
+        "Token-protected file downloads",
+        "Coupon, point and affiliate logic",
       ],
       status: "In Development",
     },
@@ -226,7 +225,7 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "sugupena",
       name: "Sugupena",
-      japaneseName: "スグペナ",
+      japaneseName: "スグペナ！",
       url: "https://sugupena.com",
       description:
         "行動経済学に基づくスマホ依存管理アプリ。スクリーンタイム目標を設定し、金銭的ペナルティでデジタル習慣を改善。",
@@ -319,21 +318,6 @@ export const projects: Record<Locale, Project[]> = {
       status: "In Development",
     },
     {
-      id: "kaihi-os",
-      name: "Kaihi-OS",
-      japaneseName: "会費ペイ",
-      description:
-        "サークル・団体向けの会費徴収SaaS。LINE連携で会員に会費請求を通知し、Stripe決済と電子ウォレット機能で徴収・管理を効率化します。",
-      tech: ["Next.js 15", "Prisma", "Auth.js", "Stripe", "LINE API", "Vercel"],
-      features: [
-        "会費の自動徴収",
-        "LINE連携による通知",
-        "電子ウォレット機能",
-        "PDF帳票出力",
-      ],
-      status: "In Development",
-    },
-    {
       id: "focuspair",
       name: "FocusPair",
       japaneseName: "いっしょロック",
@@ -349,34 +333,6 @@ export const projects: Record<Locale, Project[]> = {
       status: "In Development",
     },
     {
-      id: "styleshield",
-      name: "StyleShield",
-      description:
-        "同人作家・イラストレーター向けの画風保護クラウドサービス。AIによる画風模倣や無断学習からイラストを守る処理を提供します。",
-      tech: ["Next.js 16", "Supabase", "Stripe", "Cloudflare Pages", "Sharp"],
-      features: [
-        "画風保護処理パイプライン",
-        "GPU処理バックエンドの切り替え対応",
-        "Stripe決済連携",
-        "Supabase認証",
-      ],
-      status: "In Development",
-    },
-    {
-      id: "dojinshield",
-      name: "DojinShield",
-      description:
-        "同人誌向けの海賊版対策付き電子特典配布ツール。認証済みユーザーごとに一点物の透かし入りPDFを生成し、不正拡散を検知します。",
-      tech: ["Next.js 16", "Prisma", "pdf-lib", "PostgreSQL"],
-      features: [
-        "透かし入りPDFの個別生成",
-        "クレーム（引き換え）管理",
-        "異常アクセスの自動検知",
-        "管理者ダッシュボード",
-      ],
-      status: "In Development",
-    },
-    {
       id: "callshield",
       name: "CallShield",
       japaneseName: "迷惑電話対策コンソール",
@@ -388,6 +344,48 @@ export const projects: Record<Locale, Project[]> = {
         "匿名化データ表示",
         "Twilio Webhook連携",
         "決済状態の同期",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "bantou",
+      name: "Bantou",
+      description:
+        "プライベートサウナのような時間貸し・一棟貸し施設向けの予約・決済プラットフォーム。複数施設対応のサービスで、各施設がStripe Connectで決済を受け取ります。",
+      tech: ["Next.js 15", "Prisma", "PostgreSQL", "Auth.js", "Stripe Connect"],
+      features: [
+        "時間貸し・一棟貸しの予約",
+        "行レベルセキュリティによる施設ごとのデータ分離",
+        "決済リンク・店頭QR決済",
+        "仮押さえ決済・無断キャンセル時の請求",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "zerosec-pay",
+      name: "BoothPay",
+      japaneseName: "0秒決済",
+      description:
+        "同人誌即売会向けのキャッシュレス決済プラットフォーム。待機列の中で決済を済ませ、購入者とサークルの時間を短縮します。",
+      tech: ["Next.js", "TypeScript", "Drizzle ORM", "Neon", "Stripe", "Cloudflare R2"],
+      features: [
+        "サークルと決めた金額を入力して決済",
+        "手渡し確認後に売上を確定",
+        "各サークルのStripe接続アカウントへの決済",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "creator-incentive-market",
+      name: "Creator Market",
+      description:
+        "クリエイター向けのデジタルコンテンツ販売プラットフォーム。クリエイターの希望最低受取額から逆算して販売価格や販促を決める「Dynamic Incentive Allocation Engine」が中核です。",
+      tech: ["Next.js 15", "TypeScript", "Prisma", "PostgreSQL", "Stripe"],
+      features: [
+        "最低受取額からの価格設定",
+        "価格候補の評価",
+        "トークン付きファイルダウンロード",
+        "クーポン・ポイント・アフィリエイトの仕組み",
       ],
       status: "In Development",
     },
