@@ -24,6 +24,7 @@ const altPath = lang === "en" ? "/ja/" : "/";
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={new URL("/", Astro.site).href} />
     <link rel="alternate" hreflang={altLang} href={new URL(altPath, Astro.site).href} />
     <link rel="alternate" hreflang={lang} href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

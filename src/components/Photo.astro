@@ -9,5 +9,5 @@ const { name, eager = false } = Astro.props;
 const slot = photos[name];
 const loading = eager ? "eager" : "lazy";
 ---
-<img class="photo photo-light" src={slot.light.src} alt="" width="2000" height="1333" loading={loading} decoding="async" fetchpriority={eager ? "high" : undefined} />
+<img class="photo photo-light" src={slot.light.src} alt="" width="2000" height="1333" loading={loading} decoding="async" />
 <img class="photo photo-dark" src={slot.dark.src} alt="" width="2000" height="1333" loading={loading} decoding="async" />
