@@ -62,7 +62,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "idit",
-      name: "IDIT",
+      name: "idit.jp",
       url: "https://idit.jp",
       description:
         "Multi-AI platform for cloud infrastructure, analytics, and AI-powered applications. Integrates multiple AI providers with billing and security.",
@@ -131,21 +131,6 @@ export const projects: Record<Locale, Project[]> = {
       status: "In Development",
     },
     {
-      id: "kaihi-os",
-      name: "Kaihi-OS",
-      japaneseName: "会費ペイ",
-      description:
-        "A membership fee collection SaaS for clubs and organizations. It notifies members of fee requests through LINE and streamlines collection and management with Stripe payments and an electronic wallet.",
-      tech: ["Next.js 15", "Prisma", "Auth.js", "Stripe", "LINE API", "Vercel"],
-      features: [
-        "Automated membership fee collection",
-        "LINE notification integration",
-        "Electronic wallet functionality",
-        "PDF report export",
-      ],
-      status: "In Development",
-    },
-    {
       id: "focuspair",
       name: "FocusPair",
       japaneseName: "いっしょロック",
@@ -157,34 +142,6 @@ export const projects: Record<Locale, Project[]> = {
         "Leave-session detection and notifications",
         "Check-in functionality",
         "Expo push notification integration",
-      ],
-      status: "In Development",
-    },
-    {
-      id: "styleshield",
-      name: "StyleShield",
-      description:
-        "A cloud service for doujin creators and illustrators that protects their artistic style. It provides processing to protect illustrations from AI style imitation and unauthorized training.",
-      tech: ["Next.js 16", "Supabase", "Stripe", "Cloudflare Pages", "Sharp"],
-      features: [
-        "Artistic style protection pipeline",
-        "GPU processing backend switching",
-        "Stripe payment integration",
-        "Supabase authentication",
-      ],
-      status: "In Development",
-    },
-    {
-      id: "dojinshield",
-      name: "DojinShield",
-      description:
-        "A digital bonus distribution tool for doujin publications with anti-piracy measures. It generates unique watermarked PDFs for each authenticated user and detects unauthorized redistribution.",
-      tech: ["Next.js 16", "Prisma", "pdf-lib", "PostgreSQL"],
-      features: [
-        "Individual watermarked PDF generation",
-        "Claim and redemption management",
-        "Automatic abnormal access detection",
-        "Admin dashboard",
       ],
       status: "In Development",
     },
@@ -207,7 +164,7 @@ export const projects: Record<Locale, Project[]> = {
       id: "bantou",
       name: "Bantou",
       description:
-        "A booking and payment platform for hourly and whole-facility rentals, such as private saunas. Rebuilt from Kaihi-OS as a multi-tenant service where each facility takes payments through Stripe Connect.",
+        "A booking and payment platform for hourly and whole-facility rentals, such as private saunas. A multi-tenant service where each facility takes payments through Stripe Connect.",
       tech: ["Next.js 15", "Prisma", "PostgreSQL", "Auth.js", "Stripe Connect"],
       features: [
         "Hourly and whole-facility booking",
@@ -292,7 +249,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "idit",
-      name: "IDIT",
+      name: "idit.jp",
       url: "https://idit.jp",
       description:
         "クラウドインフラ・分析・AIアプリケーションのためのマルチAIプラットフォーム。複数AIプロバイダーを統合し、課金とセキュリティを提供。",
@@ -361,21 +318,6 @@ export const projects: Record<Locale, Project[]> = {
       status: "In Development",
     },
     {
-      id: "kaihi-os",
-      name: "Kaihi-OS",
-      japaneseName: "会費ペイ",
-      description:
-        "サークル・団体向けの会費徴収SaaS。LINE連携で会員に会費請求を通知し、Stripe決済と電子ウォレット機能で徴収・管理を効率化します。",
-      tech: ["Next.js 15", "Prisma", "Auth.js", "Stripe", "LINE API", "Vercel"],
-      features: [
-        "会費の自動徴収",
-        "LINE連携による通知",
-        "電子ウォレット機能",
-        "PDF帳票出力",
-      ],
-      status: "In Development",
-    },
-    {
       id: "focuspair",
       name: "FocusPair",
       japaneseName: "いっしょロック",
@@ -387,34 +329,6 @@ export const projects: Record<Locale, Project[]> = {
         "離脱検知通知",
         "チェックイン機能",
         "Expoプッシュ通知連携",
-      ],
-      status: "In Development",
-    },
-    {
-      id: "styleshield",
-      name: "StyleShield",
-      description:
-        "同人作家・イラストレーター向けの画風保護クラウドサービス。AIによる画風模倣や無断学習からイラストを守る処理を提供します。",
-      tech: ["Next.js 16", "Supabase", "Stripe", "Cloudflare Pages", "Sharp"],
-      features: [
-        "画風保護処理パイプライン",
-        "GPU処理バックエンドの切り替え対応",
-        "Stripe決済連携",
-        "Supabase認証",
-      ],
-      status: "In Development",
-    },
-    {
-      id: "dojinshield",
-      name: "DojinShield",
-      description:
-        "同人誌向けの海賊版対策付き電子特典配布ツール。認証済みユーザーごとに一点物の透かし入りPDFを生成し、不正拡散を検知します。",
-      tech: ["Next.js 16", "Prisma", "pdf-lib", "PostgreSQL"],
-      features: [
-        "透かし入りPDFの個別生成",
-        "クレーム（引き換え）管理",
-        "異常アクセスの自動検知",
-        "管理者ダッシュボード",
       ],
       status: "In Development",
     },
@@ -437,7 +351,7 @@ export const projects: Record<Locale, Project[]> = {
       id: "bantou",
       name: "Bantou",
       description:
-        "プライベートサウナのような時間貸し・一棟貸し施設向けの予約・決済プラットフォーム。Kaihi-OSを土台に作り直した複数施設対応のサービスで、各施設がStripe Connectで決済を受け取ります。",
+        "プライベートサウナのような時間貸し・一棟貸し施設向けの予約・決済プラットフォーム。複数施設対応のサービスで、各施設がStripe Connectで決済を受け取ります。",
       tech: ["Next.js 15", "Prisma", "PostgreSQL", "Auth.js", "Stripe Connect"],
       features: [
         "時間貸し・一棟貸しの予約",

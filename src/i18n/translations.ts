@@ -36,8 +36,8 @@ export const translations = {
   "hero.viewProjects": { en: "View Projects ↓", ja: "プロジェクトを見る ↓" },
   "about.title": { en: "About", ja: "About" },
   "about.description": {
-    en: "I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms. Currently developing 13 products across education, fintech, cloud infrastructure, and creative tooling.",
-    ja: "行動経済学ツールからマルチAIプラットフォームまで、AIを活用したWebアプリ・モバイルアプリを開発しています。教育・フィンテック・クラウドインフラ・クリエイティブツールの13プロダクトを開発中。",
+    en: "I build AI-powered web and mobile applications — from behavioral economics tools to multi-AI platforms. Currently developing 10 products across education, fintech, cloud infrastructure, and creative tooling.",
+    ja: "行動経済学ツールからマルチAIプラットフォームまで、AIを活用したWebアプリ・モバイルアプリを開発しています。教育・フィンテック・クラウドインフラ・クリエイティブツールの10プロダクトを開発中。",
   },
   "about.stackLabel": { en: "Tech stack", ja: "使用技術" },
   "projects.listLabel": { en: "Project list", ja: "プロジェクト一覧" },
@@ -50,8 +50,8 @@ export const translations = {
   },
   "projects.title": { en: "Projects", ja: "Projects" },
   "projects.subtitle": {
-    en: "Currently building 13 products across education, fintech, cloud infrastructure, and creative tooling.",
-    ja: "教育・フィンテック・クラウドインフラ・クリエイティブツールの13プロダクトを開発中。",
+    en: "Currently building 10 products across education, fintech, cloud infrastructure, and creative tooling.",
+    ja: "教育・フィンテック・クラウドインフラ・クリエイティブツールの10プロダクトを開発中。",
   },
   "projects.visitSite": { en: "Visit Site ↗", ja: "サイトを見る ↗" },
   "projects.comingSoon": { en: "Coming soon", ja: "準備中" },

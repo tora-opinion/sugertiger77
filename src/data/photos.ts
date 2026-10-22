@@ -26,52 +26,52 @@ export const photos = {
     dark: { src: "/img/dark-frame.webp", id: "t8XP7MBLxsw", author: "Zac Ong", username: "zacong" },
   },
   p1: {
-    light: { src: "/img/light-p1.webp", id: "PrZw3_3xUxI", author: "Bernard Hermant", username: "bernardhermant" },
-    dark: { src: "/img/dark-p1.webp", id: "NqOInJ-ttqM", author: "Marc-Olivier Jodoin", username: "marcojodoin" },
+    light: { src: "/img/light-studyai.webp", id: "s4GL0XwPSIU", author: "Igor Starkov", username: "igorstarkoff" },
+    dark: { src: "/img/dark-studyai.webp", id: "iLMvsknade4", author: "Mykyta Kravčenko", username: "makitrenko" },
   },
   p2: {
-    light: { src: "/img/light-p2.webp", id: "JSfGnItLmt8", author: "Mahdi Naserinejad", username: "mahdinaseri" },
-    dark: { src: "/img/dark-p2.webp", id: "zgfysCfy0zg", author: "Nicolas Caetano", username: "nicolabaka" },
+    light: { src: "/img/light-sugupena.webp", id: "cr-Gh5A_9Nc", author: "Kelli McClintock", username: "kelli_mcclintock" },
+    dark: { src: "/img/dark-sugupena.webp", id: "1rJdewJPCWE", author: "Shubham Sharan", username: "shubhamsharan" },
   },
   p3: {
-    light: { src: "/img/light-p3.webp", id: "IZ01rjX0XQA", author: "Thomas Vimare", username: "vimarethomas" },
-    dark: { src: "/img/dark-p3.webp", id: "r4PbOL-LUbs", author: "Andrew Jephson", username: "andrewjephson" },
+    light: { src: "/img/light-idit.webp", id: "nRJRBhhOBqA", author: "Christina @ wocintechchat.com M", username: "wocintechchat" },
+    dark: { src: "/img/dark-idit.webp", id: "7MJpHQdGXGA", author: "Artur Shamsutdinov", username: "roketpik" },
   },
   p4: {
-    light: { src: "/img/light-p4.webp", id: "R-wQExeiGrc", author: "Rubén García", username: "rubengargar" },
-    dark: { src: "/img/dark-p4.webp", id: "phIFdC6lA4E", author: "Benjamin Voros", username: "vorosbenisop" },
+    light: { src: "/img/light-ccslash.webp", id: "8dgFq8Vbelo", author: "Andy Brown", username: "basallt" },
+    dark: { src: "/img/dark-ccslash.webp", id: "_KgQ525v8Iw", author: "Ari Kusprawanto", username: "arikusprawanto" },
   },
   p5: {
-    light: { src: "/img/light-p5.webp", id: "oiLFf3_C_FU", author: "Red Shuheart", username: "mirrors_are_more_fun" },
-    dark: { src: "/img/dark-p5.webp", id: "oiXkO7p2UfI", author: "Klara Kulikova", username: "kkalerry" },
+    light: { src: "/img/light-creatorpay.webp", id: "laGC9MKgHIY", author: "Hanna Lazar", username: "potokvarte" },
+    dark: { src: "/img/dark-creatorpay.webp", id: "PZao9UjlbMY", author: "Mika Baumeister", username: "kommumikation" },
   },
   p6: {
-    light: { src: "/img/light-p6.webp", id: "2XPHSXVT_Ls", author: "Simone Viani", username: "flik185" },
-    dark: { src: "/img/dark-p6.webp", id: "xk1wWf6YPmY", author: "yash rai", username: "yashzucced" },
+    light: { src: "/img/light-focuspair.webp", id: "tLG2hcpITZE", author: "Brooke Cagle", username: "brookecagle" },
+    dark: { src: "/img/dark-focuspair.webp", id: "TtAHLsnbz3o", author: "Карина Низаметдинова", username: "nizametdinova" },
   },
   p7: {
-    light: { src: "/img/light-p7.webp", id: "L7NBzS16kZg", author: "Jason Leung", username: "ninjason" },
-    dark: { src: "/img/dark-p7.webp", id: "okUB5th8QtQ", author: "Beth Stevenson", username: "bthstvn" },
+    light: { src: "/img/light-callshield.webp", id: "8gWEAAXJjtI", author: "Quino Al", username: "quinoal" },
+    dark: { src: "/img/dark-callshield.webp", id: "-0xCCPIbl3M", author: "Pawel Czerwinski", username: "pawel_czerwinski" },
   },
   p8: {
-    light: { src: "/img/light-p8.webp", id: "GmcZ_kxKvKA", author: "Pierre Bamin", username: "bamin" },
-    dark: { src: "/img/dark-p8.webp", id: "ZbpWKYQvHoU", author: "Sema Martin", username: "learnmycraft" },
+    light: { src: "/img/light-bantou.webp", id: "pp7xb62ADUs", author: "Auroom Wellness", username: "auroom" },
+    dark: { src: "/img/dark-bantou.webp", id: "Cu0CbpD87-s", author: "HUUM", username: "huumsauna" },
   },
   p9: {
-    light: { src: "/img/light-p9.webp", id: "vjz868Cu_QI", author: "Declan Sun", username: "declansun" },
-    dark: { src: "/img/dark-p9.webp", id: "8V9MUCKyPw0", author: "amandazi photography", username: "amandazi_photography" },
+    light: { src: "/img/light-boothpay.webp", id: "f3-pGyIT7Vo", author: "Aaron Douglas", username: "diggdomino" },
+    dark: { src: "/img/dark-boothpay.webp", id: "0IVop5v4MMU", author: "Jonas Leupe", username: "jonasleupe" },
   },
   p10: {
-    light: { src: "/img/light-p10.webp", id: "sfukhR8hMrg", author: "ayumi kubo", username: "ayumikubo" },
-    dark: { src: "/img/dark-p10.webp", id: "0IvwihAQy5s", author: "Yuya Yoshioka", username: "superyuyakun" },
+    light: { src: "/img/light-creator-market.webp", id: "2d-ZQjDhH94", author: "Kelly Sikkema", username: "kellysikkema" },
+    dark: { src: "/img/dark-creator-market.webp", id: "9qoWKXTOTLs", author: "Jakub Żerdzicki", username: "jakubzerdzicki" },
   },
   final: {
-    light: { src: "/img/light-final.webp", id: "3YrppYQPoCI", author: "Guillaume Galtier", username: "paititi" },
+    light: { src: "/img/light-final.webp", id: "IZ01rjX0XQA", author: "Thomas Vimare", username: "vimarethomas" },
     dark: { src: "/img/dark-final.webp", id: "0289jpHHk0o", author: "Joshua Woroniecki", username: "joshuaworoniecki" },
   },
 } satisfies Record<string, PhotoSlot>;
 
 export type PhotoKey = keyof typeof photos;
 
-/** One photo per project, in the order of projects.ts. */
+/** One photo per project, in the order of projects.ts, each chosen to match its service. */
 export const projectPhotoKeys: PhotoKey[] = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"];

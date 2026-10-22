@@ -876,7 +876,7 @@ html:not(.js) .works-progress { display: none; }
   padding: 120px 20px;
   --fp: 0;
   /* light: the deep blue of the sea; dark: the star field above the ridge */
-  --fill: url("/img/light-p3.webp");
+  --fill: url("/img/light-final.webp");
   --fill-y: calc(62% + var(--fp) * 38%);
   /* soften the top edge so the rotating glow never meets the marquee as a hard coloured seam;
      the mask also clips the glow where iOS Safari lets transformed children escape overflow */
