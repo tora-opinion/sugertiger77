@@ -33,8 +33,8 @@ async function securityMiddleware(context: Context): Promise<Response> {
       statusText: response.statusText,
       headers,
     });
-  } catch (err) {
-    console.error('securityMiddleware error:', err);
+  } catch {
+    console.error('securityMiddleware error');
     return new Response('Internal Server Error', { status: 500 });
   }
 }
@@ -53,10 +53,28 @@ async function botMiddleware(context: Context): Promise<Response> {
       }
     }
     return context.next();
-  } catch (err) {
-    console.error('botMiddleware error:', err);
-    return context.next();
+  } catch {
+    console.error('botMiddleware error');
+    return errorResponse('Request check unavailable', 503);
   }
+}
+
+async function rateLimitResponse(
+  context: Context,
+  key: string,
+  max: number,
+  windowSec: number,
+): Promise<Response | null> {
+  const result = await checkRateLimit(
+    context.env.RATE_LIMIT_KV,
+    key,
+    max,
+    windowSec,
+  );
+  if (result.unavailable) {
+    return errorResponse('Rate limiter unavailable', 503);
+  }
+  return result.allowed ? null : errorResponse('Rate limit exceeded', 429);
 }
 
 async function rateLimitMiddleware(context: Context): Promise<Response> {
@@ -66,37 +84,53 @@ async function rateLimitMiddleware(context: Context): Promise<Response> {
       context.request.headers.get('cf-connecting-ip') || 'unknown';
     const cfg = getConfig(context.env);
 
-    if (
-      url.pathname === '/api/upload' &&
-      context.request.method === 'POST'
-    ) {
-      const result = await checkRateLimit(
-        context.env.RATE_LIMIT_KV,
+    if (url.pathname === '/api/upload' && context.request.method === 'POST') {
+      const limited = await rateLimitResponse(
+        context,
         `upload:${ip}`,
         cfg.rateLimits.upload.max,
         cfg.rateLimits.upload.windowSec,
       );
-      if (!result.allowed) {
-        return errorResponse('Rate limit exceeded', 429);
-      }
+      if (limited) return limited;
+    }
+
+    if (url.pathname === '/api/auth' && context.request.method === 'POST') {
+      const limited = await rateLimitResponse(
+        context,
+        `auth:${ip}`,
+        cfg.rateLimits.auth.max,
+        cfg.rateLimits.auth.windowSec,
+      );
+      if (limited) return limited;
+    }
+
+    if (
+      (url.pathname === '/api/images' || url.pathname.startsWith('/api/image/')) &&
+      context.request.method !== 'OPTIONS'
+    ) {
+      const limited = await rateLimitResponse(
+        context,
+        `api:${ip}`,
+        cfg.rateLimits.api.max,
+        cfg.rateLimits.api.windowSec,
+      );
+      if (limited) return limited;
     }
 
     if (url.pathname.startsWith('/cdn/')) {
-      const result = await checkRateLimit(
-        context.env.RATE_LIMIT_KV,
+      const limited = await rateLimitResponse(
+        context,
         `cdn:${ip}`,
         cfg.rateLimits.cdn.max,
         cfg.rateLimits.cdn.windowSec,
       );
-      if (!result.allowed) {
-        return errorResponse('Rate limit exceeded', 429);
-      }
+      if (limited) return limited;
     }
 
     return context.next();
-  } catch (err) {
-    console.error('rateLimitMiddleware error:', err);
-    return context.next();
+  } catch {
+    console.error('rateLimitMiddleware error');
+    return errorResponse('Rate limiter unavailable', 503);
   }
 }
 
@@ -111,9 +145,9 @@ async function hotlinkMiddleware(context: Context): Promise<Response> {
       }
     }
     return context.next();
-  } catch (err) {
-    console.error('hotlinkMiddleware error:', err);
-    return context.next();
+  } catch {
+    console.error('hotlinkMiddleware error');
+    return errorResponse('Request check unavailable', 503);
   }
 }
 
