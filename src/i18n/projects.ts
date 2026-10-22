@@ -38,7 +38,7 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "sugupena",
       name: "Sugupena",
-      japaneseName: "スグペナ",
+      japaneseName: "スグペナ！",
       url: "https://sugupena.com",
       description:
         "Behavioral economics-based smartphone addiction management app. Set screen time goals with financial penalties to build better digital habits.",
@@ -62,7 +62,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "idit",
-      name: "idit.jp",
+      name: "IDIT",
       url: "https://idit.jp",
       description:
         "Multi-AI platform for cloud infrastructure, analytics, and AI-powered applications. Integrates multiple AI providers with billing and security.",
@@ -203,6 +203,48 @@ export const projects: Record<Locale, Project[]> = {
       ],
       status: "In Development",
     },
+    {
+      id: "bantou",
+      name: "Bantou",
+      description:
+        "A booking and payment platform for hourly and whole-facility rentals, such as private saunas. Rebuilt from Kaihi-OS as a multi-tenant service where each facility takes payments through Stripe Connect.",
+      tech: ["Next.js 15", "Prisma", "PostgreSQL", "Auth.js", "Stripe Connect"],
+      features: [
+        "Hourly and whole-facility booking",
+        "Multi-tenant data isolation with row-level security",
+        "Payment links and POS QR codes",
+        "Authorization holds and no-show charges",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "zerosec-pay",
+      name: "BoothPay",
+      japaneseName: "0秒決済",
+      description:
+        "A cashless payment platform for doujinshi conventions. Buyers finish paying while still waiting in line, saving time for both buyers and circles.",
+      tech: ["Next.js", "TypeScript", "Drizzle ORM", "Neon", "Stripe", "Cloudflare R2"],
+      features: [
+        "Checkout by entering the amount agreed with the circle",
+        "Payment captured only after the in-person handoff",
+        "Payments to each circle's Stripe connected account",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "creator-incentive-market",
+      name: "Creator Market",
+      description:
+        "A digital content marketplace for creators. Its Dynamic Incentive Allocation Engine works back from each creator's desired minimum payout to set sale prices and promotions.",
+      tech: ["Next.js 15", "TypeScript", "Prisma", "PostgreSQL", "Stripe"],
+      features: [
+        "Pricing from the creator's minimum payout",
+        "Price candidate evaluation",
+        "Token-protected file downloads",
+        "Coupon, point and affiliate logic",
+      ],
+      status: "In Development",
+    },
   ],
   ja: [
     {
@@ -226,7 +268,7 @@ export const projects: Record<Locale, Project[]> = {
     {
       id: "sugupena",
       name: "Sugupena",
-      japaneseName: "スグペナ",
+      japaneseName: "スグペナ！",
       url: "https://sugupena.com",
       description:
         "行動経済学に基づくスマホ依存管理アプリ。スクリーンタイム目標を設定し、金銭的ペナルティでデジタル習慣を改善。",
@@ -250,7 +292,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       id: "idit",
-      name: "idit.jp",
+      name: "IDIT",
       url: "https://idit.jp",
       description:
         "クラウドインフラ・分析・AIアプリケーションのためのマルチAIプラットフォーム。複数AIプロバイダーを統合し、課金とセキュリティを提供。",
@@ -388,6 +430,48 @@ export const projects: Record<Locale, Project[]> = {
         "匿名化データ表示",
         "Twilio Webhook連携",
         "決済状態の同期",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "bantou",
+      name: "Bantou",
+      description:
+        "プライベートサウナのような時間貸し・一棟貸し施設向けの予約・決済プラットフォーム。Kaihi-OSを土台に作り直した複数施設対応のサービスで、各施設がStripe Connectで決済を受け取ります。",
+      tech: ["Next.js 15", "Prisma", "PostgreSQL", "Auth.js", "Stripe Connect"],
+      features: [
+        "時間貸し・一棟貸しの予約",
+        "行レベルセキュリティによる施設ごとのデータ分離",
+        "決済リンク・店頭QR決済",
+        "仮押さえ決済・無断キャンセル時の請求",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "zerosec-pay",
+      name: "BoothPay",
+      japaneseName: "0秒決済",
+      description:
+        "同人誌即売会向けのキャッシュレス決済プラットフォーム。待機列の中で決済を済ませ、購入者とサークルの時間を短縮します。",
+      tech: ["Next.js", "TypeScript", "Drizzle ORM", "Neon", "Stripe", "Cloudflare R2"],
+      features: [
+        "サークルと決めた金額を入力して決済",
+        "手渡し確認後に売上を確定",
+        "各サークルのStripe接続アカウントへの決済",
+      ],
+      status: "In Development",
+    },
+    {
+      id: "creator-incentive-market",
+      name: "Creator Market",
+      description:
+        "クリエイター向けのデジタルコンテンツ販売プラットフォーム。クリエイターの希望最低受取額から逆算して販売価格や販促を決める「Dynamic Incentive Allocation Engine」が中核です。",
+      tech: ["Next.js 15", "TypeScript", "Prisma", "PostgreSQL", "Stripe"],
+      features: [
+        "最低受取額からの価格設定",
+        "価格候補の評価",
+        "トークン付きファイルダウンロード",
+        "クーポン・ポイント・アフィリエイトの仕組み",
       ],
       status: "In Development",
     },
