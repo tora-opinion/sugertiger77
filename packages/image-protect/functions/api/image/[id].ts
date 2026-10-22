@@ -1,5 +1,5 @@
 import type { Env } from '../../../src/types';
-import { getImage, deleteImage } from '../../../src/storage/r2';
+import { getImage, getImageMetadata, deleteImage } from '../../../src/storage/r2';
 import { validateSignedUrl } from '../../../src/protection/signed-url';
 import { validateSession } from '../../../src/auth';
 import {
@@ -29,6 +29,7 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
     const check = await validateSignedUrl(
       context.request,
       context.env.SIGNING_SECRET,
+      id,
     );
     if (!check.valid) {
       return errorResponse('Invalid or expired signed URL', 403);
@@ -47,9 +48,9 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
         'X-Content-Type-Options': 'nosniff',
       },
     });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to serve image';
-    return errorResponse(message, 500);
+  } catch {
+    console.error('Signed image request failed');
+    return errorResponse('Failed to serve image', 500);
   }
 };
 
@@ -74,8 +75,8 @@ export const onRequestDelete = async (
     }
 
     if (!authorized && deleteToken) {
-      const result = await getImage(context.env.IMAGE_BUCKET, id);
-      if (result && result.metadata.deleteToken === deleteToken) {
+      const metadata = await getImageMetadata(context.env.IMAGE_BUCKET, id);
+      if (metadata && metadata.deleteToken === deleteToken) {
         authorized = true;
       }
     }
@@ -87,8 +88,8 @@ export const onRequestDelete = async (
     await deleteImage(context.env.IMAGE_BUCKET, id);
 
     return jsonResponse({ success: true, message: 'Image deleted' });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Delete failed';
-    return errorResponse(message, 500);
+  } catch {
+    console.error('Image delete failed');
+    return errorResponse('Delete failed', 500);
   }
 };

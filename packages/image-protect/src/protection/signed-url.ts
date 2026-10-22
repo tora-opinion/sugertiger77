@@ -45,6 +45,7 @@ export async function generateSignedUrl(
 export async function validateSignedUrl(
   request: Request,
   secret: string,
+  expectedImageId?: string,
 ): Promise<{ valid: boolean; imageId?: string }> {
   try {
     const url = new URL(request.url);
@@ -58,6 +59,7 @@ export async function validateSignedUrl(
     const pathParts = url.pathname.split('/');
     const imageId = pathParts[pathParts.length - 1];
     if (!imageId || !IMAGE_ID_PATTERN.test(imageId)) return { valid: false };
+    if (expectedImageId && imageId !== expectedImageId) return { valid: false };
 
     const payload = `${imageId}:${exp}`;
     const valid = await hmacVerify(payload, sig, secret);
