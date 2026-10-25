@@ -21,6 +21,7 @@ export function initCinematic() {
   const ticks = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-btn]") ?? []);
   const photoHost = works?.querySelector<HTMLElement>("[data-work-photos]");
   const photoLayers = Array.from(works?.querySelectorAll<HTMLElement>("[data-work-photo]") ?? []);
+  const progress = works?.querySelector<HTMLElement>("[data-work-progress]");
   const finale = document.querySelector<HTMLElement>("[data-final]");
   const marquee = document.querySelector<HTMLElement>(".marquee-track");
 
@@ -43,6 +44,11 @@ export function initCinematic() {
     const nextPhoto = index % Math.max(photoLayers.length, 1);
     if (nextPhoto !== currentPhoto && photoLayers.length) {
       photoHost?.setAttribute("data-dir", forward ? "down" : "up");
+      // Set the incoming cut at its starting edge for this direction before it moves.
+      const incoming = photoLayers[nextPhoto];
+      incoming.classList.add("cue");
+      void incoming.offsetWidth;
+      incoming.classList.remove("cue");
       photoLayers.forEach((layer, i) => {
         layer.classList.toggle("prev", i === currentPhoto);
         layer.classList.toggle("on", i === nextPhoto);
@@ -139,7 +145,8 @@ export function initCinematic() {
     if (works && scenes.length) {
       const r = works.getBoundingClientRect();
       const p = clamp(-r.top / Math.max(works.offsetHeight - vh, 1));
-      works.style.setProperty("--wp", p.toFixed(4));
+      // Only the progress bar reads this; setting it on the whole stage restyles every scene each frame.
+      progress?.style.setProperty("--wp", p.toFixed(4));
       setScene(Math.min(scenes.length - 1, Math.floor(p * scenes.length)));
     }
 
