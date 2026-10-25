@@ -28,7 +28,7 @@ const statusMap = {
     <div class="works-stick">
       <div class="works-photos" aria-hidden="true" data-work-photos>
         {projectPhotoKeys.map((key, i) => (
-          <div class:list={["ph", { on: i === 0 }]} data-work-photo><Photo name={key} /></div>
+          <div class:list={["ph", { on: i === 0 }]} data-work-photo><div class="ph-in"><Photo name={key} /></div></div>
         ))}
       </div>
 
@@ -98,7 +98,7 @@ const statusMap = {
         ))}
       </ol>
 
-      <div class="works-progress" aria-hidden="true"><span></span></div>
+      <div class="works-progress" aria-hidden="true" data-work-progress><span></span></div>
     </div>
   </div>
 </section>

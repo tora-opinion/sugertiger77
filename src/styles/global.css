@@ -527,7 +527,6 @@
 .works {
   position: relative;
   height: calc(var(--count, 4) * 70vh + 100vh);
-  --wp: 0;
 }
 .works-stick {
   position: sticky;
@@ -540,25 +539,49 @@
   inset: 0;
   overflow: hidden;
 }
-/* each cut wipes in over the previous one, like a film edit */
-.works-photos .ph {
+/* each cut wipes in over the previous one, like a film edit.
+   The layer slides in while its contents slide the opposite way, so the photo holds still
+   behind a moving edge; both are plain transforms, which the GPU runs without repainting. */
+.works-photos .ph,
+.works-photos .ph-in {
   position: absolute;
   inset: 0;
+  /* the cut that drops out of .prev stays put until the next one has covered it */
+  transition: transform 0s 1.25s;
+}
+.works-photos .ph {
   z-index: 0;
-  clip-path: inset(100% 0 0 0);
-  transition: clip-path 1.25s var(--ease);
+  overflow: hidden;
+  transform: translate3d(0, 100%, 0);
+}
+.works-photos .ph-in {
+  transform: translate3d(0, -100%, 0);
 }
 .works-photos[data-dir="up"] .ph {
-  clip-path: inset(0 0 100% 0);
+  transform: translate3d(0, -100%, 0);
+}
+.works-photos[data-dir="up"] .ph-in {
+  transform: translate3d(0, 100%, 0);
 }
 .works-photos .ph.prev {
   z-index: 1;
-  clip-path: inset(0);
-  transition: none;
 }
 .works-photos .ph.on {
   z-index: 2;
-  clip-path: inset(0);
+}
+.works-photos .ph.prev,
+.works-photos .ph.prev .ph-in {
+  transform: none;
+  transition: none;
+}
+.works-photos .ph.on,
+.works-photos .ph.on .ph-in {
+  transform: none;
+  transition: transform 1.25s var(--ease);
+}
+.works-photos .ph.cue,
+.works-photos .ph.cue .ph-in {
+  transition: none;
 }
 .works-photos .ph .photo {
   transform: scale(1.3) translateY(4%);
@@ -769,11 +792,38 @@
   /* fade out as the last scene ends, so no coloured line trails into the next section */
   opacity: clamp(0, calc((1 - var(--wp, 0)) * 25), 1);
 }
+/* where supported, the bar follows the scroll position itself rather than a script */
+@supports (animation-timeline: view()) {
+  .works { view-timeline: --works block; view-timeline-inset: 0; }
+  .works-progress,
+  .works-progress span {
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --works;
+  }
+  .works-progress {
+    animation-name: works-progress-out;
+    animation-range: contain 96% contain 100%;
+  }
+  .works-progress span {
+    animation-name: works-progress-fill;
+    animation-range: contain 0% contain 100%;
+  }
+}
+@keyframes works-progress-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes works-progress-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
 .works-progress span {
   display: block;
   height: 100%;
   background: linear-gradient(90deg, var(--acc), var(--acc2));
-  transform: scaleX(var(--wp));
+  transform: scaleX(var(--wp, 0));
   transform-origin: left;
 }
 
