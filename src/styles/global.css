@@ -467,7 +467,8 @@
 .expand-stick {
   position: sticky;
   top: 0;
-  height: 100svh;
+  /* full height with the phone toolbar hidden, so no strip opens up below the photo */
+  height: 100lvh;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -531,7 +532,7 @@
 .works-stick {
   position: sticky;
   top: 0;
-  height: 100svh;
+  height: 100lvh;
   overflow: hidden;
 }
 .works-photos {
@@ -578,7 +579,9 @@
 }
 .scenes {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto;
+  /* text stays inside the area left visible when the phone toolbar shows */
+  height: 100svh;
   z-index: 4;
   list-style: none;
 }
@@ -710,7 +713,7 @@
   position: absolute;
   z-index: 5;
   right: clamp(8px, 2.4vw, 40px);
-  top: 50%;
+  top: 50svh;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -760,7 +763,7 @@
   z-index: 5;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: calc(100svh - 2px);
   height: 2px;
   background: var(--line);
   /* fade out as the last scene ends, so no coloured line trails into the next section */
@@ -790,8 +793,8 @@
 /* without JS nothing drives the scenes, so stack every project */
 html:not(.js) .works { height: auto; }
 html:not(.js) .works-stick { position: relative; height: auto; overflow: visible; }
-html:not(.js) .works-photos { position: sticky; top: 0; height: 100svh; margin-bottom: -100svh; }
-html:not(.js) .scenes { position: relative; }
+html:not(.js) .works-photos { position: sticky; top: 0; height: 100lvh; margin-bottom: -100lvh; }
+html:not(.js) .scenes { position: relative; height: auto; }
 html:not(.js) .scene {
   position: relative;
   min-height: 100svh;
@@ -812,8 +815,8 @@ html:not(.js) .works-progress { display: none; }
 @media (max-height: 600px) {
   .works { height: auto; }
   .works-stick { position: relative; height: auto; overflow: visible; }
-  .works-photos { position: sticky; top: 0; height: 100svh; margin-bottom: -100svh; }
-  .scenes { position: relative; }
+  .works-photos { position: sticky; top: 0; height: 100lvh; margin-bottom: -100lvh; }
+  .scenes { position: relative; height: auto; }
   .scene,
   .scene:not(.on) {
     position: relative;
