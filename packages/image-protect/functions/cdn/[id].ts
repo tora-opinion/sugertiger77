@@ -71,9 +71,9 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
     }
 
     return serveRawImage(context.env, id);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to serve image';
-    return errorResponse(message, 500);
+  } catch {
+    console.error('CDN image request failed');
+    return errorResponse('Failed to serve image', 500);
   }
 };
 

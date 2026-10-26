@@ -31,10 +31,11 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
 
     const url = new URL(context.request.url);
     const cursor = url.searchParams.get('cursor') || undefined;
-    const limit = Math.min(
-      Number(url.searchParams.get('limit')) || 50,
-      100,
-    );
+    const limitValue = url.searchParams.get('limit');
+    const requestedLimit = limitValue === null ? 50 : Number(limitValue);
+    const limit = Number.isSafeInteger(requestedLimit)
+      ? Math.max(1, Math.min(requestedLimit, 100))
+      : 50;
 
     const result = await listImages(
       context.env.IMAGE_BUCKET,
@@ -47,8 +48,8 @@ export const onRequestGet = async (context: Context): Promise<Response> => {
       images: result.images,
       cursor: result.cursor,
     });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to list images';
-    return errorResponse(message, 500);
+  } catch {
+    console.error('Image listing failed');
+    return errorResponse('Failed to list images', 500);
   }
 };
