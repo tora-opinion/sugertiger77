@@ -53,6 +53,7 @@ export class Agent {
     await this.push({ role: "user", content: userInput });
     let turns = 0;
     try {
+      let finished = false;
       while (!signal.aborted && turns < this.cfg.maxTurns) {
         turns++;
         const entry = this.cfg.models.find((item) => item.id === this.model);
@@ -76,7 +77,7 @@ export class Agent {
         }
         if (response.usage) { this.usage = { promptTokens: this.usage.promptTokens + response.usage.promptTokens, completionTokens: this.usage.completionTokens + response.usage.completionTokens }; this.lastPromptTokens = response.usage.promptTokens; this.onEvent({ type: "usage", usage: response.usage }); }
         await this.push(response.message);
-        if (!response.message.tool_calls?.length) break;
+        if (!response.message.tool_calls?.length) { finished = true; break; }
         for (let i = 0; i < response.message.tool_calls.length; i++) {
           const call = response.message.tool_calls[i]!;
           if (signal.aborted) {
@@ -94,7 +95,10 @@ export class Agent {
           }
         }
       }
-      if (turns >= this.cfg.maxTurns) this.onEvent({ type: "warning", message: `最大ターン数（${this.cfg.maxTurns}）に達しました。` });
+      if (!finished && !signal.aborted && turns >= this.cfg.maxTurns) {
+        this.lastRunFailed = true;
+        this.onEvent({ type: "warning", message: `最大ターン数（${this.cfg.maxTurns}）に達しました。` });
+      }
     } catch (error) {
       this.lastRunFailed = true;
       if (!signal.aborted) this.onEvent({ type: "warning", message: formatApiError(error) });

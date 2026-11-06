@@ -68,7 +68,7 @@ export const grepTool: Tool = {
       if (normalized.output_mode === "content") flags.push("--line-number", "--context", String(normalized.context ?? 0));
       else if (normalized.output_mode === "count") flags.push("--count");
       else flags.push("--files-with-matches");
-      flags.push(normalized.pattern, normalized.path ?? ".");
+      flags.push("-e", normalized.pattern, "--", normalized.path ?? ".");
       const result = await execFileAsync("rg", flags, { cwd: ctx.cwd, maxBuffer: 10 * 1024 * 1024, windowsHide: true });
       return limitLines(result.stdout, normalized.head_limit);
     } catch (error) {
