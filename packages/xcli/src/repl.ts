@@ -5,7 +5,7 @@ import { Agent } from "./agent.js";
 import { addModel, loadConfig, removeModel, resolveModel, saveConfig } from "./config.js";
 import { createPermissionPrompter } from "./permissions.js";
 import { buildSystemPrompt } from "./prompt.js";
-import { EventRenderer, renderBanner, renderDisplay, renderError, renderHelp, renderInfo, renderModelList, renderPromptPrefix, renderUsage } from "./render.js";
+import { EventRenderer, renderBanner, renderContinuationPrefix, renderDisplay, renderError, renderFailure, renderGoodbye, renderGreeting, renderHelp, renderInfo, renderInputRule, renderMascot, renderModelList, renderPromptPrefix, renderRaw, renderSuccess, renderUsage } from "./render.js";
 import { Session } from "./session.js";
 import { getTools } from "./tools/index.js";
 import type { ChatMessage } from "./types.js";
@@ -30,6 +30,7 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
     renderInfo(`セッション ${id} を再開しました。`);
   } else session = await Session.create(current, options.cwd);
 
+  await renderGreeting();
   renderBanner({ model: current, cwd, version: options.version || "0.1.0", web: cfg.web });
   const rl = createInterface({ input: stdin, output: stdout, terminal: true });
   // rl.question never settles once stdin closes (Ctrl+D / EOF); race it against close so the loop exits cleanly
@@ -41,14 +42,17 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
   let controller: AbortController | undefined;
   let generating = false;
   let ctrlPressed = false;
-  let prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderInfo });
+  let prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderRaw });
   const askPermission: typeof prompter = (req) => prompter(req);
   const makeAgent = () => new Agent({ cfg, model: current, cwd, tools: getTools({ web: cfg.web }), session, askPermission, onEvent: (event) => {
-    if (event.type === "warning") renderError(event.message);
-    else if (event.type === "usage") renderUsage(event.usage, current);
-    else renderer.handle(event);
+    // hold the latest warning back: if the run fails it is shown with a sad Mikan instead
+    if (event.type === "warning") { if (pendingWarning) renderer.handle({ type: "warning", message: pendingWarning }); pendingWarning = event.message; return; }
+    if (event.type === "usage") return;
+    if (event.type !== "done" && pendingWarning) { renderer.handle({ type: "warning", message: pendingWarning }); pendingWarning = undefined; }
+    renderer.handle(event);
   }, messages, display: renderDisplay });
   let renderer = new EventRenderer();
+  let pendingWarning: string | undefined;
   agent = makeAgent();
   let lastSigint = 0;
   const onSigint = () => {
@@ -66,12 +70,12 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
     while (true) {
       let input: string;
       if (options.initialPrompt !== undefined) { input = options.initialPrompt; options.initialPrompt = undefined; }
-      else { try { input = await ask(renderPromptPrefix()); } catch { break; } }
+      else { renderInputRule(); try { input = await ask(renderPromptPrefix()); } catch { break; } }
       ctrlPressed = false;
       let lines = input;
       while (lines.endsWith("\\")) {
         lines = lines.slice(0, -1) + "\n";
-        try { lines += await ask("  "); } catch { lines += ""; break; }
+        try { lines += await ask(renderContinuationPrefix()); } catch { lines += ""; break; }
       }
       const text = lines.trim();
       if (!text) continue;
@@ -80,26 +84,35 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
         try {
           if (command === "/exit") break;
           if (command === "/help") renderHelp();
-          else if (command === "/yes") { yes = !yes; prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderInfo }); renderInfo(`許可確認スキップ: ${yes ? "有効" : "無効"}`); }
+          else if (command === "/mascot") await renderMascot(args[0]);
+          else if (command === "/yes") { yes = !yes; prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderRaw }); renderInfo(`許可確認スキップ: ${yes ? "有効" : "無効"}`); }
           else if (command === "/clear") { agent.clear(); renderInfo("会話をリセットしました。"); }
           else if (command === "/cost") renderUsage(agent.getUsage(), current);
-          else if (command === "/compact") { controller = new AbortController(); await agent.compact(controller.signal); renderInfo("会話を要約しました。"); }
+          else if (command === "/compact") { controller = new AbortController(); await agent.compact(controller.signal); controller = undefined; await renderSuccess("会話を要約したで"); }
           else if (command === "/models") { const endpoint = await import("./config.js").then((m) => m.getEndpoint(cfg, current)); const { createClient, listModels } = await import("./client.js"); renderModelList(await listModels(createClient(endpoint.baseURL, endpoint.apiKey)), cfg.models, current); }
           else if (command === "/resume") { const entries = await Session.list(); if (!args[0]) entries.forEach((s) => renderInfo(`${s.id}  ${s.firstUserMessage.slice(0, 80)}`)); else { const data = await Session.load(args[0]); session = await Session.open(args[0]); current = data.meta.model; cwd = data.meta.cwd; messages = [{ role: "system", content: buildSystemPrompt(cwd) }, ...data.messages]; agent = makeAgent(); if (path.resolve(cwd) !== path.resolve(process.cwd())) renderInfo(`セッションの作業ディレクトリを使用します: ${cwd}`); renderInfo(`セッション ${args[0]} を再開しました。`); } }
-          else if (command === "/model" && args[0] === "add") { const entry = parseModelArgs(args.slice(1)); Object.assign(cfg, addModel(cfg, entry)); await saveConfig(cfg); if (resolveModel(cfg, current).id === entry.id) agent.setModel(entry.id); renderInfo(`モデル ${entry.id} を登録しました。`); }
+          else if (command === "/model" && args[0] === "add") { const entry = parseModelArgs(args.slice(1)); Object.assign(cfg, addModel(cfg, entry)); await saveConfig(cfg); if (resolveModel(cfg, current).id === entry.id) agent.setModel(entry.id); await renderSuccess(`モデル ${entry.id} を登録したで`); }
           else if (command === "/model" && args[0] === "rm") { if (!args[1] || !removeModel(cfg, args[1])) renderInfo("登録モデルが見つかりません。"); else { await saveConfig(cfg); renderInfo(`モデル ${args[1]} を解除しました。`); } }
-          else if (command === "/model" && args[0]) { const resolved = resolveModel(cfg, args[0]); if (!resolved.registered) renderInfo(`未登録コード ${resolved.id} をそのまま使用します。`); current = resolved.id; agent.setModel(current); renderInfo(`モデルを ${current} に切り替えました。`); }
+          else if (command === "/model" && args[0]) { const resolved = resolveModel(cfg, args[0]); if (!resolved.registered) renderInfo(`未登録コード ${resolved.id} をそのまま使用します。`); current = resolved.id; agent.setModel(current); await renderSuccess(`モデルを ${current} に切り替えたで`); }
           else renderInfo("不明なコマンドです。/help を参照してください。");
         } catch (error) { renderError(error instanceof Error ? error.message : String(error)); }
         continue;
       }
       renderer = new EventRenderer();
+      pendingWarning = undefined;
       controller = new AbortController(); generating = true;
-      try { await agent.run(text, controller.signal); }
-      catch (error) { const { formatApiError } = await import("./client.js"); renderError(formatApiError(error)); }
+      renderer.start();
+      try {
+        await agent.run(text, controller.signal);
+        const aborted = controller.signal.aborted;
+        if (agent.lastRunFailed && !aborted) renderFailure(pendingWarning ?? "原因不明のエラーや");
+        else if (pendingWarning) renderer.handle({ type: "warning", message: pendingWarning });
+        pendingWarning = undefined;
+      }
+      catch (error) { const { formatApiError } = await import("./client.js"); renderFailure(formatApiError(error)); }
       finally { generating = false; controller = undefined; }
     }
-  } finally { process.removeListener("SIGINT", onSigint); rl.removeListener("SIGINT", onSigint); rl.close(); }
+  } finally { process.removeListener("SIGINT", onSigint); rl.removeListener("SIGINT", onSigint); rl.close(); await renderGoodbye(); }
 }
 
 export function parseModelArgs(args: string[]): { id: string; alias?: string; tools?: boolean; contextTokens?: number; baseURL?: string; apiKeyEnv?: string } {
