@@ -91,3 +91,19 @@ test("Grep JS fallback searches a single file path", async () => {
   const out = await grepJsFallback({ pattern: "needle", path: "a.txt" }, dir);
   assert.match(out, /a\.txt/);
 });
+
+test("coloredDiff keeps content lines that look like patch headers", async () => {
+  const { coloredDiff } = await import("../util/diff.js");
+  const plain = coloredDiff("a.sql", "-- old\nselect 1;\n", "++ new\nselect 1;\n").replace(/\x1b\[[0-9;]*m/g, "");
+  assert.match(plain, /^--- old$/m);
+  assert.match(plain, /^\+\+\+ new$/m);
+  assert.match(plain, /\+1 -1/);
+});
+
+test("permission request shows the full command without truncation", async () => {
+  const { formatPermissionRequest } = await import("../permissions.js");
+  const cmd = "echo " + "x".repeat(300) + " && rm -rf build";
+  const plain = formatPermissionRequest({ tool: "Bash", summary: `Bash: ${cmd}` }).replace(/\x1b\[[0-9;]*m/g, "");
+  const joined = plain.split("\n").filter((l) => l.startsWith("│ ")).slice(1).map((l) => l.slice(2)).join("");
+  assert.equal(joined, cmd);
+});

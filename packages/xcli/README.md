@@ -54,3 +54,21 @@ WebFetch / WebSearch は初期状態で有効で、Web取得先に制限は設�
 ## 設定とセッション
 
 設定ファイルは `~/.xcli/config.json`、セッションは `~/.xcli/sessions/` に保存する。`XCLI_HOME` を設定すると保存先を変更できる。既定モデル、APIのBase URL、モデル別名やコンテキスト長も設定ファイルに保存される。
+
+## マスコット「Mikan」
+
+xcli にはオレンジのマスコット **Mikan**（みかん）がおるで。考え中・作業中・ネット探索中などに、状況に合わせてアニメーションする。
+
+| 名前 | 場面 |
+|---|---|
+| `wave` | 起動時のあいさつ |
+| `idle` | まばたき（バナー） |
+| `think` | モデルの返答待ち |
+| `work` | Bash / Write / Edit 実行中 |
+| `search` | Read / Grep / WebSearch / WebFetch 実行中 |
+| `happy` | モデル切替や /compact の成功時 |
+| `sad` | API エラー時 |
+| `sleep` | 終了時 |
+
+- `/mascot` で全部のアニメーションを再生、`/mascot think` みたいに名前を指定すると1つだけ再生する。
+- アニメーションを止めたい時は環境変数 `XCLI_NO_ANIM=1`、色を消したい時は `NO_COLOR=1` を設定してな。
