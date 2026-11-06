@@ -28,7 +28,7 @@ export const bashTool: Tool = {
       argv = ["-NoProfile", "-NonInteractive", "-Command", args.command];
     } else { executable = "bash"; argv = ["-lc", args.command]; }
     return await new Promise<string>((resolve, reject) => {
-      const child = spawn(executable, argv, { cwd: ctx.cwd, windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+      const child = spawn(executable, argv, { cwd: ctx.cwd, windowsHide: true, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
       let output = "";
       let settled = false;
       let timedOut = false;
@@ -45,6 +45,9 @@ export const bashTool: Tool = {
             killer.once("error", () => resolve());
             killer.once("close", () => resolve());
           });
+        } else if (child.pid) {
+          // detached => own process group; kill the whole group so descendants die too
+          try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill("SIGKILL"); }
         } else child.kill("SIGKILL");
       };
       const timer = setTimeout(() => { if (!settled && !terminating) { timedOut = true; kill(); } }, timeout);
