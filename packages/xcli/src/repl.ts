@@ -33,10 +33,24 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
   await renderGreeting();
   renderBanner({ model: current, cwd, version: options.version || "0.1.0", web: cfg.web });
   const rl = createInterface({ input: stdin, output: stdout, terminal: true });
-  // rl.question never settles once stdin closes (Ctrl+D / EOF); race it against close so the loop exits cleanly
-  const closed = new Promise<never>((_, reject) => rl.once("close", () => reject(new Error("input closed"))));
-  closed.catch(() => undefined);
-  const ask = (q: string): Promise<string> => Promise.race([rl.question(q), closed]);
+  // Queue every line: rl.question drops lines that arrive while nobody is waiting
+  // (pasted multi-line input, type-ahead during generation, piped stdin).
+  const queued: string[] = [];
+  let waiter: { resolve: (s: string) => void; reject: (e: Error) => void } | undefined;
+  let inputClosed = false;
+  rl.on("line", (line) => {
+    if (waiter) { const w = waiter; waiter = undefined; w.resolve(line); } else queued.push(line);
+  });
+  rl.once("close", () => {
+    inputClosed = true;
+    if (waiter) { const w = waiter; waiter = undefined; w.reject(new Error("input closed")); }
+  });
+  const ask = (q: string): Promise<string> => {
+    const next = queued.shift();
+    if (next !== undefined) { stdout.write(q + next + "\n"); return Promise.resolve(next); }
+    if (inputClosed) return Promise.reject(new Error("input closed"));
+    return new Promise((resolve, reject) => { waiter = { resolve, reject }; rl.setPrompt(q); rl.prompt(); });
+  };
   let yes = options.yes === true;
   let agent: Agent;
   let controller: AbortController | undefined;
