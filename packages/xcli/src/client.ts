@@ -30,10 +30,12 @@ export function accumulateToolCall(current: ToolCall, part: { id?: string | null
   return current;
 }
 
+const MAX_ATTEMPTS = 5;
+
 function retryable(error: unknown): boolean {
   if (error && typeof error === "object") {
     const status = "status" in error ? Number(error.status) : 0;
-    if (status === 429) return !`${errorText(error)} ${JSON.stringify(error)}`.includes("free_limit_reached");
+    if (status === 429) return !/free_limit_reached|model_requires_purchase/.test(`${errorText(error)} ${JSON.stringify(error)}`);
     if (status >= 500) return true;
     if ("status" in error && status > 0) return false;
     return "name" in error && /network|timeout|connection|fetch/i.test(String(error.name));
@@ -53,7 +55,7 @@ export async function streamChat(args: {
 }): Promise<{ message: ChatMessage; usage?: Usage }> {
   let lastError: unknown;
   let emitted = false;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     try {
       const stream = await args.client.chat.completions.create({
         model: args.model,
@@ -79,9 +81,10 @@ export async function streamChat(args: {
     } catch (error) {
       lastError = error;
       // never retry once text reached the user: a retry would duplicate output
-      if (attempt === 2 || emitted || !retryable(error) || args.signal?.aborted) throw error;
+      if (attempt === MAX_ATTEMPTS - 1 || emitted || !retryable(error) || args.signal?.aborted) throw error;
       await new Promise<void>((resolve, reject) => {
-        const timer = setTimeout(resolve, 250 * 2 ** attempt);
+        // gateway 503 "admission temporarily unavailable" usually clears within seconds: 1s, 2s, 4s, 8s
+        const timer = setTimeout(resolve, 1000 * 2 ** attempt);
         args.signal?.addEventListener("abort", () => { clearTimeout(timer); reject(args.signal?.reason); }, { once: true });
       });
     }
@@ -92,6 +95,7 @@ export async function streamChat(args: {
 export function formatApiError(err: unknown): string {
   const raw = `${errorText(err)} ${err && typeof err === "object" ? JSON.stringify(err) : ""}`;
   const code = err && typeof err === "object" && "code" in err ? String(err.code) : raw;
+  if (code.includes("model_requires_purchase")) return "このモデルはアカウントでロックされています。https://platform.experientiallabs.ai/credits でクレジットを購入すると利用できます。";
   if (code.includes("free_limit_reached")) return "無料利用枠に達しました。時間をおいてから再度お試しください。";
   if (code.includes("model_not_granted")) return "このモデルを利用する権限がありません。利用可能なモデルを選んでください。";
   if (code.includes("model_location_not_supported")) return "このモデルは現在の接続地域では利用できません。";
