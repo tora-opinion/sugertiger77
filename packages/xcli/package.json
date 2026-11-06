@@ -1,0 +1,29 @@
+{
+  "name": "xcli",
+  "version": "0.1.0",
+  "description": "Claude Code-like terminal coding agent for any model on Experiential Labs (OpenAI-compatible)",
+  "type": "module",
+  "bin": { "xcli": "dist/cli.js" },
+  "files": ["dist"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test dist/__tests__/*.test.js",
+    "start": "node dist/cli.js"
+  },
+  "dependencies": {
+    "diff": "^7.0.0",
+    "fast-glob": "^3.3.2",
+    "node-html-parser": "^6.1.13",
+    "openai": "^5.0.0",
+    "picocolors": "^1.1.1",
+    "turndown": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/diff": "^7.0.0",
+    "@types/node": "^22.0.0",
+    "@types/turndown": "^5.0.5",
+    "typescript": "^5.9.3"
+  }
+}
