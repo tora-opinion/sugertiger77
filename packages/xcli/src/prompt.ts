@@ -7,9 +7,10 @@ export function buildSystemPrompt(cwd: string): string {
   const date = new Date().toISOString().slice(0, 10);
   let git = "このディレクトリは Git リポジトリではないか、状態を取得できません。";
   try {
-    const branch = execFileSync("git", ["branch", "--show-current"], { cwd, encoding: "utf8", timeout: 1500 }).trim();
-    const status = execFileSync("git", ["status", "--short"], { cwd, encoding: "utf8", timeout: 1500 }).trim();
-    git = `ブランチ: ${branch || "(detached)"}\n変更: ${status || "なし"}`;
+    const branch = execFileSync("git", ["branch", "--show-current"], { cwd, encoding: "utf8", timeout: 1500, stdio: ["ignore", "pipe", "ignore"] }).trim();
+    const status = execFileSync("git", ["status", "--short"], { cwd, encoding: "utf8", timeout: 1500, stdio: ["ignore", "pipe", "ignore"] }).trim();
+    const shown = status.split(/\r?\n/).slice(0, 50).join("\n");
+    git = `ブランチ: ${branch || "(detached)"}\n変更: ${shown || "なし"}`;
   } catch { /* git is optional */ }
   const instructions: string[] = [];
   for (const name of ["AGENTS.md", "CLAUDE.md", "XCLI.md"]) {

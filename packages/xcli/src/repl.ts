@@ -32,12 +32,16 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
 
   renderBanner({ model: current, cwd, version: options.version || "0.1.0", web: cfg.web });
   const rl = createInterface({ input: stdin, output: stdout, terminal: true });
+  // rl.question never settles once stdin closes (Ctrl+D / EOF); race it against close so the loop exits cleanly
+  const closed = new Promise<never>((_, reject) => rl.once("close", () => reject(new Error("input closed"))));
+  closed.catch(() => undefined);
+  const ask = (q: string): Promise<string> => Promise.race([rl.question(q), closed]);
   let yes = options.yes === true;
   let agent: Agent;
   let controller: AbortController | undefined;
   let generating = false;
   let ctrlPressed = false;
-  let prompter = createPermissionPrompter({ yes, ask: (q) => rl.question(q + " "), print: renderInfo });
+  let prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderInfo });
   const askPermission: typeof prompter = (req) => prompter(req);
   const makeAgent = () => new Agent({ cfg, model: current, cwd, tools: getTools({ web: cfg.web }), session, askPermission, onEvent: (event) => {
     if (event.type === "warning") renderError(event.message);
@@ -62,12 +66,12 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
     while (true) {
       let input: string;
       if (options.initialPrompt !== undefined) { input = options.initialPrompt; options.initialPrompt = undefined; }
-      else { try { input = await rl.question(renderPromptPrefix()); } catch { break; } }
+      else { try { input = await ask(renderPromptPrefix()); } catch { break; } }
       ctrlPressed = false;
       let lines = input;
       while (lines.endsWith("\\")) {
         lines = lines.slice(0, -1) + "\n";
-        try { lines += await rl.question("  "); } catch { lines += ""; break; }
+        try { lines += await ask("  "); } catch { lines += ""; break; }
       }
       const text = lines.trim();
       if (!text) continue;
@@ -76,7 +80,7 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
         try {
           if (command === "/exit") break;
           if (command === "/help") renderHelp();
-          else if (command === "/yes") { yes = !yes; prompter = createPermissionPrompter({ yes, ask: (q) => rl.question(q + " "), print: renderInfo }); renderInfo(`許可確認スキップ: ${yes ? "有効" : "無効"}`); }
+          else if (command === "/yes") { yes = !yes; prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderInfo }); renderInfo(`許可確認スキップ: ${yes ? "有効" : "無効"}`); }
           else if (command === "/clear") { agent.clear(); renderInfo("会話をリセットしました。"); }
           else if (command === "/cost") renderUsage(agent.getUsage(), current);
           else if (command === "/compact") { controller = new AbortController(); await agent.compact(controller.signal); renderInfo("会話を要約しました。"); }
