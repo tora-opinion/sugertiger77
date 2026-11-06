@@ -33,16 +33,32 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
   await renderGreeting();
   renderBanner({ model: current, cwd, version: options.version || "0.1.0", web: cfg.web });
   const rl = createInterface({ input: stdin, output: stdout, terminal: true });
-  // rl.question never settles once stdin closes (Ctrl+D / EOF); race it against close so the loop exits cleanly
-  const closed = new Promise<never>((_, reject) => rl.once("close", () => reject(new Error("input closed"))));
-  closed.catch(() => undefined);
-  const ask = (q: string): Promise<string> => Promise.race([rl.question(q), closed]);
+  // Queue every line: rl.question drops lines that arrive while nobody is waiting
+  // (pasted multi-line input, type-ahead during generation, piped stdin).
+  const queued: string[] = [];
+  let waiter: { resolve: (s: string) => void; reject: (e: Error) => void } | undefined;
+  let inputClosed = false;
+  rl.on("line", (line) => {
+    if (waiter) { const w = waiter; waiter = undefined; w.resolve(line); } else queued.push(line);
+  });
+  rl.once("close", () => {
+    inputClosed = true;
+    if (waiter) { const w = waiter; waiter = undefined; w.reject(new Error("input closed")); }
+  });
+  // fresh: ignore queued type-ahead and wait for a line typed after the prompt is shown.
+  // Permission answers must use this, or a queued "y"/"a" would silently approve a tool call.
+  const ask = (q: string, fresh = false): Promise<string> => {
+    const next = fresh ? undefined : queued.shift();
+    if (next !== undefined) { stdout.write(q + next + "\n"); return Promise.resolve(next); }
+    if (inputClosed) return Promise.reject(new Error("input closed"));
+    return new Promise((resolve, reject) => { waiter = { resolve, reject }; rl.setPrompt(q); rl.prompt(); });
+  };
   let yes = options.yes === true;
   let agent: Agent;
   let controller: AbortController | undefined;
   let generating = false;
   let ctrlPressed = false;
-  let prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderRaw });
+  let prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " ", true), print: renderRaw });
   const askPermission: typeof prompter = (req) => prompter(req);
   const makeAgent = () => new Agent({ cfg, model: current, cwd, tools: getTools({ web: cfg.web }), session, askPermission, onEvent: (event) => {
     // hold the latest warning back: if the run fails it is shown with a sad Mikan instead
@@ -85,7 +101,7 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
           if (command === "/exit") break;
           if (command === "/help") renderHelp();
           else if (command === "/mascot") await renderMascot(args[0]);
-          else if (command === "/yes") { yes = !yes; prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " "), print: renderRaw }); renderInfo(`許可確認スキップ: ${yes ? "有効" : "無効"}`); }
+          else if (command === "/yes") { yes = !yes; prompter = createPermissionPrompter({ yes, ask: (q) => ask(q + " ", true), print: renderRaw }); renderInfo(`許可確認スキップ: ${yes ? "有効" : "無効"}`); }
           else if (command === "/clear") { agent.clear(); renderInfo("会話をリセットしました。"); }
           else if (command === "/cost") renderUsage(agent.getUsage(), current);
           else if (command === "/compact") { controller = new AbortController(); await agent.compact(controller.signal); controller = undefined; await renderSuccess("会話を要約したで"); }
