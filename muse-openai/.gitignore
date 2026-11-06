@@ -1,0 +1,5 @@
+credentials.json
+host_id.txt
+refresh.lock
+__pycache__/
+*.pyc
