@@ -148,6 +148,8 @@ export function renderFailure(msg: string): void {
   lines.slice(0, 4).forEach((l, i) => { right[i + 2] = t.muted(l); });
   out("\n");
   printFrame("sad", 3, right);
+  // anything that did not fit beside Mikan goes below, so no diagnostic is lost
+  for (const l of lines.slice(4)) out("  " + t.muted(l) + "\n");
 }
 
 /** Write pre-styled text as-is (stops any running animation first). */
