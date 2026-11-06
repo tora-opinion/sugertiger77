@@ -8,7 +8,9 @@ export function applyEdit(content: string, oldStr: string, newStr: string, repla
   const occurrences = content.split(oldStr).length - 1;
   if (occurrences === 0) throw new Error("Edit: old_string not found in file.");
   if (!replaceAll && occurrences > 1) throw new Error(`Edit: old_string occurs ${occurrences} times; provide a more specific string or set replace_all=true.`);
-  return replaceAll ? content.split(oldStr).join(newStr) : content.replace(oldStr, newStr);
+  if (replaceAll) return content.split(oldStr).join(newStr);
+  const index = content.indexOf(oldStr);
+  return content.slice(0, index) + newStr + content.slice(index + oldStr.length);
 }
 
 export const editTool: Tool = {

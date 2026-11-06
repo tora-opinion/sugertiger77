@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
+import picomatch from "picomatch";
 import type { Tool } from "../types.js";
 
 const execFileAsync = promisify(execFile);
@@ -14,7 +15,7 @@ export async function grepJsFallback(args: GrepArgs, cwd: string): Promise<strin
   const head = Math.max(0, args.head_limit ?? 250);
   const context = Math.max(0, args.context ?? 0);
   const records: Array<{ file: string; lines: string[]; count: number }> = [];
-  const globRegex = args.glob ? new RegExp(`^${args.glob.split("/").map((part) => part === "**" ? ".*" : part === "*" ? "[^/]*" : part.replace(/[.+^${}()|[\]\\]/g, "\\$&")).join("/").replace(/^\.\*\//, "(?:.*/)?")}$`) : undefined;
+  const globMatcher = args.glob ? picomatch(args.glob, { basename: !args.glob.includes("/") }) : undefined;
   async function visit(dir: string): Promise<void> {
     let entries;
     try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
@@ -26,7 +27,7 @@ export async function grepJsFallback(args: GrepArgs, cwd: string): Promise<strin
         const info = await stat(full);
         if (info.size > 2 * 1024 * 1024) continue;
         const rel = path.relative(root, full).split(path.sep).join("/");
-        if (globRegex && !globRegex.test(rel)) continue;
+        if (globMatcher && !globMatcher(rel)) continue;
         const buffer = await readFile(full);
         if (buffer.includes(0)) continue;
         const lines = buffer.toString("utf8").split(/\r?\n/);

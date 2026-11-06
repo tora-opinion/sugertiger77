@@ -18,6 +18,10 @@ test("applyEdit requires unique match unless replace_all", () => {
   assert.equal(applyEdit("x x", "x", "y", true), "y y");
 });
 
+test("applyEdit inserts replacement strings literally", () => {
+  assert.equal(applyEdit("old", "old", "$&"), "$&");
+});
+
 test("htmlToMarkdown strips script and retains headings and links", () => {
   const result = htmlToMarkdown("<html><head><title>Page</title></head><body><main><script>alert(1)</script><h2>Heading</h2><a href=\"https://example.com\">Link</a></main></body></html>");
   assert.match(result, /# Page/);
@@ -54,6 +58,20 @@ test("Grep JS fallback searches and counts matching files", async () => {
     await writeFile(path.join(cwd, "src", "a.txt"), "hello\nworld\nhello\n", "utf8");
     await writeFile(path.join(cwd, "other.txt"), "no match\n", "utf8");
     assert.equal(await grepJsFallback({ pattern: "hello", output_mode: "count" }, cwd), `src${path.sep}a.txt:2`);
+  } finally { await rm(cwd, { recursive: true, force: true }); }
+});
+
+test("Grep JS fallback supports common glob patterns and basename matching", async () => {
+  const cwd = await mkdtemp(path.join(os.tmpdir(), "xcli-glob-"));
+  try {
+    await mkdir(path.join(cwd, "src", "nested"), { recursive: true });
+    await mkdir(path.join(cwd, "lib"), { recursive: true });
+    await writeFile(path.join(cwd, "src", "a.ts"), "hit", "utf8");
+    await writeFile(path.join(cwd, "src", "nested", "b.tsx"), "hit", "utf8");
+    await writeFile(path.join(cwd, "lib", "c.ts"), "hit", "utf8");
+    assert.equal((await grepJsFallback({ pattern: "hit", glob: "*.ts" }, cwd)).split("\n").length, 2);
+    assert.equal((await grepJsFallback({ pattern: "hit", glob: "**/*.ts" }, cwd)).split("\n").length, 2);
+    assert.equal((await grepJsFallback({ pattern: "hit", glob: "src/**/*.{ts,tsx}" }, cwd)).split("\n").length, 2);
   } finally { await rm(cwd, { recursive: true, force: true }); }
 });
 

@@ -10,7 +10,7 @@ import { Session } from "./session.js";
 import { getTools } from "./tools/index.js";
 import type { ChatMessage } from "./types.js";
 
-export async function runRepl(options: { cwd: string; model?: string; yes?: boolean; noWeb?: boolean; resume?: string; version?: string }): Promise<void> {
+export async function runRepl(options: { cwd: string; model?: string; yes?: boolean; noWeb?: boolean; resume?: string; version?: string; initialPrompt?: string }): Promise<void> {
   let cfg = await loadConfig();
   if (options.noWeb) cfg.web = false;
   let current = resolveModel(cfg, options.model || cfg.defaultModel).id;
@@ -56,7 +56,8 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
   try {
     while (true) {
       let input: string;
-      try { input = await rl.question(renderPromptPrefix()); } catch { break; }
+      if (options.initialPrompt !== undefined) { input = options.initialPrompt; options.initialPrompt = undefined; }
+      else { try { input = await rl.question(renderPromptPrefix()); } catch { break; } }
       ctrlPressed = false;
       let lines = input;
       while (lines.endsWith("\\")) {
@@ -84,7 +85,6 @@ export async function runRepl(options: { cwd: string; model?: string; yes?: bool
         continue;
       }
       renderer = new EventRenderer();
-      agent = makeAgent();
       controller = new AbortController(); generating = true;
       await agent.run(text, controller.signal);
       generating = false; controller = undefined;

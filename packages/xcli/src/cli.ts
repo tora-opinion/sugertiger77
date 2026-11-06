@@ -57,7 +57,7 @@ async function main(argv: string[]): Promise<number> {
     if (sub === "rm") { if (!positional[2] || !removeModel(cfg, positional[2])) throw new Error("登録モデルが見つかりません。"); await saveConfig(cfg); renderInfo(`モデル ${positional[2]} を解除しました。`); return 0; }
     throw new Error("使い方: xcli model add|rm|list");
   }
-  if (!print) { await runRepl({ cwd, model, yes, noWeb, resume, version: pkg.version }); return 0; }
+  if (!print) { await runRepl({ cwd, model, yes, noWeb, resume, version: pkg.version, initialPrompt: prompt }); return 0; }
   if (!prompt) throw new Error("プロンプトが必要です。");
   const actualModel = resolveModel(cfg, model || cfg.defaultModel);
   if (!actualModel.registered) renderInfo(`未登録モデルコード ${actualModel.id} をそのまま使用します。`);

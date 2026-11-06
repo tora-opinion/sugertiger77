@@ -11,6 +11,7 @@ type AgentOptions = {
   messages?: ChatMessage[];
   display?: ToolContext["display"];
   stopOnDeny?: boolean;
+  clientFactory?: (baseURL: string, apiKey: string) => OpenAI;
 };
 
 export class Agent {
@@ -24,6 +25,7 @@ export class Agent {
   private readonly onEvent: (event: AgentEvent) => void;
   private readonly display?: ToolContext["display"];
   private readonly stopOnDeny: boolean;
+  private readonly clientFactory: (baseURL: string, apiKey: string) => OpenAI;
   private usage: Usage = { promptTokens: 0, completionTokens: 0 };
   private lastPromptTokens = 0;
   private textOnly = false;
@@ -33,6 +35,7 @@ export class Agent {
     this.session = options.session; this.askPermission = options.askPermission; this.onEvent = options.onEvent;
     this.display = options.display;
     this.stopOnDeny = options.stopOnDeny === true;
+    this.clientFactory = options.clientFactory ?? createClient;
     this.messages = options.messages ? [...options.messages] : [{ role: "system", content: buildSystemPrompt(options.cwd) }];
   }
 
@@ -41,7 +44,7 @@ export class Agent {
   getUsage(): Usage { return { ...this.usage }; }
 
   private async push(message: ChatMessage): Promise<void> { this.messages.push(message); await this.session?.append(message); }
-  private endpoint(): OpenAI { const endpoint = getEndpoint(this.cfg, this.model); return createClient(endpoint.baseURL, endpoint.apiKey); }
+  private endpoint(): OpenAI { const endpoint = getEndpoint(this.cfg, this.model); return this.clientFactory(endpoint.baseURL, endpoint.apiKey); }
 
   async run(userInput: string, signal: AbortSignal): Promise<void> {
     await this.push({ role: "user", content: userInput });
