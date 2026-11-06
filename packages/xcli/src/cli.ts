@@ -65,7 +65,12 @@ async function main(argv: string[]): Promise<number> {
   if (noWeb) cfg.web = false;
   let denied = false; let output = "";
   const nonInteractive = !process.stdin.isTTY;
-  const askPermission = createPermissionPrompter({ yes, ask: async () => "n", print: (s) => { if (!yes && nonInteractive) denied = true; else console.error(s); } });
+  const ttyAsk = async (q: string): Promise<string> => {
+    const { createInterface } = await import("node:readline/promises");
+    const rl = createInterface({ input: process.stdin, output: process.stderr });
+    try { return await rl.question(q + " "); } finally { rl.close(); }
+  };
+  const askPermission = createPermissionPrompter({ yes, ask: nonInteractive ? async () => "n" : ttyAsk, print: (s) => { if (!yes && nonInteractive) denied = true; else console.error(s); } });
   const session = await Session.create(actualModel.id, cwd);
   const agent = new Agent({ cfg, model: actualModel.id, cwd, tools: getTools({ web: cfg.web }), session, askPermission, stopOnDeny: !yes && nonInteractive, onEvent: (event) => {
     if (event.type === "text") output += event.delta;

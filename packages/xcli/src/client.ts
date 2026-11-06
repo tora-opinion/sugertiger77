@@ -52,6 +52,7 @@ export async function streamChat(args: {
   onText(delta: string): void;
 }): Promise<{ message: ChatMessage; usage?: Usage }> {
   let lastError: unknown;
+  let emitted = false;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const stream = await args.client.chat.completions.create({
@@ -66,7 +67,7 @@ export async function streamChat(args: {
       let usage: Usage | undefined;
       for await (const chunk of stream as AsyncIterable<ChatCompletionChunk>) {
         const choice = chunk.choices[0];
-        if (choice?.delta.content) { content += choice.delta.content; args.onText(choice.delta.content); }
+        if (choice?.delta.content) { content += choice.delta.content; emitted = true; args.onText(choice.delta.content); }
         for (const part of choice?.delta.tool_calls || []) {
           const call = calls.get(part.index) || { id: "", type: "function" as const, function: { name: "", arguments: "" } };
           accumulateToolCall(call, part);
@@ -77,7 +78,8 @@ export async function streamChat(args: {
       return { message: { role: "assistant", content: content || null, ...(calls.size ? { tool_calls: [...calls.entries()].sort(([a], [b]) => a - b).map(([, call]) => call) } : {}) }, ...(usage ? { usage } : {}) };
     } catch (error) {
       lastError = error;
-      if (attempt === 2 || !retryable(error) || args.signal?.aborted) throw error;
+      // never retry once text reached the user: a retry would duplicate output
+      if (attempt === 2 || emitted || !retryable(error) || args.signal?.aborted) throw error;
       await new Promise<void>((resolve, reject) => {
         const timer = setTimeout(resolve, 250 * 2 ** attempt);
         args.signal?.addEventListener("abort", () => { clearTimeout(timer); reject(args.signal?.reason); }, { once: true });

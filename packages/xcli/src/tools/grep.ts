@@ -68,14 +68,20 @@ export const grepTool: Tool = {
       if (normalized.output_mode === "content") flags.push("--line-number", "--context", String(normalized.context ?? 0));
       else if (normalized.output_mode === "count") flags.push("--count");
       else flags.push("--files-with-matches");
-      flags.push("--max-count", String(normalized.head_limit), normalized.pattern, normalized.path ?? ".");
+      flags.push(normalized.pattern, normalized.path ?? ".");
       const result = await execFileAsync("rg", flags, { cwd: ctx.cwd, maxBuffer: 10 * 1024 * 1024, windowsHide: true });
-      return result.stdout.trimEnd();
+      return limitLines(result.stdout, normalized.head_limit);
     } catch (error) {
       const e = error as NodeJS.ErrnoException & { code?: number; stdout?: string };
       if (e.code === "ENOENT") return grepJsFallback(normalized, ctx.cwd);
-      if (typeof e.stdout === "string") return e.stdout.trimEnd();
+      if (typeof e.stdout === "string") return limitLines(e.stdout, normalized.head_limit);
       throw error;
     }
   },
 };
+
+function limitLines(text: string, limit = 250): string {
+  const trimmed = text.trimEnd();
+  if (!trimmed) return "";
+  return trimmed.split(/\r?\n/).slice(0, Math.max(0, limit)).join("\n");
+}
