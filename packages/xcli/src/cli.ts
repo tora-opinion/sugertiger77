@@ -47,7 +47,7 @@ async function main(argv: string[]): Promise<number> {
   if (command === "models") {
     const { getEndpoint } = await import("./config.js"); const { createClient, listModels } = await import("./client.js");
     const id = resolveModel(cfg, model || cfg.defaultModel).id;
-    renderModelList(await listModels(createClient((model && cfg.models.find((m) => m.id === model)?.baseURL) || cfg.baseURL, getEndpoint(cfg, id).apiKey)), cfg.models, id); return 0;
+    const endpoint = getEndpoint(cfg, id); renderModelList(await listModels(createClient(endpoint.baseURL, endpoint.apiKey)), cfg.models, id); return 0;
   }
   if (command === "sessions") { for (const s of await Session.list()) console.log(`${s.id}\t${s.firstUserMessage}`); return 0; }
   if (command === "model") {
@@ -73,6 +73,7 @@ async function main(argv: string[]): Promise<number> {
     else if (event.type === "tool_start" && process.env.XCLI_VERBOSE) console.error(`● ${event.call.function.name}`);
   } });
   await agent.run(prompt, new AbortController().signal);
+  if (agent.lastRunFailed) return 1;
   if (denied) { console.error("書き込みツールの実行を拒否しました。許可する場合は --yes を指定してください。"); return 1; }
   process.stdout.write(output);
   return 0;

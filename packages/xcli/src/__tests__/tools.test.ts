@@ -81,3 +81,13 @@ test("Bash reports timeout", async () => {
   const result = await bashTool.run({ command, timeout_ms: 50 }, ctx);
   assert.match(result, /timed out after 50 ms/);
 });
+
+test("Grep JS fallback searches a single file path", async () => {
+  const { grepJsFallback } = await import("../tools/grep.js");
+  const { mkdtemp, writeFile } = await import("node:fs/promises");
+  const os = await import("node:os"); const p = await import("node:path");
+  const dir = await mkdtemp(p.join(os.tmpdir(), "xcli-grepfile-"));
+  await writeFile(p.join(dir, "a.txt"), "hay\nneedle\n");
+  const out = await grepJsFallback({ pattern: "needle", path: "a.txt" }, dir);
+  assert.match(out, /a\.txt/);
+});

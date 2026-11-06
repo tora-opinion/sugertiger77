@@ -23,27 +23,30 @@ export async function grepJsFallback(args: GrepArgs, cwd: string): Promise<strin
       if (entry.name === "node_modules" || entry.name === ".git") continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) await visit(full);
-      else if (entry.isFile()) {
-        const info = await stat(full);
-        if (info.size > 2 * 1024 * 1024) continue;
-        const rel = path.relative(root, full).split(path.sep).join("/");
-        if (globMatcher && !globMatcher(rel)) continue;
-        const buffer = await readFile(full);
-        if (buffer.includes(0)) continue;
-        const lines = buffer.toString("utf8").split(/\r?\n/);
-        const matched: number[] = [];
-        for (let i = 0; i < lines.length; i++) { matcher.lastIndex = 0; if (matcher.test(lines[i])) matched.push(i); }
-        if (matched.length) {
-          const selected = new Set<number>();
-          for (const index of matched) {
-            for (let line = Math.max(0, index - context); line <= Math.min(lines.length - 1, index + context); line++) selected.add(line);
-          }
-          records.push({ file: full, lines: mode === "content" ? [...selected].sort((a, b) => a - b).map((i) => `${i + 1}:${lines[i]}`) : [], count: matched.length });
-        }
-      }
+      else if (entry.isFile()) await scanFile(full, root);
     }
   }
-  await visit(root);
+  async function scanFile(full: string, base: string): Promise<void> {
+    const info = await stat(full);
+    if (info.size > 2 * 1024 * 1024) return;
+    const rel = path.relative(base, full).split(path.sep).join("/");
+    if (globMatcher && !globMatcher(rel)) return;
+    const buffer = await readFile(full);
+    if (buffer.includes(0)) return;
+    const lines = buffer.toString("utf8").split(/\r?\n/);
+    const matched: number[] = [];
+    for (let i = 0; i < lines.length; i++) { matcher.lastIndex = 0; if (matcher.test(lines[i])) matched.push(i); }
+    if (matched.length) {
+      const selected = new Set<number>();
+      for (const index of matched) {
+        for (let line = Math.max(0, index - context); line <= Math.min(lines.length - 1, index + context); line++) selected.add(line);
+      }
+      records.push({ file: full, lines: mode === "content" ? [...selected].sort((a, b) => a - b).map((i) => `${i + 1}:${lines[i]}`) : [], count: matched.length });
+    }
+  }
+  const rootInfo = await stat(root).catch(() => undefined);
+  if (rootInfo?.isFile()) await scanFile(root, path.dirname(root));
+  else await visit(root);
   if (mode === "count") return records.slice(0, head).map((r) => `${path.relative(cwd, r.file)}:${r.count}`).join("\n");
   if (mode === "content") return records.flatMap((r) => [`${path.relative(cwd, r.file)}:`, ...r.lines]).slice(0, head).join("\n");
   return records.slice(0, head).map((r) => path.relative(cwd, r.file)).join("\n");

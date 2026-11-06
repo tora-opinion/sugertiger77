@@ -15,6 +15,8 @@ type AgentOptions = {
 };
 
 export class Agent {
+  /** true when the last run() ended with an API/fatal error */
+  lastRunFailed = false;
   readonly messages: ChatMessage[];
   private model: string;
   private readonly cfg: XcliConfig;
@@ -47,6 +49,7 @@ export class Agent {
   private endpoint(): OpenAI { const endpoint = getEndpoint(this.cfg, this.model); return this.clientFactory(endpoint.baseURL, endpoint.apiKey); }
 
   async run(userInput: string, signal: AbortSignal): Promise<void> {
+    this.lastRunFailed = false;
     await this.push({ role: "user", content: userInput });
     let turns = 0;
     try {
@@ -93,6 +96,7 @@ export class Agent {
       }
       if (turns >= this.cfg.maxTurns) this.onEvent({ type: "warning", message: `最大ターン数（${this.cfg.maxTurns}）に達しました。` });
     } catch (error) {
+      this.lastRunFailed = true;
       if (!signal.aborted) this.onEvent({ type: "warning", message: formatApiError(error) });
     } finally { this.onEvent({ type: "done" }); }
   }
