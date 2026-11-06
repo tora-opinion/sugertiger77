@@ -40,7 +40,7 @@ export class Agent {
   }
 
   setModel(id: string): void { this.model = id; this.textOnly = false; }
-  clear(): void { this.messages.splice(0, this.messages.length, { role: "system", content: buildSystemPrompt(this.cwd) }); this.usage = { promptTokens: 0, completionTokens: 0 }; this.lastPromptTokens = 0; }
+  clear(): void { this.messages.splice(0, this.messages.length, { role: "system", content: buildSystemPrompt(this.cwd) }); this.usage = { promptTokens: 0, completionTokens: 0 }; this.lastPromptTokens = 0; void this.session?.reset(); }
   getUsage(): Usage { return { ...this.usage }; }
 
   private async push(message: ChatMessage): Promise<void> { this.messages.push(message); await this.session?.append(message); }
@@ -114,6 +114,7 @@ export class Agent {
     let result = ""; let isError = false;
     try {
       if (!tool.readOnly && !(await this.askPermission({ tool: tool.name, summary }))) { result = "User denied permission"; isError = true; }
+      else if (signal.aborted) { result = "Error: aborted by user"; isError = true; }
       else result = await tool.run(args, { cwd: this.cwd, signal, askPermission: this.askPermission, display: this.display });
     } catch (error) { isError = true; result = `Error: ${error instanceof Error ? error.message : String(error)}`; }
     await this.push({ role: "tool", tool_call_id: call.id, content: result });
@@ -136,6 +137,7 @@ export class Agent {
     const system = this.messages[0];
     const summary: ChatMessage = { role: "user", content: `Conversation summary for continuation:\n${summaryResponse.message.content || ""}` };
     this.messages.splice(0, this.messages.length, system, summary);
+    await this.session?.reset();
     await this.session?.append(summary);
   }
 }

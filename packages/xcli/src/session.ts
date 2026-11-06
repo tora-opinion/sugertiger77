@@ -30,11 +30,23 @@ export class Session {
     await fs.appendFile(this.file, `${JSON.stringify(msg)}\n`, "utf8");
   }
 
+  /** Marks a history reset (/clear, /compact); messages before it are dropped on load. */
+  async reset(): Promise<void> {
+    await fs.appendFile(this.file, `${JSON.stringify({ type: "reset" })}
+`, "utf8");
+  }
+
   static async load(id: string): Promise<{ meta: SessionMeta; messages: ChatMessage[] }> {
     const file = path.join(getConfigHome(), "sessions", `${id}.jsonl`);
     const lines = (await fs.readFile(file, "utf8")).split(/\r?\n/).filter(Boolean);
     const meta = JSON.parse(lines.shift() || "null") as SessionMeta;
-    return { meta, messages: lines.map((line) => JSON.parse(line) as ChatMessage) };
+    let messages: ChatMessage[] = [];
+    for (const line of lines) {
+      const parsed = JSON.parse(line) as ChatMessage | { type: "reset" };
+      if ("type" in parsed && parsed.type === "reset") messages = [];
+      else messages.push(parsed as ChatMessage);
+    }
+    return { meta, messages };
   }
 
   static async list(limit = 20): Promise<SessionSummary[]> {

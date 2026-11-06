@@ -6,7 +6,7 @@ import { Agent } from "./agent.js";
 import { addModel, loadConfig, removeModel, resolveModel, saveConfig } from "./config.js";
 import { createPermissionPrompter } from "./permissions.js";
 import { runRepl, parseModelArgs } from "./repl.js";
-import { EventRenderer, renderError, renderHelp, renderInfo, renderModelList } from "./render.js";
+import { renderError, renderHelp, renderInfo, renderModelList } from "./render.js";
 import { Session } from "./session.js";
 import { getTools } from "./tools/index.js";
 
@@ -60,23 +60,23 @@ async function main(argv: string[]): Promise<number> {
   if (!print) { await runRepl({ cwd, model, yes, noWeb, resume, version: pkg.version, initialPrompt: prompt }); return 0; }
   if (!prompt) throw new Error("プロンプトが必要です。");
   const actualModel = resolveModel(cfg, model || cfg.defaultModel);
-  if (!actualModel.registered) renderInfo(`未登録モデルコード ${actualModel.id} をそのまま使用します。`);
+  // print mode: stdout carries only the answer; diagnostics go to stderr
+  if (!actualModel.registered && process.env.XCLI_VERBOSE) console.error(`未登録モデルコード ${actualModel.id} をそのまま使用します。`);
   if (noWeb) cfg.web = false;
-  let denied = false; let warning = ""; let output = "";
+  let denied = false; let output = "";
   const nonInteractive = !process.stdin.isTTY;
   const askPermission = createPermissionPrompter({ yes, ask: async () => "n", print: (s) => { if (!yes && nonInteractive) denied = true; else console.error(s); } });
   const session = await Session.create(actualModel.id, cwd);
-  const renderer = new EventRenderer();
   const agent = new Agent({ cfg, model: actualModel.id, cwd, tools: getTools({ web: cfg.web }), session, askPermission, stopOnDeny: !yes && nonInteractive, onEvent: (event) => {
     if (event.type === "text") output += event.delta;
-    if (event.type === "warning") warning = event.message;
-    if (event.type !== "text" && event.type !== "done" && event.type !== "warning") renderer.handle(event);
+    else if (event.type === "warning") console.error(`⚠ ${event.message}`);
+    else if (event.type === "tool_start" && process.env.XCLI_VERBOSE) console.error(`● ${event.call.function.name}`);
   } });
   await agent.run(prompt, new AbortController().signal);
-  if (denied || warning) { if (denied) console.error("書き込みツールの実行を拒否しました。許可する場合は --yes を指定してください。"); if (warning) console.error(warning); return 1; }
+  if (denied) { console.error("書き込みツールの実行を拒否しました。許可する場合は --yes を指定してください。"); return 1; }
   process.stdout.write(output);
   return 0;
 }
 
 try { process.exitCode = await main(process.argv.slice(2)); }
-catch (error) { renderError(error instanceof Error ? error.message : String(error)); process.exitCode = 1; }
+catch (error) { const { formatApiError } = await import("./client.js"); console.error("✗ " + formatApiError(error)); process.exitCode = 1; }
