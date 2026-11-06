@@ -1,4 +1,4 @@
-import { t, termCols, truncW } from "./theme.js";
+import { strWidth, t, termCols } from "./theme.js";
 import type { PermissionRequest } from "./types.js";
 
 export function formatPermissionRequest(req: PermissionRequest): string {
@@ -6,8 +6,10 @@ export function formatPermissionRequest(req: PermissionRequest): string {
   const bar = t.accent("│");
   const lines = [
     t.accent("╭─ ") + t.bold(t.accent("許可が要るで")) + " " + t.accent("─".repeat(Math.max(0, w - 16))),
-    `${bar} ${t.bold(req.tool)}  ${t.soft(truncW(req.summary.replace(/^[^:]+:\s*/, ""), w - req.tool.length - 6))}`,
+    `${bar} ${t.bold(req.tool)}`,
   ];
+  // never truncate: the user must see the complete command/path before approving
+  for (const l of wrapW(req.summary.replace(/^[^:]+:\s*/, ""), Math.max(20, w - 4))) lines.push(`${bar} ${t.soft(l)}`);
   if (req.detail) for (const l of req.detail.split("\n")) lines.push(`${bar} ${l}`);
   lines.push(t.accent("╰" + "─".repeat(Math.max(0, w - 1))));
   return lines.join("\n");
@@ -25,4 +27,17 @@ export function createPermissionPrompter(opts: { yes: boolean; ask: (question: s
     if (answer === "a") { approved.add(req.tool); return true; }
     return answer === "y" || answer === "yes";
   };
+}
+
+function wrapW(text: string, width: number): string[] {
+  const out: string[] = [];
+  for (const para of text.split(/\r?\n/)) {
+    let line = "";
+    for (const ch of para) {
+      if (strWidth(line + ch) > width) { out.push(line); line = ""; }
+      line += ch;
+    }
+    out.push(line);
+  }
+  return out;
 }
