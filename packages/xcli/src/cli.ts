@@ -80,7 +80,7 @@ async function main(argv: string[]): Promise<number> {
   await agent.run(prompt, new AbortController().signal);
   if (agent.lastRunFailed) return 1;
   if (denied) { console.error("書き込みツールの実行を拒否しました。許可する場合は --yes を指定してください。"); return 1; }
-  process.stdout.write(output);
+  process.stdout.write(output.endsWith("\n") ? output : output + "\n");
   return 0;
 }
 
