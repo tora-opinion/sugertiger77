@@ -13,68 +13,63 @@ const PALETTE: Record<string, RGB> = {
   L: [104, 196, 84], // leaf
   l: [62, 142, 51], // stem
   E: [43, 26, 16], // eye
-  W: [255, 255, 255], // eye shine
-  B: [255, 118, 128], // blush
-  m: [120, 44, 14], // mouth
   T: [110, 198, 255], // tear / sweat
 };
 
-// Body without face. Top two rows are headroom for jumping.
+// Body only: no face, no limbs. Two empty rows on top are headroom for jumping.
+// Design rule: 1-pixel eyes, no nose / mouth, 1-pixel stubby hands and feet.
 const BODY: string[] = [
   "............",
   "............",
-  "......Ll....",
+  "......l.....",
   ".....LL.....",
-  "...oOOOOo...",
-  "..OhhOOOOO..",
+  "...OOOOOO...",
+  "..OhOOOOOO..",
+  ".OOOOOOOOOO.",
   ".OOOOOOOOOO.",
   ".OOOOOOOOOO.",
   ".OOOOOOOOOO.",
   "..OOOOOOOO..",
-  "...oOOOOo...",
-  "...o....o...",
+  "............",
 ];
 
-type Eyes = "open" | "closed" | "happy";
-type Mouth = "smile" | "open" | "frown" | "o" | "none";
-interface FaceOpts {
-  eyes?: Eyes;
-  look?: "center" | "left" | "right" | "up";
-  mouth?: Mouth;
-  blush?: boolean;
-  lift?: number; // pixels to move up
+type Arm = "rest" | "up" | "high" | "down";
+type Feet = "stand" | "stepA" | "stepB";
+interface Pose {
+  eyes?: "open" | "closed";
+  look?: "center" | "left" | "right";
+  eyeRow?: -1 | 0 | 1; // -1 = looking up, 1 = looking down
+  left?: Arm;
+  right?: Arm;
+  feet?: Feet;
+  lift?: number; // pixels to move up (jump / bounce)
   extra?: Array<[number, number, string]>; // [x, y, color] in body coordinates
 }
 
-function face(o: FaceOpts = {}): string[] {
+const ARM_L: Record<Arm, [number, number]> = { rest: [0, 8], up: [0, 7], high: [0, 6], down: [0, 9] };
+const ARM_R: Record<Arm, [number, number]> = { rest: [11, 8], up: [11, 7], high: [11, 6], down: [11, 9] };
+const FEET: Record<Feet, Array<[number, number]>> = {
+  stand: [[3, 11], [8, 11]],
+  stepA: [[2, 11], [7, 11]],
+  stepB: [[4, 11], [9, 11]],
+};
+
+function pose(p: Pose = {}): string[] {
   const g = BODY.map((r) => r.split(""));
   const set = (x: number, y: number, c: string) => {
     if (y >= 0 && y < H && x >= 0 && x < W) g[y]![x] = c;
   };
-  const look = o.look ?? "center";
-  const dx = look === "left" ? -1 : look === "right" ? 1 : 0;
-  const ey = look === "up" ? 5 : 6;
-  const eyes = o.eyes ?? "open";
-  for (const x0 of [3 + dx, 7 + dx]) {
-    if (eyes === "open") {
-      set(x0, ey, "E"); set(x0 + 1, ey, "W"); set(x0, ey + 1, "E"); set(x0 + 1, ey + 1, "E");
-    } else if (eyes === "closed") {
-      set(x0, ey + 1, "E"); set(x0 + 1, ey + 1, "E");
-    } else {
-      set(x0, ey, "E"); set(x0 + 1, ey, "E");
-    }
-  }
-  switch (o.mouth ?? "smile") {
-    case "smile": set(4, 8, "m"); set(5, 9, "m"); set(6, 9, "m"); set(7, 8, "m"); break;
-    case "open": set(5, 8, "m"); set(6, 8, "m"); set(5, 9, "m"); set(6, 9, "m"); break;
-    case "frown": set(4, 9, "m"); set(5, 8, "m"); set(6, 8, "m"); set(7, 9, "m"); break;
-    case "o": set(5, 8, "m"); set(6, 8, "m"); break;
-    case "none": break;
-  }
-  if (o.blush) { set(2, 8, "B"); set(9, 8, "B"); }
-  for (const [x, y, c] of o.extra ?? []) set(x, y, c);
+  const dx = p.look === "left" ? -1 : p.look === "right" ? 1 : 0;
+  const ey = 7 + (p.eyeRow ?? 0);
+  const eye = p.eyes === "closed" ? "o" : "E";
+  set(3 + dx, ey, eye);
+  set(8 + dx, ey, eye);
+  set(...ARM_L[p.left ?? "rest"], "o");
+  set(...ARM_R[p.right ?? "rest"], "o");
+  for (const [x, y] of FEET[p.feet ?? "stand"]) set(x, y, "o");
+  for (const [x, y, c] of p.extra ?? []) set(x, y, c);
   let rows = g.map((r) => r.join(""));
-  const lift = o.lift ?? 0;
+  const lift = p.lift ?? 0;
   if (lift > 0) rows = [...rows.slice(lift), ...Array<string>(lift).fill(".".repeat(W))];
   return rows;
 }
@@ -92,78 +87,84 @@ export interface Animation {
   frames: Frame[];
 }
 
-const armUp: Array<[number, number, string]> = [[11, 5, "O"], [11, 6, "O"], [10, 4, "o"]];
-const armDown: Array<[number, number, string]> = [[11, 8, "O"], [11, 9, "o"]];
+const hi = (s: string) => ({ 2: t.bold(t.accent(s)) });
 
 export const ANIMATIONS: Record<string, Animation> = {
   wave: {
-    name: "wave", label: "あいさつ", interval: 220,
+    name: "wave", label: "あいさつ", interval: 200,
     frames: [
-      { grid: face({ blush: true, extra: armUp }), text: { 2: t.bold(t.accent("まいど！")) } },
-      { grid: face({ blush: true, extra: armDown }), text: { 2: t.bold(t.accent("まいど！")) } },
+      { grid: pose({ right: "high" }), text: hi("まいど！") },
+      { grid: pose({ right: "up" }), text: hi("まいど！") },
+      { grid: pose({ right: "high" }), text: hi("まいど！") },
+      { grid: pose({ right: "up", eyes: "closed" }), text: hi("まいど！") },
     ],
   },
   idle: {
-    name: "idle", label: "まばたき", interval: 180,
+    name: "idle", label: "まばたき", interval: 160,
     frames: [
-      ...Array.from({ length: 10 }, () => ({ grid: face() })),
-      { grid: face({ eyes: "closed" }) },
-      { grid: face() },
-      { grid: face({ eyes: "closed" }) },
+      ...Array.from({ length: 12 }, () => ({ grid: pose() })),
+      { grid: pose({ eyes: "closed" }) },
+      { grid: pose() },
+      { grid: pose({ eyes: "closed" }) },
+      ...Array.from({ length: 6 }, () => ({ grid: pose() })),
+      { grid: pose({ look: "left" }) },
+      { grid: pose({ look: "left" }) },
+      { grid: pose({ look: "right" }) },
+      { grid: pose({ look: "right" }) },
     ],
   },
   think: {
-    name: "think", label: "考え中", interval: 280,
+    name: "think", label: "考え中", interval: 300,
     frames: [
-      { grid: face({ look: "up", mouth: "o" }), text: { 1: t.muted("·") } },
-      { grid: face({ look: "up", mouth: "o" }), text: { 1: t.muted("· ·") } },
-      { grid: face({ look: "up", mouth: "o" }), text: { 1: t.muted("· · ·") } },
-      { grid: face({ look: "up", mouth: "o" }), text: { 1: t.soft("· · · ?") } },
+      { grid: pose({ eyeRow: -1, look: "right", right: "up" }), text: { 1: t.muted("·") } },
+      { grid: pose({ eyeRow: -1, look: "right", right: "up" }), text: { 1: t.muted("· ·") } },
+      { grid: pose({ eyeRow: -1, look: "right", right: "up" }), text: { 1: t.muted("· · ·") } },
+      { grid: pose({ eyeRow: -1, look: "left", right: "up" }), text: { 1: t.soft("· · · ?") } },
     ],
   },
   work: {
-    name: "work", label: "作業中", interval: 160,
+    name: "work", label: "作業中", interval: 150,
     frames: [
-      { grid: face({ eyes: "happy", mouth: "o" }) },
-      { grid: face({ eyes: "happy", mouth: "o", lift: 1, extra: [[11, 3, "T"]] }) },
-      { grid: face({ eyes: "happy", mouth: "o", lift: 2, extra: [[11, 4, "T"]] }) },
-      { grid: face({ eyes: "happy", mouth: "o", lift: 1 }) },
+      { grid: pose({ feet: "stepA", left: "up", right: "down" }) },
+      { grid: pose({ feet: "stand", lift: 1, extra: [[11, 4, "T"]] }) },
+      { grid: pose({ feet: "stepB", left: "down", right: "up" }) },
+      { grid: pose({ feet: "stand", lift: 1, extra: [[11, 4, "T"]] }) },
     ],
   },
   search: {
-    name: "search", label: "ネット探索", interval: 300,
+    name: "search", label: "ネット探索", interval: 280,
     frames: [
-      { grid: face({ look: "left", mouth: "o" }), text: { 1: t.soft("?") } },
-      { grid: face({ look: "center", mouth: "o" }), text: { 1: t.soft(" ?") } },
-      { grid: face({ look: "right", mouth: "o" }), text: { 1: t.soft("  ?") } },
-      { grid: face({ look: "center", mouth: "smile" }), text: { 1: t.accent("  !") } },
+      { grid: pose({ look: "left", right: "high" }), text: { 1: t.soft("?") } },
+      { grid: pose({ look: "center", right: "high" }), text: { 1: t.soft(" ?") } },
+      { grid: pose({ look: "right", right: "high" }), text: { 1: t.soft("  ?") } },
+      { grid: pose({ look: "center", left: "up", right: "up", lift: 1 }), text: { 1: t.accent("  !") } },
     ],
   },
   happy: {
     name: "happy", label: "よろこび", interval: 130,
     frames: [
-      { grid: face({ eyes: "happy", mouth: "open", blush: true }), text: { 1: t.accent("♪") } },
-      { grid: face({ eyes: "happy", mouth: "open", blush: true, lift: 1 }), text: { 0: t.soft("♪") } },
-      { grid: face({ eyes: "happy", mouth: "open", blush: true, lift: 2, extra: armUp }), text: { 0: t.accent(" ♪") } },
-      { grid: face({ eyes: "happy", mouth: "open", blush: true, lift: 1 }), text: { 1: t.soft(" ♪") } },
+      { grid: pose({ eyeRow: -1, left: "up", right: "up" }), text: { 1: t.accent("♪") } },
+      { grid: pose({ eyeRow: -1, left: "high", right: "high", lift: 1 }), text: { 0: t.soft("♪") } },
+      { grid: pose({ eyeRow: -1, eyes: "closed", left: "high", right: "high", lift: 2 }), text: { 0: t.accent(" ♪") } },
+      { grid: pose({ eyeRow: -1, left: "high", right: "high", lift: 1 }), text: { 1: t.soft(" ♪") } },
     ],
   },
   sad: {
-    name: "sad", label: "しょんぼり", interval: 320,
+    name: "sad", label: "しょんぼり", interval: 340,
     frames: [
-      { grid: face({ eyes: "closed", mouth: "frown", extra: [[3, 8, "T"]] }) },
-      { grid: face({ eyes: "closed", mouth: "frown", extra: [[3, 9, "T"]] }) },
-      { grid: face({ eyes: "closed", mouth: "frown", extra: [[3, 10, "T"]] }) },
-      { grid: face({ eyes: "closed", mouth: "frown" }) },
+      { grid: pose({ eyeRow: 1, left: "down", right: "down", extra: [[3, 9, "T"]] }) },
+      { grid: pose({ eyeRow: 1, left: "down", right: "down", extra: [[3, 10, "T"]] }) },
+      { grid: pose({ eyeRow: 1, left: "down", right: "down", extra: [[3, 11, "T"]] }) },
+      { grid: pose({ eyeRow: 1, eyes: "closed", left: "down", right: "down" }) },
     ],
   },
   sleep: {
-    name: "sleep", label: "おやすみ", interval: 450,
+    name: "sleep", label: "おやすみ", interval: 480,
     frames: [
-      { grid: face({ eyes: "closed", mouth: "o" }), text: { 2: t.muted("z") } },
-      { grid: face({ eyes: "closed", mouth: "o" }), text: { 1: t.soft("Z"), 2: t.muted("z") } },
-      { grid: face({ eyes: "closed", mouth: "none" }), text: { 0: t.accent("Z"), 1: t.soft("Z"), 2: t.muted("z") } },
-      { grid: face({ eyes: "closed", mouth: "none" }), text: { 0: t.soft("Z"), 1: t.muted("z") } },
+      { grid: pose({ eyes: "closed", left: "down", right: "down" }), text: { 2: t.muted("z") } },
+      { grid: pose({ eyes: "closed", left: "down", right: "down" }), text: { 1: t.soft("Z"), 2: t.muted("z") } },
+      { grid: pose({ eyes: "closed", left: "down", right: "down", lift: 1 }), text: { 0: t.accent("Z"), 1: t.soft("Z"), 2: t.muted("z") } },
+      { grid: pose({ eyes: "closed", left: "down", right: "down" }), text: { 0: t.soft("Z"), 1: t.muted("z") } },
     ],
   },
 };
