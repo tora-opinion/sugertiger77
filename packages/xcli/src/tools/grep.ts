@@ -75,7 +75,7 @@ export const grepTool: Tool = {
       const e = error as NodeJS.ErrnoException & { code?: number | string; stdout?: string; stderr?: string };
       if (e.code === "ENOENT") return grepJsFallback(normalized, ctx.cwd);
       // rg exits 1 for "no matches"; anything else (2 = bad regex / missing path) is a real error
-      if (e.code === 1 && typeof e.stdout === "string") return limitLines(e.stdout, normalized.head_limit);
+      if ((e.code as unknown) === 1 && typeof e.stdout === "string") return limitLines(e.stdout, normalized.head_limit);
       if (typeof e.stderr === "string" && e.stderr.trim()) throw new Error(`Grep: ${e.stderr.trim()}`);
       throw error;
     }

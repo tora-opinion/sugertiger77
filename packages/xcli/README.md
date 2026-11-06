@@ -9,6 +9,8 @@ APIキーは環境変数 `EXPLABS_API_KEY` に設定する。キーをファイ�
 ```powershell
 $env:EXPLABS_API_KEY = "（自分のキー）"
 cd packages/xcli
+npm install
+npm run build
 npm link
 ```
 
