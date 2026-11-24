@@ -1,6 +1,7 @@
 import type { Env, RateLimitEntry } from '../types';
 
 type LimiterName = 'upload' | 'cdn';
+const MIN_KV_TTL_SEC = 60;
 
 export async function checkRateLimit(
   env: Env,
@@ -29,7 +30,7 @@ export async function checkRateLimit(
     if (!entry || entry.resetAt <= now) {
       const newEntry: RateLimitEntry = { count: 1, resetAt: now + windowSec };
       await kv.put(kvKey, JSON.stringify(newEntry), {
-        expirationTtl: windowSec + 10,
+        expirationTtl: Math.max(MIN_KV_TTL_SEC, windowSec + 10),
       });
       return { allowed: true, remaining: max - 1, resetAt: newEntry.resetAt };
     }
@@ -41,7 +42,7 @@ export async function checkRateLimit(
     entry.count++;
     const ttl = entry.resetAt - now + 10;
     await kv.put(kvKey, JSON.stringify(entry), {
-      expirationTtl: ttl > 10 ? ttl : 10,
+      expirationTtl: Math.max(MIN_KV_TTL_SEC, ttl),
     });
     return {
       allowed: true,
